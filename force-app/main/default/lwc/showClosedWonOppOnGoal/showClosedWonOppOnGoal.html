@@ -1,0 +1,42 @@
+<template>
+    
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+        <thead>
+        <tr class="slds-line-height_reset">
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Opportunity Name">Opportunity Name</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Account Name">Account Name</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Close Date">Amount</div>
+            </th>
+            <th class="" scope="col">
+                <div class="slds-truncate" title="Stage">Stage</div>
+            </th>
+        </tr>
+        </thead>
+        <template for:each={closedwonOpportunity} for:item="rec" for:index="index">
+            <tbody  key={rec.Name}>
+                <tr  class="slds-hint-parent" >
+                    <th data-label="Opportunity Name" scope="row">
+                        <div class="slds-truncate" title="Cloudhub">
+                            <a href="#" tabindex="-1">{rec.Opportunity__r.Name}</a>
+                        </div>
+                    </th>
+                    <td data-label="Account Name">
+                        <div class="slds-truncate" title="Cloudhub">{rec.Opportunity__r.Account.Name}</div>
+                    </td>
+                    <td data-label="Close Date">
+                        <div class="slds-truncate" title="4/14/2015">{rec.Opportunity__r.Amount}</div>
+                    </td>
+                    <td data-label="Prospecting">
+                        <div class="slds-truncate" title="Prospecting">{rec.Opportunity__r.StageName}</div>
+                    </td>
+                </tr>
+            </tbody>
+        </template>
+        
+    </table>
+</template>

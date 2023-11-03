@@ -1,0 +1,230 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <style>
+        	.table>thead{
+        		    background-color: rgb(203 213 225);
+        	}
+        	.dataTables_wrapper.no-footer{
+        		background:#fff;
+        		padding:10px;
+        	}
+        	
+        	.dataTables_paginate.paging_simple_numbers>*{
+        		margin:10px;
+        		text-decoration:none;
+        		cursor:pointer;
+        		color:black;
+        	}
+        	.dataTables_paginate.paging_simple_numbers>span>*{
+                margin: 0px 10px;
+                text-decoration: none;
+        		color:black;
+                padding: 5px 10px;
+                border-radius: 50%;
+        	}
+        	.paginate_button.current{
+        	background:rgb(203 213 225);
+        	}
+    </style>
+    <div ng-controller="products_ctrl">
+        <div class="container mt-3 mb-2" ng-init="getAllProducts()">
+            <div class="loadingSection" id="spinner" ng-show="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+            <div class="row " >
+                
+                <div class="col-sm-12 scollable-controlls" style="background:#fff;">
+                    <h3 ng-show="!productDetails" style="text-align:center;margin-top:1%">Products</h3>
+                    <h3 ng-show="productDetails" style="text-align:center;margin-top:1%">Product Details</h3>
+
+                    <!-- <div class="mt-3 mb-3">
+                        Select view : <select ng-change="view(e.targe.value)" ng-model="viewOption"> 
+                        <option value="Table">Table</option>
+                        <option value="Cards">Cards</option>    
+                        </select>
+                    </div> -->
+                    <div class="table-responsive" ng-show="viewOption==='Table' && !productDetails">
+                        
+                     <table id="example" class="table table-striped" style="width:100%;background:#fff;" >
+                             <thead>
+                                 <tr>
+                                    <th>Product Name</th>
+                                    <th>Product Code</th>
+                                    <th>Product Family</th>
+                                    <th>Product Price</th>
+                                    <th>Quantity of Unit</th>
+                                    <!-- <th>Active ?</th> -->
+                                    <th>Action</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 <tr ng-repeat="product in products track by $index">
+                                     <td>{{product.Product2.Name}}</td>
+                                     <td>{{product.Product2.ProductCode}}</td>
+                                     <td>{{product.Product2.Family}}</td>
+                                     <td>{{product.UnitPrice}}</td>
+                                     <td>{{product.Product2.QuantityUnitOfMeasure}}</td>
+                                     <!-- <td>{{product.Product2.IsActive}}</td> -->
+                                     <td>
+                                         <a class="btn btn-primary smallEye w-100" ng-click="details($index)" style="">
+                                             <i class="fa fa-eye"></i>
+                                         </a>
+                                     </td>
+                                 </tr>
+                             </tbody>
+                         </table>
+                    </div>
+                     <div ng-repeat="product in products" ng-show="viewOption==='Cards' && !productDetails">
+                        
+                         <div class="card mb-3">
+                             <div class="card-header d-flex justify-content-between">
+                                 <p class="card-title" style="margin-top:0.5rem;">
+                                     <b class="ondontefontColor">Product Name  : </b>
+                                     <span style="color:black;">{{product.Product2.Name}}</span>
+                                 </p>
+                                 <a class="btn btn-primary smallEye" ng-click="details($index)" style="">
+                                     <i class="fa fa-eye"></i>
+                                 </a>
+                             </div>
+                             <div class="card-body">
+                                 <div class="d-flex justify-content-between">
+                                     <p class="card-subtitle text-muted">
+                                         <b class="ondontefontColor">Product Code : </b>
+                                         <span style="color:black;">{{product.Product2.ProductCode}}</span>
+                                     </p>
+                                     <div  class="card-subtitle  col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Product Price : &nbsp;</b>
+                                         <span style="color:black;">{{product.UnitPrice || 'N/A'}}</span>
+                                     </div>
+                                 </div>
+                                 <div class="d-flex justify-content-between">
+                                     <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                         <b class="ondontefontColor">Product Family : </b>
+                                         <span style="color:black;">{{product.Product2.Family}}</span>
+                                     </p>
+                                 </div>
+                                 
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div style="width: 50%;">
+                                         <b class="ondontefontColor">Qunatity of Unit &nbsp;</b>
+                                         <span style="color:black;">{{product.Product2.QuantityUnitOfMeasure }}</span>
+                                     </div>
+                                     
+                                     <div style="width: 50%;">
+                                         <b class="ondontefontColor">Active :&nbsp;</b>
+                                         <span style="color:black;">{{product.Product2.IsActive}}</span>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                    </div>
+                    
+                    
+                    <div  ng-show="productDetails">
+                        
+                         <div class="card mb-3">
+                             <div class="card-header d-flex justify-content-between ">
+                                 <p class="card-title" style="margin-top:0.5rem;">
+                                     <b class="ondontefontColor">Product Name  : </b>
+                                     <span style="color:black;">{{productDetails.Product2.Name}}</span>
+                                 </p>
+                                 <a class="btn btn-danger smallEye" ng-click="closeProdDetail()" style="">
+                                     <i class="fa fa-close"></i>
+                                 </a>
+                             </div>
+                             <div class="card-body">
+                                 <!--<div class="justify-content-between col-sm-12 mt-2 mb-2">
+                                     <div class="card-subtitle text-muted">
+                                         <b class="ondontefontColor">Product Code : </b>
+                                         <span style="color:black;">{{productDetails.ProductCode}}</span>
+                                     </div>
+                                 </div>-->
+                                 <div class="d-flex justify-content-between">
+                                     <div class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Product Family : </b>
+                                         <span style="color:black;">{{productDetails.Product2.Family}}</span>
+                                     </div>
+                                     <div class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Product Code : </b>
+                                         <span style="color:black;">{{productDetails.Product2.ProductCode}}</span>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Qunatity of Unit &nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.QuantityUnitOfMeasure }}</span>
+                                     </div>
+                                     
+                                     <div class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Active :&nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.IsActive}}</span>
+                                     </div>
+                                     
+                                 </div>
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm- text-muted">
+                                         <b class="ondontefontColor">Application : &nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.Application__c || 'N/A' }}</span>
+                                     </div>
+                                     
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Currency Inventory :&nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.Current_Inventory__c || 'N/A'}}</span>
+                                     </div>
+                                     
+                                 </div>
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm- text-muted">
+                                         <b class="ondontefontColor">Distributor Landing (INR) : &nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.DISTRIBUTOR_LANDING_in_INR__c || 'N/A'}}</span>
+                                     </div>
+                                     
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Distributor Margin :&nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.Customer_Discount__c || 'N/A'}}</span>
+                                     </div>
+                                     
+                                 </div>
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm- text-muted">
+                                         <b class="ondontefontColor">Dosage Guidelines : &nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.Dosage_Guidelines__c || 'N/A'}}</span>
+                                     </div>
+                                     
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">Stock Keeping Unit :&nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.StockKeepingUnit || 'N/A'}}</span>
+                                     </div>
+                                     
+                                 </div>
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm- text-muted">
+                                         <b class="ondontefontColor">Sampling Qty UNIT : &nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.Sampling_Qty_UNIT__c || 'N/A'}}</span>
+                                     </div>
+                                      <div  class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">End Use Category :&nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.End_Use_Category__c || 'N/A'}}</span>
+                                     </div>
+                                 </div>
+                                 <div class="d-flex justify-content-between d-block-mobile">
+                                     <div  class="card-subtitle mb-2 mt-2 col-sm- text-muted">
+                                         <b class="ondontefontColor">Product Price : &nbsp;</b>
+                                         <span style="color:black;">{{productDetails.UnitPrice || 'N/A'}}</span>
+                                     </div>
+                                     <!-- <div  class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                         <b class="ondontefontColor">End Use Category :&nbsp;</b>
+                                         <span style="color:black;">{{productDetails.Product2.End_Use_Category__c || 'N/A'}}</span>
+                                     </div>-->
+                                 </div>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

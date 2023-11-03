@@ -1,0 +1,173 @@
+<apex:page applyHtmlTag="false" docType="html-5.0" showHeader="false" sidebar="false" renderAs="pdf" controller="SampleInvoiceDomesticPDFController" >
+    <head>
+        <style>
+            
+            @page {
+            margin-left: 0.5cm;
+            margin-right: 0.5cm;      
+            }
+            
+            .col-container {
+            display: table;
+            width: 100%;
+            }
+            
+            .col {
+            display: table-cell;
+            padding-left: 1px;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <br/>  <br/>  <br/>  <br/>
+        <div style="border:1px solid black; padding-left:15px;">
+            <div style="width:30px; border:1px solid; margin-left:10px; margin-top:10px; height:10px;"></div><BR/>
+            <!-- <span style="font-size:10px;">Original for recipient</span> -->
+            <div style="font-size:10px; margin-left:8%; margin-top:-4%;">Original for recipient</div>  
+            
+            <div style="width:30px; border:1px solid; margin-left:28%; margin-top:-10px; height:10px;"></div>
+            <div style="font-size:10px; margin-left:34%; margin-top:-1.5%;">Duplicate for Transporter</div>  
+            
+            <div style="width:30px; border:1px solid; margin-left:54%; margin-top:-10px; height:10px;"></div>
+            <div style="font-size:10px; margin-left:60%; margin-top:-1.5%;">Triplicate for supplier</div>  
+            
+            <div style="width:30px; border:1px solid; margin-left:80%; margin-top:-10px; height:10px;"></div>
+            <div style="font-size:10px; margin-left:86%; margin-top:-1.5%;">Extra Copy</div>  
+        </div>
+        
+        <!-- 3 Boxes 1st -->
+        <div class="col-container">
+            
+            <div class="col" style="border:1px solid black;width:25%"><br/><br/>
+                <center><span ><apex:image url="{!$Resource.logo}" width="130px" height="30px"/></span></center>
+            </div>
+            
+            <div class="col" style="border: 1px solid black; padding-left:1px;width:40%">
+                <span style="font-size:12px;">
+                    <b>{!sampDetails.MasterLabel} </b></span><br/>
+                <span style="font-size:12px;"> {!sampDetails.SyntPark__c}.{!sampDetails.Hno__c},{!sampDetails.Pancode__c} {!sampDetails.Landmark__c},<br/>
+                    {!sampDetails.City__c}-{!sampDetails.Pincode__c},{!sampDetails.State__c},{!sampDetails.Country__c},<br/>
+                    Tel: {!sampDetails.mobile2__c}<br/>
+                    {!sampDetails.Email__c}; {!sampDetails.Website__c}.
+                </span>
+            </div>
+            
+            <div class="col" style="border: 1px solid black; padding-left:1px;width:30%">
+                <span style="font-size:12px;">GSTIN &nbsp; &nbsp; :{!sampDetails.GST__c}</span><br/>
+                <span style="font-size:12px;">CIN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{!sampDetails.CIN__c}</span><br/>
+                <span style="font-size:12px;">PAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{!sampDetails.PAN__c}</span><br/>
+                <span style="font-size:12px;">FSSAI Nr&nbsp;&nbsp;:{!sampDetails.FSSAI_Nr__c}</span><br/>
+                <span style="font-size:12px;">Tax is payable on reverse charge : NO</span><br/>
+            </div>
+        </div>
+        
+        <!-- 3 Boxes 1st ending -->
+        
+        <div style="border: 1px solid black;font-size:18px;height:25px;">
+            <center><b>Sample Invoice</b></center>     
+        </div>
+        <!-- 3 Boxes -2nd -->
+        
+        <div class="col-container">
+            <div class="col" style="border:1px solid black;">
+                <b>  
+                    <span style="font-size:12px;"> Details of Receiver (Bill to) </span>
+                </b><br/> 
+                <span style="font-size:12px;"> {!projRec.Opportunity__r.Account.Name} </span><br/>
+                
+                <p style="font-size:12px;">
+                    {!projRec.Opportunity__r.Account.BillingStreet} <br/>
+                    {!projRec.Opportunity__r.Account.BillingCity}, {!projRec.Opportunity__r.Account.BillingState}<br/>
+                    {!projRec.Opportunity__r.Account.BillingCountry} - {!projRec.Opportunity__r.Account.BillingPostalCode} <br/>
+                    Tel: {!projRec.Customers_Contact__r.Phone} <br/>
+                    State Code:19/GSTIN: {!projRec.Opportunity__r.Account.GST_number__c}<BR/>
+                    PAN: {!projRec.Opportunity__r.Account.PAN_Number__c}
+                </p>
+            </div>
+            
+            <div class="col" style="border: 1px solid black;">
+                <b> <span style="font-size:12px;"> Details of Consignee (Ship to) </span></b><br/>
+                <span style="font-size:12px;"> {!projRec.Opportunity__r.Account.Name} </span><br/>
+                <p style="font-size:12px;">
+                    {!projRec.Opportunity__r.Account.ShippingStreet} <br/>
+                    {!projRec.Opportunity__r.Account.ShippingCity}, {!projRec.Opportunity__r.Account.ShippingState}<br/>
+                    {!projRec.Opportunity__r.Account.ShippingCountry} - {!projRec.Opportunity__r.Account.ShippingPostalCode} <br/>
+                    Tel: {!projRec.Customers_Contact__r.Phone} <br/>
+                    State Code:19/GSTIN: {!projRec.Opportunity__r.Account.GST_number__c}<BR/>
+                    PAN: {!projRec.Opportunity__r.Account.PAN_Number__c}
+                </p>
+            </div>
+            
+            <div class="col" style="border: 1px solid black;">
+                <p style="font-size:12px;">
+                    Invoice No : {!projRec.Invoice_No__c} &amp; Date : {!DAY(TODAY())}.{!MONTH(TODAY())}.{!YEAR(TODAY())}<BR/>
+                    PO Number &amp; Date : 123/{!DAY(TODAY())}.{!MONTH(TODAY())}.{!YEAR(TODAY())}<BR/>
+                    Sale Order Nr. &amp; Date : {!projRec.Opportunity__r.Sale_Order_No__c} / {!DAY(TODAY())}.{!MONTH(TODAY())}.{!YEAR(TODAY())}<BR/> 
+                    Delivery Number &amp; Date : 123 / {!DAY(TODAY())}.{!MONTH(TODAY())}.{!YEAR(TODAY())} <BR/>
+                    Terms of Delivery : {!projRec.Opportunity__r.Account.Transportation_Terms__c} <BR/>
+                    Terms of Payment : {!projRec.Opportunity__r.Account.Payment_terms__c} <BR/>
+                    Payment due on : {!DAY(TODAY())}.{!MONTH(TODAY())}.{!YEAR(TODAY())}<BR/>
+                    Contact Details : {!projRec.Customers_Contact__r.Name}({!projRec.Customers_Contact__r.Phone}) <BR/>
+                </p>
+            </div>
+        </div>
+        <table style="width:100%;border:1px solid black;border-collapse:collapse;">
+            <tr>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:2%">SL.<br/> No</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:33%">Item Description/ <br/> Code / No. of packs</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">HSN/<br/>SAC</th>
+                <th  style="border:1px solid black;font-size:12px;width:5%">Quantity</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">UOM</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">Rate Per<br/>100.00<br/>UOM</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">Value</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">Freight<br/>Value</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">Taxable<br/>Value</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">Rate Of<br/>Tax</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">CGST<br/>Amount</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">SGST<br/>Amount</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">IGST<br/>Amount</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%" colspan="2">Flood Cess<br/>Rate&nbsp;Amount</th>
+                <th  style="border:1px solid black;font-size:12px;text-align:center;width:5%">Total</th>    
+            </tr>
+            <apex:variable var="cnt" value="{!0}" />
+            <apex:repeat value="{!sampLineItemList}" var="sli"> 
+                <apex:variable var="cnt" value="{!cnt+1}"/>
+                <tr>
+                    <td  style="border:1px solid black;font-size:12px;" ><apex:OutputText value="{!cnt}"/></td>
+                    <td  style="border:1px solid black;font-size:12px;" ><span>{!sli.Product_Name__c}</span></td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;">{!sli.Product_Code__c}</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;">{!sli.Quantity__c}</td>
+                    <td  style="border:1px solid black;font-size:12px;" >{!sli.Quantity_Unit__c}</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;" >{!sli.Quantity_Unit__c}</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:right;">test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;">test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:right;" >test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;">test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;" >test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;">test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:right;" >test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;" >test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:center;">test</td>
+                    <td  style="border:1px solid black;font-size:12px;text-align:right;">test</td>
+                </tr>
+            </apex:repeat>
+            <tr>
+                <td style="border:1px solid black;" colspan="16" >&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="border:1px solid black;font-size:12px;" colspan="16" > <b>E&amp;OE Declaration</b> (To be furnished by the Seller) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; <b>For Symega Food Ingredients Ltd.</b></td>
+            </tr>
+        </table>
+        
+        <div style="border: 1px solid black;padding-left:5px;">
+            <span style="font-size:12px;"><b>E&amp;OE Declaration</b> (To be furnished by the Seller) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; <b>For Symega Food Ingredients Ltd.</b></span>
+            <p style="font-size:9px;">Certified that all the particulars shown in the above tax Invoice are true and correct in all respects and the good on which the tax charged and<br/>
+                collected are in accordance with the provisions of the GST Act 2017 and the rules made there under.It is also certified that my/our Registration<br/>
+                under GST Act 2017 is not subject to any suspension/cancellation and it is valid as on the date of this Bill.&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <b Style="font-size:12px;">Authorized Signatory</b>
+            </p>
+        </div>
+        <!--span style="font-size:8px;"><b>Page 1 of 3</b> Registered Office - Symega Food Ingredients Ltd. Synthite Taste Park, Nr. XI 312 G, Pancode, Near kolenchery Ernakulam - 682310,Kerala,India. (**All disputes subject to cochin jurisdiction only).</span-->  
+        <span style="font-size:8px;"><b>Page 1 of 3</b>Registered Office - {!sampDetails.MasterLabel}  {!sampDetails.SyntPark__c}.{!sampDetails.Hno__c},{!sampDetails.Pancode__c} {!sampDetails.Landmark__c} {!sampDetails.City__c}-{!sampDetails.Pincode__c},{!sampDetails.State__c},{!sampDetails.Country__c}</span>
+    </body>
+</apex:page>

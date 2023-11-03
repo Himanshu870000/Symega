@@ -1,0 +1,92 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,force:hasSObjectName" controller="OpportunityTeamHelper">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="OppTeamMemberList" type="list" />
+    <aura:attribute name="oppTeamMasterId" type="string" />
+    <aura:attribute name="oppTeamMasterList" type="list" />
+    <aura:attribute name="oppMemberToBeAdded" type="list" />
+    <aura:attribute name="showMember" type="boolean" default="false" />
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:attribute name="urlParam" type="string"/>
+    <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+
+    <div style="margin-left:30%"> 
+        
+        <div style="position:absolute;top: 20%;" class="card">
+                <span class="slds-form-element__label" style="text-align: center;font-size:24px;font-weight: bold;">Create {!v.sObjectName} Team Member</span>
+                <p class="slds-p-horizontal_small slds-m-top_large">
+                    <lightning:select aura:id="select" label="Select Team Members" required="true" onchange="{!c.onchange}"
+                        messageWhenValueMissing="Select a Team!!">
+                        <option value="">-- None --</option>
+                        <aura:iteration items="{!v.oppTeamMasterList}" var="oppTeamMaster">
+                            <option value="{!oppTeamMaster.Opportunity_Team_Master__c}"
+                                text="{!oppTeamMaster.Opportunity_Team_Master__r.Name}"></option>
+                        </aura:iteration>
+                    </lightning:select>
+                    
+                    
+                    
+                </p><br />
+                
+                <aura:if isTrue="{!v.showMember}">
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-box" role="grid">
+                        <thead>
+                            <tr class="slds-text-title--caps">
+                                <th>
+                                    <label class="slds-checkbox">
+                                        <ui:inputCheckbox value="{!v.isSelectAll}" change="{!c.selectAll}"
+                                            aura:id="selectAll" />
+                                        <span class="slds-checkbox--faux" />
+                                        <span class="slds-form-element__label"></span>
+                                    </label>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Name">Name</div>
+                                </th>
+                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Phone">Phone</div>
+                                </th>
+                
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Email">Email</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.oppMemberToBeAdded}" var="con">
+                                <tr>
+                                    <th>
+                                        <label class="slds-checkbox">
+                                            <ui:inputCheckbox aura:id="checkContact" value="" text="{!con.Contact__c}" />
+                                            <span class="slds-checkbox--faux" />
+                                            <span class="slds-form-element__label"></span>
+                                        </label>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!con.Name}">{!con.Contact__r.Name}</div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!con.Phone}">{!con.Contact__r.Phone}</div>
+                                    </th>
+                                    <td>
+                                        <div class="slds-truncate" title="{!con.Email}">{!con.Contact__r.Email}</div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </aura:if>
+                
+                <div class="slds-text-align_center slds-m-top_large">
+                    <lightning:button variant="brand" class=" " type="submit" onclick="{!c.handleSelectedContacts}" name="save"
+                        label="Submit" />
+                    <lightning:button type="submit" onclick="{!c.close}" name="close" label="Cancel" />
+                </div>
+           
+        </div>
+        <!-- <lightning:card  title="" iconName="" footer="">
+            
+           
+        </lightning:card> -->
+    </div>
+</aura:component>

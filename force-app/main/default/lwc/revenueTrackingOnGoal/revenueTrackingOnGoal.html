@@ -1,0 +1,36 @@
+<template>
+
+    <lightning-card  title="Revenue Tracking">
+        <div class="slds-size_1-of-4 slds-medium-size_1-of-3"></div>
+
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-form">
+                <div class="slds-form-element slds-form-element_readonly">
+                    <span class="slds-form-element__label">Fiscal Target</span>
+                    <div class="slds-form-element__control">
+                      <div class="slds-form-element__static">{goalTrackData.Target__c}</div>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_readonly">
+                    <span class="slds-form-element__label">Achieved Target</span>
+                    <div class="slds-form-element__control">
+                      <div class="slds-form-element__static">{goalTrackData.Achieved_Target__c}</div>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_readonly">
+                    <span class="slds-form-element__label">In Progress</span>
+                    <div class="slds-form-element__control">
+                      <div class="slds-form-element__static">{goalTrackData.Expected_Amount__c}</div>
+                    </div>
+                </div>
+                <div class="slds-form-element slds-form-element_readonly">
+                    <span class="slds-form-element__label">Percentage Achieved</span>
+                    <div class="slds-form-element__control">
+                      <div class="slds-form-element__static"><lightning-formatted-number value={achived_percentage} maximum-fraction-digits="2"></lightning-formatted-number>%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+    
+</template>

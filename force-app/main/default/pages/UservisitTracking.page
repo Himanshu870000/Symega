@@ -1,0 +1,485 @@
+<apex:page controller="UservisitTrackingController" applyBodyTag="False" sidebar="false"    showHeader="false" >
+    <html  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ng-app="userVisit">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+        <head>
+            
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+            <apex:slds /> 
+            <c:scriptComponent />
+            <script>              
+            var userId = '{!userId}';
+            var userName='{!userName}';
+            var tbMarker = '{!URLFOR($Resource.Marker_Orange)}';
+            var pendingMarker = '{!URLFOR($Resource.Marker_Green)}';
+            var completedMarker = '{!URLFOR($Resource.Marker_Gray)}';
+            var lapseMarker = '{!URLFOR($Resource.Marker_Red)}';
+            var currentMarker = '{!URLFOR($Resource.Marker_Blue)}';
+            var currentDate = '{!$CurrentPage.parameters.currentDate}';
+            </script>
+            <title>My Visits</title>
+            <script src="https://polyfill.io/v3/polyfill.min.js?features=default">
+            </script>
+            <style type="text/css">
+                body{
+                    overflow-x:hidden;
+                    font-size:1.2rem !important;
+                }
+                #map {
+                height: 300px;
+                }
+                .dot {
+                height: 30px;
+                width: 30px;
+                cursor:pointer;
+                background-color: #bbb;
+                border-radius: 50%;
+                display: inline-block;
+                text-align: center;
+                text-decoration: none;
+                font-size: large;
+                /* padding: 2px; */
+                padding-top: 3%;
+                }
+                .previousButtonCSS{
+                display: inline;
+                
+                
+                }
+                .nextButtonCSS{
+                display: inline;
+                margin-top: 0;
+                margin-left: 3%;
+                
+                }
+                .btn-primary {
+                color: #fff;
+                background-color: #337ab7;
+                border-color: #2e6da4;
+                }
+                .button:hover {
+                background-color: #f1f1f1;
+                }
+                .dot:hover {
+                background-color: #337ab7;
+                }
+                
+                .today {
+                background-color: #337ab7;
+                color: white;
+                font-size: large;
+                }
+                .pbtn{
+                	background:#f7941d !important;
+                	padding:5px !important;
+                }
+                .dbtn{
+                	padding:5px !important;
+                	background:#696969 !important;
+                }
+                .pheader{
+                background: #073e5f ! important;
+                }
+                .small-size{
+                }
+                @media screen and (max-width: 800px) 
+                {
+                    .slds-scope .slds-size_8-of-12 ,.slds-scope .slds-size_4-of-12{
+                        width:100%;
+                        margin-left: 2% !important;
+                    }
+                    .slds-scope .slds-grid{
+                        display:block;
+                    }
+                .slds-scope .slds-size_3-of-12{
+                    padding:2%;
+                }
+                .left-button{
+                    width:initial !important;
+                }
+                .small-size{
+                    padding-left:initial !important;
+                    padding-right:initial !important;
+                }
+                
+                }
+                @media only screen and (max-width: 800px){
+                        .small-margin{
+                        padding:unset !important;
+                    }
+                    
+                    .small-padding{
+                        margin-left: unset !important; 
+
+                    }
+                    .small-btns{
+                        display: flex;
+                        flex-flow: column;
+                        justify-content: space-between;
+                    }
+                    .small-padding{
+                        margin-top:6px !important;
+                    }
+                }
+                button:disabled {
+                    background:gray !important;
+                }
+
+                hr {
+                    margin: 0px !important;
+                    padding: 0px !important;
+                }
+            </style>
+        </head>
+        <body class="slds-scope" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  ng-controller="userVisitController" data-ng-init="angularInit()">
+            
+            
+            <div class="slds-page-header pheader" >
+                <div class="slds-page-header__row slds-p-top_xxx-small slds-p-bottom_xxx-small">
+                    <div class="slds-page-header__col-title">
+                        <div class="slds-media">
+                            
+                            <div class="slds-media__body">
+                                <div class="slds-page-header__name">
+                                    <div class="slds-page-header__name-title">
+                                        <h1>
+                                            <span style="color:white">User</span>
+                                            <span class="slds-page-header__title slds-truncate" title="Recently Viewed" style="color:white">{{userName}}</span>
+                                        </h1>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-page-header__col-actions">
+                        <div class="slds-page-header__controls">
+                            <div class="slds-page-header__control">
+                                <div class="slds-align_absolute-center">
+                                    <button class="slds-button slds-button_brand pbtn" ng-hide="dayHasEnded" ng-disabled="dayVisitPlanId !== undefined || pendingVisit.length == 0" ng-click="startDay()">Start Your Day</button>
+                                	<button class="slds-button slds-button_brand pbtn" ng-hide="dayHasEnded" ng-disabled="disableTodayVisit || pendingVisit.length == 0" ng-click="endDay()">End Your Day</button>
+                                </div>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="slds-grid slds-gutters slds-size_12-of-12 slds-grid_horizontal slds-p-top_xx-small slds-p-bottom_xx-small" ng-show="visitData">
+                
+                <div class="container">
+                    <div class="row">
+                        <div class="slds-col slds-size_6-of-12 slds-align_absolute-center">
+                            <h2 style="font-size: initial;">
+                               <b style="margin-top: 10px;margin-bottom: 8px;color: #073e5f;">{{monthName}} - {{year}}</b> 
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="slds-col slds-size_6-of-12 slds-align_absolute-center">
+                            
+                            <div class="slds-col slds-size_3-of-12 left-button" style="padding-left : 20%;font-size:15px;">
+                                <button ng-click="previousWeek()" class="btn-primary" style="background: #073e5f;color: white; padding:5px;"> <i class="fa fa-angle-left fa-lg" aria-hidden="true"></i></button>
+                            </div>
+                            <div ng-repeat="currentDate in currentDateMap" style="padding-left: 2px;padding-right: 2px;padding-top: 2px;padding-bottom: 2px;">
+                                <span class="dot" ng-class="{'today': currentDate.selected}" ng-click="getVisits($index)">
+                                    {{currentDate.day}} 
+                                </span>                     
+                            </div>
+                            <div class="slds-col slds-size_3-of-12" style="padding-left:3%;font-size:15px;">
+                                <button ng-click="nextWeek()" class="btn-primary" style="background: #073e5f;color: white; padding:5px;"> <i class="fa fa-angle-right fa-lg" aria-hidden="true"></i></button>
+                            </div>
+                            
+                    
+                    
+                </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slds-grid slds-gutters slds-size_12-of-12 slds-wrap" ng-show="visitData">
+                
+                
+                <div class="slds-col  slds-size_8-of-12 slds-p-top_small">
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid pheader" >
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title slds-p-top_xxx-small slds-p-bottom_small">
+                                        <span class="slds-text-heading_medium" style="color:white;">Customer list to be visitied</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div style="max-height: 500px;overflow: scroll;"> <!--class="slds-card__body slds-card__body_inner slds-grid small-margin slds-scrollable"-->
+                            <!-- <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-table_fixed-layout">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Opportunity Name">Name</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Status">Status</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Account Name">Address</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Close Date">Phone</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Close Date">Action</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody ng-repeat="x in pendingVisit">
+                                    {{x}}
+                                    <tr class="slds-hint-parent" ng-style="{'background-color':x.disabled||(!x.CheckIn__c && !x.Check_Out__c)?'#E7E7E7':'#47B1FF'}">
+                                        
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate" title="Cloudhub">{{x.Account__r.Name}}</div>
+                                        </td>
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate" title="Cloudhub">{{x.Status__c}}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" title="">
+                                                {{x.Street__c}},
+                                                {{x.City__c}},
+                                                {{x.State__c}},
+                                                {{x.Country__c}},
+                                                {{x.Postal_Code__c}}
+                                            </div>
+                                        </td>
+                                        <td data-label="Prospecting">
+                                            <div class="slds-truncate" title="Prospecting">{{x.Account__r.Phone}}</div>
+                                        </td>
+                                        <td data-label="Prospecting " class="small-btns"> 
+                                            <div ng-if="disableTodayVisit && !dayHasEnded">
+                                                <button class="slds-button slds-button_brand dbtn small-size" ng-disabled="disableTodayVisit" ng-click="amendVisit($index,x.Id)">Amend Visit</button>
+                                                <button class="slds-button slds-button_brand dbtn small-size small-padding" ng-disabled="disableTodayVisit"
+                                                    ng-click="startVisit(x.Account__r.Id,x.Id);"><span ng-if="x.Status__c == 'PENDING'">Start Visit</span><span ng-if="x.Status__c == 'INPROGRESS'">Continue Visit</span></button>
+                                            </div>
+                                            <div ng-if="!disableTodayVisit && !dayHasEnded">
+                                                <button class="slds-button slds-button_brand small-size {dbtn:x.disabled}"  ng-disabled="x.disabled || x.CheckIn__c" ng-click="amendVisit($index,x.Id)">Amend Visit</button>
+                                                <button class="slds-button slds-button_brand small-size small-padding {dbtn:x.disabled}" ng-disabled="x.disabled"
+                                                    ng-click="startVisit(x.Account__r.Id,x.Id);"><span ng-if="x.Status__c == 'PENDING'">Start Visit</span>
+                                                    <span ng-if="x.Status__c == 'INPROGRESS'">Continue Visit</span></button>
+                                            </div>
+                                            <div ng-if="dayHasEnded">
+                                                <p>The day has ended.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table> -->
+                            <div ng-if="dayHasEnded">
+                                <p>The day has ended.</p>
+                            </div>
+                            <div ng-repeat="x in pendingVisit">
+                                <article class="slds-card" ng-style="{'background-color':x.disabled||(!x.CheckIn__c && !x.Check_Out__c)?'#FFFFFF':'#e8ef8a'}" style="padding: 5px;">
+                                    <div class="slds-card__header slds-grid">
+                                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                                    <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+                                                    </svg>
+                                                    <span class="slds-assistive-text">{{x.Account__r?x.Account__r.Name:x.Lead__r.Name}}</span>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <h2 class="slds-card__header-title">
+                                                    <a href="#" class="slds-card__header-link slds-truncate" title="{{x.Account__r?x.Account__r.Name:x.Lead__r.Name}}">
+                                                        <span style="font-size:10pt;">{{x.Account__r?x.Account__r.Name:x.Lead__r.Name}}</span>
+                                                    </a>
+                                                </h2>
+                                            </div>
+                                        </header>
+                                    </div>
+                                    <div class="slds-card__body slds-card__body_inner">
+                                        <p class="card-text"><b>Address:</b>{{x.Street__c}}, {{x.City__c}}, {{x.State__c}}, {{x.Country__c}}, {{x.Postal_Code__c}}</p>
+                                        <div class="slds-grid slds-gutters slds-m-top_x-small">
+                                            <div class="slds-col">
+                                                <b>Status:</b> {{x.Status__c}}
+                                            </div>
+                                            <div class="slds-col">
+                                                <b>Phone:</b> {{x.Phone}}
+                                            </div>
+                                        </div>
+                                        <div class="slds-grid slds-gutters slds-m-top_x-small">
+                                            <div class="slds-col" ng-if="disableTodayVisit && !dayHasEnded">
+                                                <button style="padding-left: 10px !important;padding-right: 10px !important;" class="slds-button slds-button_brand dbtn small-size" ng-disabled="disableTodayVisit" ng-click="amendVisit($index,x.Id)">Amend Visit</button>
+                                                <button style="padding-left: 10px !important;padding-right: 10px !important;" class="slds-button slds-button_brand dbtn small-size small-padding" ng-disabled="disableTodayVisit" ng-click="startVisit(x.Account__r?x.Account__r.Id:x.Lead__r.Id,x.Id);">
+                                                    <span ng-if="x.Status__c == 'PENDING'">Start Visit</span>
+                                                    <span ng-if="x.Status__c == 'INPROGRESS'">Continue Visit</span>
+                                                </button>
+                                            </div>
+                                            <div class="slds-col" ng-if="!disableTodayVisit && !dayHasEnded">
+                                                <button style="padding-left: 10px !important;padding-right: 10px !important;" class="slds-button slds-button_brand small-size {dbtn:x.disabled}" ng-disabled="x.disabled || x.CheckIn__c" ng-click="amendVisit($index,x.Id)">Amend Visit</button>
+                                                <button style="padding-left: 10px !important;padding-right: 10px !important;" class="slds-button slds-button_brand small-size small-padding {dbtn:x.disabled}" ng-disabled="x.disabled" ng-click="startVisit(x.Account__r?x.Account__r.Id:x.Lead__r.Id,x.Id);">
+                                                    <span ng-if="x.Status__c == 'PENDING'">Start Visit</span>
+                                                    <span ng-if="x.Status__c == 'INPROGRESS'">Continue Visit</span>
+                                                </button>                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article><hr/>
+                            </div>
+                        </div>
+                        
+                    </article>
+                    
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid pheader">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title slds-p-top_xxx-small slds-p-bottom_small">
+                                        <span class="slds-text-heading_medium" style="color:white">Visited Customers</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div style="max-height: 500px;overflow: scroll;"> <!--class="slds-card__body slds-card__body_inner slds-grid small-margin slds-scrollable"-->
+                            <!-- <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover slds-table_fixed-layout">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Opportunity Name">Name</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Status">Status</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Account Name">Address</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Close Date">Phone</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody ng-repeat="x in compVisit">
+                                    <tr class="slds-hint-parent">
+                                        
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate" title="Cloudhub">{{x.Account__r.Name}}</div>
+                                        </td>
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate" title="Cloudhub">{{x.Status__c}}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <div class="slds-truncate" title="address">
+                                                {{x.Street__c}}, {{x.City__c}}, {{x.State__c}}, {{x.Country__c}}, {{x.Postal_Code__c}}
+                                            </div>
+                                        </td>
+                                        <td data-label="Prospecting">
+                                            <div class="slds-truncate" title="Prospecting">{{x.Account__r.Phone}}</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table> -->
+
+                            <div ng-repeat="x in compVisit">
+                                <article class="slds-card" style="padding: 5px;">
+                                    <div class="slds-card__header slds-grid">
+                                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                            <div class="slds-media__figure">
+                                                <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                                    <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+                                                    </svg>
+                                                    <span class="slds-assistive-text">{{x.Account__r.Name}}</span>
+                                                </span>
+                                            </div>
+                                            <div class="slds-media__body">
+                                                <h2 class="slds-card__header-title">
+                                                    <a href="#" class="slds-card__header-link slds-truncate" title="{{x.Account__r.Name}}">
+                                                        <span style="font-size:10pt;">{{x.Account__r.Name}}</span>
+                                                    </a>
+                                                </h2>
+                                            </div>
+                                        </header>
+                                    </div>
+                                    <div class="slds-card__body slds-card__body_inner">
+                                        <p class="card-text">
+                                            <b>Address:</b>{{x.Street__c}}, {{x.City__c}}, {{x.State__c}}, {{x.Country__c}}, {{x.Postal_Code__c}}</p>
+                                        <div class="slds-grid slds-gutters slds-m-top_x-small">
+                                            <div class="slds-col">
+                                                <b>Status:</b> {{x.Status__c}}
+                                            </div>
+                                            <div class="slds-col">
+                                                <b>Phone:</b> {{x.Phone}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                                <hr/>
+                            </div>
+                        </div>
+                        
+                    </article>
+                </div>
+                <div class="slds-col slds-size_4-of-12 slds-p-top_small">
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid pheader">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title slds-p-top_xxx-small slds-p-bottom_small">
+                                        <span class="slds-text-heading_medium" style="color:white">Tracking Analyst</span>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div id="map" ></div>
+                            <div id="info_div"></div>
+                            <script src="{!$Resource.UservisitTrackingjs}">
+                            </script>
+                            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAki1KNhw8H36mkjnT_BBsJyX-dsV3hmnA&callback=initMap&libraries=&v=weekly">
+                            </script>
+                        </div>
+                    </article>
+                </div>
+                
+                <div>
+                <section role="dialog" ng-show="amendVisitHandling" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header pheader">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate" style="color:white;">Change Planned Visit Date</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <div class="slds-form" role="list">
+                                <div class="slds-form__row">
+                                    <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                            <label class="slds-form-element__label" for="single-form-element-id-02">Current visit Date</label>
+                                            <div class="slds-form-element__control">
+                                                <input type="date" id="single-form-element-id-02" placeholder="Dealer Name" class="slds-input" ng-model="amendVisitDate" readonly="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                                            <label class="slds-form-element__label" for="single-form-element-id-02">Change visit date</label>
+                                            <div class="slds-form-element__control">
+                                                <input type="date" id="single-form-element-id-02" placeholder="Dealer Name" class="slds-input" ng-model="newVisitDate"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_brand pbtn" ng-click="changeAmendVisit();">Change Visit Date</button>
+                            <button class="slds-button slds-button_outline-brand" ng-click="cancelAmendVisit();">Cancel</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" ng-show="amendVisitHandling"></div>
+            </div>
+            </div>
+        </body>
+        
+    </html>
+    
+</apex:page>

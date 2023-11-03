@@ -1,0 +1,29 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <div ng-controller="">
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8 mt-2 mb-2">
+
+        <div class="card mb-3">
+          <img src="https://symega.com/wp-content/uploads/2021/10/HeroImage1.png" class="card-img-top" alt="..." />
+          <div class="card-body">
+            <h5 class="card-title ondontefontColor">Resources from Symega</h5>
+            <p class="card-text">With our thorough understanding of prevailing and forthcoming food and beverage trends, technical expertise, and a diligent team of food 
+                enthusiasts, we offer innovative ingredient solutions that redefine the world of sensory experiences to the consumers.</p>
+            <p class="card-text">
+                <b class="ondontefontColor">Symega Ingredients </b>is engaged in crafting sensory experiences for consumers worldwide.
+                We develop delectable flavours, natural colours, specialty seasonings and exquisite culinary ingredients for the global food and beverage industry.</p>
+            <p class="card-text">
+                <b class="ondontefontColor">Symega Ingredients</b> was born out of our reflection that food companies across the world needed a
+                trustworthy yet invisible partner for their product development. With food technologists, flavourists and sensory experts 
+                as part of a cross functional team, our personnel engage with our customers in varied industries ranging from sweet goods like
+                dairy and confectionery to savoury ones like noodles and snacks.</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
+    </div>
+</apex:page>

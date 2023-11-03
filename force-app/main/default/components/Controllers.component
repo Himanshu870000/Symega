@@ -1,0 +1,22 @@
+<apex:component >
+    <script> 
+        angular.module('cp_app', ['ngRoute','angularjs-dropdown-multiselect', 'ui.bootstrap', 'ui.bootstrap.datetimepicker']); 
+    </script>
+     <script src="{!$Resource.DistributerDashboard}"/>
+    <script src="{!$Resource.CP_HomePage}"/>
+        <script src="{!$Resource.Products}"/>
+        <script src="{!$Resource.Cases}"/>
+        <script src="{!$Resource.Customers}" />
+        <script src="{!$Resource.Opportunity}"/>
+        <script src="{!$Resource.Sample}"/>
+        <script src="{!$Resource.CP_EditProfile}"/>
+            <script src="{!$Resource.Orders}"/>
+		
+                
+        <script src="https://code.jquery.com/jquery-3.5.1.js" />
+        <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"/>
+            <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js" />
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" />
+                    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css" />
+   
+</apex:component>

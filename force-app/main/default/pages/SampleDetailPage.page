@@ -1,0 +1,819 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
+    <html>
+        <head>
+            <apex:includeLightning />
+            <c:Libraries2 ></c:Libraries2>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.css"/>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"/>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.js"/>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.6/semantic.js">
+                    </script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js">
+            </script>
+            <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet"/>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <apex:stylesheet value="{!$Resource.OperationsPortalCSS}" />
+            
+            <style>
+                .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                }
+                .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+                }
+                
+                .tab {
+                overflow: hidden;
+                border: 1px solid #ccc;
+                background-color: mintcream;
+                padding-left: 1%;
+                margin-left: 1%;
+                margin-right: 2%;
+                border-radius: 11px;
+                }
+                
+                /* Style the buttons inside the tab */
+                .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+                }
+                
+                /* Change background color of buttons on hover */
+                .tab button:hover {
+                background-color: #ddd;
+                }
+                
+                /* Create an active/current tablink class */
+                .tab button.active {
+                background-color: #ccc;
+                }
+                
+                /* Style the tab content */
+                .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+                }
+            </style>
+        </head>
+        
+        <body ng-app="SampleDet_App" ng-controller="SampleDet_ctrl" style="background-color: white; !important;">
+            <div class="loadingSection" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+            
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="wrapper px-5">
+                    <div>
+                        <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                    </div>
+                    <div style="width: 50%;">
+                        <!-- <marquee>
+<h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+</marquee> -->
+                    </div>
+                    
+                    <!--div class="d-flex text-align-center">
+<div class="dropdown">
+<i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+</i>
+<ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+<li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{conName}}</a></li>
+<li>
+<hr class="dropdown-divider" />
+</li>
+<li><a class="dropdown-item pe-5"><i class="fa-solid fa-at me-3"></i>{{email}}</a></li>
+<li>
+<hr class="dropdown-divider" />
+</li>
+<li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+<li>
+<hr class="dropdown-divider" />
+</li>
+<li>
+<a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+</li>
+</ul>
+</div>
+</div-->
+                </div>
+            </nav>
+            <apex:includeLightning />
+            <div  id="container"/>
+            
+            <div class="row mx-5">
+                <div class="row box-shadow-2 mb-5">
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-8">
+                            <h3 class="pb-3 color-theme"><b>BASIC DETAILS</b></h3>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            
+                            <button class="blue-btn float-end me-2 mb-5" ng-click="openAuraPopUp()" style="background:teal;" type="button">
+                                Create/Edit Sample Lineitems</button>
+                            
+                            <div class="modal" id="flipFlop">
+                                <div class="modal-dialog" style="min-width:1000px">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                                                <h3>
+                                                    <b>Create Sample LineItems :</b>
+                                                </h3>
+                                                </div></h4> 
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row mt-3 mx-5">
+                                                <div class="col-md-12" style="overflow-x:auto;">
+                                                    
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width:2%;">S.No.</th>
+                                                                <th style="width:10%;">Product</th>
+                                                                <th style="width:5%;">Quantity</th>
+                                                                <th style="width:5%;">Quantity Unit</th>
+                                                                <th style="width:8%;">Packaging Quantity</th>
+                                                                <th style="width:10%;">Packaging Unit</th>
+                                                                <th style="width:15%;">Regulatory Requirements</th>
+                                                                <th style="width:15%;">Current Shelf Life</th>
+                                                                <th style="width:15%;">Expected Shelf Life</th>
+                                                                <th style="width:15%;">Customer Instructions</th>
+                                                                <th><i class="fas fa-plus-circle icon ps-3" ng-click="addRow()"></i></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="SLI in SLIlist">
+                                                                <!--{{SLIlist}}-->
+                                                                <td>{{$index+1}}</td>
+                                                                <td ><so-dropdown ng-model="productId" dropdown-items="mergedList" ng-change="onChangeToAssignProduct(SLI,productId)" ng-disabled="SLI.check">
+                                                                    <option value='None'>None</option>
+                                                                    </so-dropdown></td>
+                                                                <td><input type="text" class="form-control" number="SLI.Quantity__c" ng-model="SLI.Quantity__c" ng-change="calculatePUnit(SLI.Quantity__c,SLI.Packaging_Quantity__c,SLI)" ng-disabled="SLI.check"/></td>
+                                                                <td><select class="form-control" ng-model="SLI.Quantity_Unit__c" ng-change="setPackagingUnit(SLI.Quantity_Unit__c,SLI)" ng-disabled="SLI.check">
+                                                                    <option ng-repeat="item in quantityUnit" value="{{item}}">{{item}}</option>
+                                                                    </select></td>
+                                                                <td><input type="text" class="form-control" number="SLI.Packaging_Quantity__c" ng-model="SLI.Packaging_Quantity__c" ng-change="calculatePUnit(SLI.Quantity__c,SLI.Packaging_Quantity__c,SLI)" ng-disabled="SLI.check" /></td>
+                                                                <td>{{SLI.calc}}&nbsp;{{SLI.Packaging_Unit__c}}</td> 
+                                                                <td>{{SLI.OPTIVA_Recipe__r.Regulatory__c}}</td>
+                                                                <td>{{SLI. OPTIVA_Recipe__r.Shelf_Life__c}}</td>
+                                                                <td>{{SLI.Expected_Shelf_Life__c}}</td>
+                                                                <td><input type="text" class="form-control" ng-model="SLI.Customer_Instructions__c" ng-disabled="SLI.check" /></td>
+                                                                <!--td ng-if="(conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c) || SLI.Id == undefined"><so-dropdown ng-model="productId" dropdown-items="mergedList" ng-change="onChangeToAssignProduct(SLI,productId)">
+                                                                    <option value='None'>None</option>
+                                                                    </so-dropdown></td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Project_Quotient__c != undefined">{{SLI.Project_Quotient__r.Name}}</td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Product__c != undefined">{{SLI.Product__r.Name}}</td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.OPTIVA_Recipe__c != undefined">{{SLI.OPTIVA_Recipe__r.Name}}</td>
+                                                                
+                                                                
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined"><input type="text" class="form-control" number="SLI.Quantity__c" ng-model="SLI.Quantity__c" ng-change="calculatePUnit(SLI.Quantity__c,SLI.Packaging_Quantity__c,SLI)"/></td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Id != undefined">{{SLI.Quantity__c}}</td>
+                                                                
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined"><select class="form-control" ng-model="SLI.Quantity_Unit__c" ng-change="setPackagingUnit(SLI.Quantity_Unit__c,SLI)">
+                                                                    <option ng-repeat="item in quantityUnit" value="{{item}}">{{item}}</option>
+                                                                    </select></td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Id != undefined">{{SLI.Quantity_Unit__c}}</td>
+                                                                
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined"><input type="text" class="form-control" number="SLI.Packaging_Quantity__c" ng-model="SLI.Packaging_Quantity__c" ng-change="calculatePUnit(SLI.Quantity__c,SLI.Packaging_Quantity__c,SLI)" /></td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Id != undefined">{{SLI.Packaging_Quantity__c}}</td>
+                                                                
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c || conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined">{{SLI.calc}}&nbsp;{{SLI.Packaging_Unit__c}}</td> 
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c || conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined">{{SLI.OPTIVA_Recipe__r.Regulatory__c}}</td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c || conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined">{{SLI. OPTIVA_Recipe__r.Shelf_Life__c}}</td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined"><input type="text" class="form-control" ng-model="SLI.Expected_Shelf_Life__c" /></td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Id != undefined">{{SLI.Expected_Shelf_Life__c}}</td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c == SLI.Product_Family__c || SLI.Id == undefined"><input type="text" class="form-control" ng-model="SLI.Customer_Instructions__c" /></td>
+                                                                <td ng-if="conRec.Sample_Assignment_Team__r.Team_Type__c != SLI.Product_Family__c && SLI.Id != undefined">{{SLI.Customer_Instructions__c}}</td-->
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6 mb-5">
+                                                <button type="button" data-bs-dismiss="modal" ng-click="saveSLIDetails()" class="blue-btn float-end">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Opportunity__r.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Status
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Status__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Customer_Name__c" ng-disabled="false"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity Close Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="sampleDetails.Opportunity_Close_Date__c" ng-disabled="false"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Business Potential Value
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Business_potential_value_INR__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Account
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Account__r.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Revert Date Count
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Revert_Date_Count__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sub Retry Count
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Sample_Sub_Retry_Count__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Submit To Optiva
+                        </label>
+                        <input class="form-control" type="checkbox" ng-model="sampleDetails.Submit_Sample_To_Optiva__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Currency
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.CurrencyIsoCode" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Submitted
+                        </label>
+                        <input class="form-control" type="checkbox" ng-model="sampleDetails.Submitted_To_SAP_Optiva__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Error Occured On Submitting To Optiva
+                        </label>
+                        <input class="form-control" type="checkbox" ng-model="sampleDetails.Error_Occured_On_Submitting_To_Optiva__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Business potential value (INR) New
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Business_potential_value_INR_New__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Error Message On Submitting To Optiva
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Error_Message_On_Submitting_To_Optiva__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Annual Volume (in units)
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <select class="form-control" ng-model="sampleDetails.Annual_Volume_in_units__c">
+                            <option ng-repeat="item in annulaVolInUnits" value="{{item}}">{{item}}</option>
+                        </select>
+                        <!--input class="form-control" type="text" ng-model="sampleDetails.Annual_Volume_in_units__c" ng-disabled="true"/-->
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Submitted Date
+                        </label>
+                        <input class="form-control" type="date" ng-model="sampleDetails.Sample_Submitted_Date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Record Type Name
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Record_Type_Name__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Revert Date
+                        </label>
+                        <input class="form-control" type="date" ng-model="sampleDetails.Sample_Revert_Date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Delivery Date
+                        </label>
+                        <input class="form-control" type="date" ng-model="sampleDetails.Sample_Delivery_Date__c" ng-disabled="true"/>
+                    </div>
+                    
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>SAMPLING BRIEF</b></h3>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product ID
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Product_ID__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">End Use Category
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <select class="form-control" ng-model="sampleDetails.End_Use_category__c">
+                            <option ng-repeat="item in endUseCategory" value="{{item}}">{{item}}</option>
+                        </select>
+                        <!--input class="form-control" type="text" ng-model="sampleDetails.End_Use_category__c" ng-disabled="false"/-->
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Expected Annual Value
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Expected_Annual_Value__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">End Use Applications
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="sampleDetails.End_Use_Applications__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Minimum order quantity
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Minimum_order_quantity__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Minimum order Unit
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Minimum_order_quantity_unit__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">First Sample due date
+                        </label>
+                        <input class="form-control" type="date" ng-model="sampleDetails.First_Sample_due_date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Instruction
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Product_Instruction__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Dosage Guidelines
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Dosage_Guidelines__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Family
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Product_Family__c" ng-disabled="true"/>
+                    </div>
+                    
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>TELL US MORE</b></h3>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Requested by
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <select class="form-control" ng-model="sampleDetails.Sample_Requested_by__c">
+                            <option ng-repeat="item in sampleReqBy" value="{{item}}">{{item}}</option>
+                        </select>
+                        <!--input class="form-control" type="text" ng-model="sampleDetails.Sample_Requested_by__c" ng-disabled="false"/-->
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Main reason for selecting product
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <select class="form-control" ng-model="sampleDetails.Reason_for_selecting_product_C__c">
+                            <option ng-repeat="item in mainReasonForSelPro" value="{{item}}">{{item}}</option>
+                        </select>
+                        <!--input class="form-control" type="text" ng-model="sampleDetails.Reason_for_selecting_product_C__c" ng-disabled="false"/-->
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Specify other reason
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Specify_other_reason__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Annual Volume - Full
+                        </label>
+                        
+                        <input class="form-control" type="text" ng-model="sampleDetails.Annual_Volume_Full__c" ng-disabled="false"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Expected Volume Unit
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Expected_Volume_Unit__c" ng-disabled="true"/>
+                    </div>
+                    
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>SHIPPING ADDRESS INFORMATION</b></h3>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Compamy Name
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Company_Name__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Contact Number
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Contact_Number__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">City
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.City__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">State
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.State__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Country
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Country__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Street
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Street__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3 mb-3">
+                        <label class="font-if">Postal Code
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Postal_Code__c" ng-disabled="true"/>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="col-md-6 mt-3 mb-3">
+                <button class="blue-btn float-end me-2 mb-5" ng-click="SaveSampleDetails()" type="button">
+                    Save</button>
+                <button class="blue-btn float-end me-2 mb-5" ng-click="back()" type="button">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back</button>
+            </div>
+        </body>
+        
+        <script>
+        var userHashId = '{!$CurrentPage.parameters.id}';
+        var sampleId = '{!$CurrentPage.parameters.sampleId}';
+        var quantityUnit = JSON.parse('{!quantityUnit}');
+        var endUseCategory = JSON.parse('{!endUseCategory}');
+        var sampleReqBy = JSON.parse('{!sampleReqBy}');
+        var mainReasonForSelPro = JSON.parse('{!mainReasonForSelPro}');
+        var annulaVolInUnits = JSON.parse('{!annulaVolInUnits}');
+        var parentId = '0061m00000AyM4bAAF';
+        
+        angular.module('number', [])
+        .directive('number', function () {
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function (scope, element, attrs, ctrl) {
+                    ctrl.$parsers.push(function (input) {
+                        if (input == undefined) return ''
+                        var inputNumber = input.toString().replace(/[^0-9]/g, '');
+                        if (inputNumber != input) {
+                            ctrl.$setViewValue(inputNumber);
+                            ctrl.$render();
+                        }
+                        return inputNumber;
+                    });
+                }
+            };
+        });
+        
+        angular.module('decimal', [])
+        .directive('decimal', function () {
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function (scope, element, attrs, ctrl) {
+                    ctrl.$parsers.push(function (input) {
+                        if (input == undefined) return ''
+                        var inputNumber = input.toString().replace(/[^0-9/.]/g, '');
+                        if (inputNumber != input) {
+                            ctrl.$setViewValue(inputNumber);
+                            ctrl.$render();
+                        }
+                        return inputNumber;
+                    });
+                }
+            };
+        });
+        var app = angular.module('SampleDet_App', []);
+        app.controller('SampleDet_ctrl', function ($scope){
+            debugger;
+            $scope.quantityUnit = quantityUnit;
+            $scope.endUseCategory = endUseCategory;
+            $scope.sampleReqBy = sampleReqBy;
+            $scope.mainReasonForSelPro = mainReasonForSelPro;
+            $scope.annulaVolInUnits = annulaVolInUnits;
+            $scope.teamTypeList = [];
+            
+            $scope.getSampleDetails = function(){
+                debugger;
+                $scope.mergedList = [];
+                OperationsPortalController.getSampleDetails(sampleId,userHashId,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        debugger;
+                        $scope.sampleDetails = result.listOfSamples[0];
+                        $scope.allocationTeam = result.conRec.Account__r;
+                        if(result.listOfSamples[0].Opportunity_Close_Date__c != null){
+                            $scope.sampleDetails.Opportunity_Close_Date__c = new Date(result.listOfSamples[0].Opportunity_Close_Date__c);
+                        }
+                        
+                        $scope.conRec = result.conRec;
+                        if(result.listOfSamples[0].Sample_Line_Items__r != undefined){
+                            $scope.SLIlist = result.listOfSamples[0].Sample_Line_Items__r;
+                            for(var i=0;i<$scope.SLIlist.length;i++){
+                                $scope.SLIlist[i].calc = $scope.SLIlist[i].Quantity__c/$scope.SLIlist[i].Packaging_Quantity__c;
+                                /*if($scope.SLIlist[i].Product__c != undefined){
+                                            $scope.SLIlist[i].productId = $scope.SLIlist[i].Product__r.Name;
+                                        }else if($scope.SLIlist[i].OPTIVA_Recipe__c != undefined){
+                                            $scope.SLIlist[i].productId = $scope.SLIlist[i].OPTIVA_Recipe__r.Name;
+                                        }else if($scope.SLIlist[i].Project_Quotient__c != undefined){
+                                            $scope.SLIlist[i].productId = $scope.SLIlist[i].Project_Quotient__r.Name;
+                                        }else{
+                                        }*/
+                            }
+                        }else{
+                            $scope.SLIlist.push({
+                                "Quantity__c":"","Quantity_Unit__c":"","Packaging_Quantity__c":"","Packaging_Unit__c":"","Sample__c":sampleId,"Packaging_Unit__c":"","OPTIVA_Recipe__r.Regulatory__c":"","OPTIVA_Recipe__r.Shelf_Life__c":"","Expected_Shelf_Life__c":"","Customer_Instructions__c":""
+                            })
+                        }
+                        
+                        $scope.productList = result.listOfProducts;
+                        $scope.optivaRecipeList = result.listOfOptivaRecipe;
+                        $scope.projectQuotientList = result.listOfProQuotient;
+                        
+                        for(var i=0;i<$scope.productList.length;i++){
+                            $scope.mergedList.push({"Id":$scope.productList[i].Id,"Name":$scope.productList[i].Name});
+                        }
+                        for(var i=0;i<$scope.optivaRecipeList.length;i++){
+                            $scope.mergedList.push({"Id":$scope.optivaRecipeList[i].Id,"Name":$scope.optivaRecipeList[i].Name});
+                        }
+                        for(var i=0;i<$scope.projectQuotientList.length;i++){
+                            $scope.mergedList.push({"Id":$scope.projectQuotientList[i].Id,"Name":$scope.projectQuotientList[i].Name});
+                        }
+                        if($scope.allocationTeam != undefined){
+                            for(var i=0;i<$scope.allocationTeam.length;i++){
+                                $scope.teamTypeList.push($scope.allocationTeam[i].Sample_Assignment_Team_Type__c);
+                            }
+                        }
+                        for(var i=0;i<$scope.SLIlist.length;i++){
+                            if($scope.teamTypeList.includes($scope.SLIlist[i].Product_Family__c)){
+                               	$scope.SLIlist[i].check = false;
+                            }else{
+                               $scope.SLIlist[i].check = true;
+                               }
+                        }
+                        //$scope.mergedList = [].concat($scope.productList, $scope.optivaRecipeList, $scope.projectQuotientList);
+                        $scope.$apply();
+                    }
+                })
+            }
+            $scope.getSampleDetails();
+            
+            $scope.back = function(){
+                debugger;
+                var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleLineItemDetailPage';
+                window.location.replace(window.location.origin + sitePrefix +'?id='+ userHashId);
+            }
+            
+            $scope.openAuraPopUp = function(){
+                debugger;
+                var myModal = new bootstrap.Modal(document.getElementById('flipFlop'));
+                myModal.show('slow');
+            }
+            
+            $scope.myFunc = function() {
+                debugger;
+                alert('hi there...!');
+                
+                // Use the LWC Open Source JavaScript library
+                // Assuming your LWC is LightningOut enabled
+                $Lightning.use("c:submitForFertCodeApp", function() {
+                    const container = document.getElementById("compContainer");
+                    
+                    // Create a new Lightning Web Component
+                    const lwcElement = document.createElement("c-submit-for-fert-code");
+                    lwcElement.recordId = parentid;
+                    
+                    // Append the component to the container
+                    container.appendChild(lwcElement);
+                });
+            };
+            
+            $scope.onChangeToAssignProduct = function(SLI,productId){
+                console.log(SLI);
+                debugger;
+                if(productId.startsWith('01t')){
+                    SLI.Product__c = productId;
+                    //$scope.productId = SLI.Product__r.Name;
+                }else if(productId.startsWith('a0S')){
+                    SLI.Project_Quotient__c = productId;
+                    //$scope.productId = SLI.Project_Quotient__r.Name;
+                }else if(productId.startsWith('a0Y')){
+                    SLI.OPTIVA_Recipe__c = productId;
+                    //$scope.productId = SLI.OPTIVA_Recipe__r.Name;
+                }else{
+                }
+            }
+            
+            $scope.saveSLIDetails = function(){
+                debugger;
+                for(var i=0;i<$scope.SLIlist.length;i++){
+                    debugger;
+                    if($scope.SLIlist[i].Product__c == undefined && $scope.SLIlist[i].OPTIVA_Recipe__c == undefined && $scope.SLIlist[i].Project_Quotient__c == undefined){
+                        swal("info", "Please add Product.","info");
+                        return;
+                    }
+                    if($scope.SLIlist[i].Quantity__c == undefined || $scope.SLIlist[i].Quantity__c == ""){
+                        swal("info", "Please enter quantity.","info");
+                        return;
+                    }
+                    if($scope.SLIlist[i].Quantity_Unit__c == undefined || $scope.SLIlist[i].Quantity_Unit__c == ""){
+                        swal("info", "Please enter quantity unit.","info");
+                        return;
+                    }
+                    if($scope.SLIlist[i].Packaging_Quantity__c == undefined || $scope.SLIlist[i].Packaging_Quantity__c == ""){
+                        swal("info", "Please enter packaging quantity.","info");
+                        return;
+                    }
+                }
+                
+                for(var i=0;i<$scope.SLIlist.length;i++){
+                    delete ($scope.SLIlist[i]['$$hashKey']);
+                    delete ($scope.SLIlist[i]['calc']);
+                    delete ($scope.SLIlist[i]['check']);
+                    delete ($scope.SLIlist[i]['productId']);
+                }
+                OperationsPortalController.saveSLIDetails($scope.SLIlist,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        debugger;
+                        swal("success", "Record has been update successfully.","success");
+                    }
+                    $scope.$apply();
+                })
+            }
+            
+            $scope.addRow=function(){
+                debugger;
+                $scope.SLIlist.push({
+                    "Quantity_Unit__c":"","Packaging_Quantity__c":"","Packaging_Unit__c":"","Sample__c":sampleId
+                });
+            }
+            
+            $scope.calculatePUnit = function(quantity,pquantity,SLI){
+                debugger;
+                SLI.calc = quantity/pquantity;
+            }
+            
+            $scope.setPackagingUnit = function(qUnit,SLI){
+                debugger;
+                SLI.Packaging_Unit__c = SLI.Quantity_Unit__c;
+                
+            }
+            
+            $scope.SaveSampleDetails = function(){
+                debugger;
+                var year=0;
+                var month=0;
+                var day=0;
+                if($scope.sampleDetails.Opportunity_Close_Date__c!=undefined && $scope.sampleDetails.Opportunity_Close_Date__c!=''){
+                    year = $scope.sampleDetails.Opportunity_Close_Date__c.getUTCFullYear();
+                    month = $scope.sampleDetails.Opportunity_Close_Date__c.getUTCMonth()+1;
+                    day = $scope.sampleDetails.Opportunity_Close_Date__c.getDate();
+                }
+                $scope.detailrec = {"Sample_Name__c":$scope.sampleDetails.Sample_Name__c,"Customer_Name__c":$scope.sampleDetails.Customer_Name__c,
+                                    "Annual_Volume_in_units__c":$scope.sampleDetails.Annual_Volume_in_units__c,"End_Use_category__c":$scope.sampleDetails.End_Use_category__c,
+                                    "Id":$scope.sampleDetails.Id,"Sample_Requested_by__c":$scope.sampleDetails.Sample_Requested_by__c,
+                                    "Main_reason_for_selecting_product__c":$scope.sampleDetails.Main_reason_for_selecting_product__c,
+                                    "Annual_Volume_Full__c":$scope.sampleDetails.Annual_Volume_Full__c};
+                OperationsPortalController.SaveSampleDetails($scope.detailrec,year,month,day,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        swal("success", "Sample Details have been update successfully.","success");   
+                    }
+                    $scope.$apply();
+                })
+            }
+        })
+        
+        .directive('soDropdown', ['$timeout', function($timeout) {
+            return {
+                restrict: 'E',
+                require: 'ngModel',
+                replace: true,
+                transclude: true,
+                template: function (el, atts) {
+                    var itemName = 'dropdownItem';
+                    var valueField = itemName + '.' + (atts.valueField || 'Id');
+                    var textField = itemName + '.' + (atts.textField || 'Name');
+                    return "<select class='ui search dropdown'>" +
+                        "<div ng-transclude></div>" +
+                        "   <option value='{{" + valueField + "}}' ng-repeat='" + itemName + " in " + atts.dropdownItems + " track by " + valueField + "'>" +
+                        "       {{" + textField + "}}" +
+                        "   </option>" +
+                        "</select>";
+                },
+                link: function (scope, el, atts, ngModel) {
+                    $(el).dropdown({
+                        onChange: function (value, text, choice) {
+                            scope.$apply(function () {
+                                ngModel.$setViewValue(value);
+                            });
+                        }
+                    });
+                    ngModel.$render = function () {
+                        console.log('set value', el, ngModel, ngModel.$viewValue);
+                        $timeout(function () {
+                            $(el).dropdown('set value', ngModel.$viewValue);
+                        });
+                        // $(el).dropdown('set value', ngModel.$viewValue);
+                    };
+                }
+            };
+        }]);
+        </script>
+        
+        
+        <div class="modal text-center" id="compContainer">
+            <div class="modal-dialog" style="min-width:1000px">
+                <div class="modal-content">
+                    <div id="compContainer2">                                           
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12 text-center mx-auto">
+                             <button type="button" data-bs-dismiss="modal"  onclick="cancelLWC()" class="blue-btn btn-sm">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+        function loadComponents(){
+            debugger;
+            alert('hi there')
+            var myModal = new bootstrap.Modal(document.getElementById('compContainer'));
+            myModal.show('slow');
+            $Lightning.use("c:submitForFertCodeApp", function() {
+                $Lightning.createComponent("c:submitForFertCode",{
+                    recordId:parentId,
+                },"compContainer2",function(cmp) {});
+            });
+        }
+         function cancelLWC(){
+                var myModal =document.getElementById('compContainer2');
+             	myModal.innerHTML = "";
+                myModal.hide('slow');
+             	location.reload();
+            }
+            
+     </script>
+    </html>
+</apex:page>

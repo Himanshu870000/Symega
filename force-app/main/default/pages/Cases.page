@@ -1,0 +1,404 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <style>
+        .full-table{
+        	width:100%;
+        	text-align:center;
+		}
+        .full-table>tbody>tr>th,.full-table>tbody>tr>td{
+        	padding:8px;
+        }
+        .full-table>tbody>tr>th{
+        background-color: rgb(203 213 225);	
+        }
+        .full-table>tbody>tr>td>input{
+        	text-align:center;
+        }
+        .dataTables_wrapper.no-footer{
+        	background:#fff;
+        }
+        
+        .table>thead{
+        		    background-color: rgb(203 213 225);
+        	}
+        	.dataTables_wrapper.no-footer{
+        		background:#fff;
+        		padding:10px;
+        	}
+        	
+        	.dataTables_paginate.paging_simple_numbers>*{
+        		margin:10px;
+        		text-decoration:none;
+        		cursor:pointer;
+        		color:black;
+        	}
+        	.dataTables_paginate.paging_simple_numbers>span>*{
+                margin: 0px 10px;
+                text-decoration: none;
+        		color:black;
+                padding: 5px 10px;
+                border-radius: 50%;
+        	}
+        	.paginate_button.current{
+        	background:rgb(203 213 225);
+        	}
+    </style>
+    <div ng-controller="case_ctrl">
+        <div class="container mt-3 mb-2" ng-init="getCases();getAllCustomer();">
+            <div class="loadingSection" id="spinner" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+            <div class="row" >
+                <div class="col-sm-12 scollable-controlls">
+                    <div ng-if="showCaseForm" class="p-3" style="background:#fff;">
+                        <h3 style="text-align:center;margin-top:1%">Create Case</h3>
+                        <form >
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Case origin</label>
+                                        <select class="form-control" ng-model="createCase.Origin" ng-disabled="true">
+                                            <option value="select">--select--</option>
+                                            <option>Email</option>
+                                            <option>Phone</option>
+                                            <option>Web</option>
+                                            <option>Distributor Portal</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Status</label>
+                                        <!--<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />-->
+                                        <select class="form-control" ng-model="createCase.Status" ng-disabled="true">
+                                            <option>--select--</option>
+                                            <option>New</option>
+                                            <option>On hold</option>
+                                            <option>Escalated</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1" >Case Type<span class="required-asterisk" style="color:red;">*</span></label>
+                                        <select class="form-control" ng-model="createCase.Type">
+                                            <option value="select">--select--</option>
+                                            <option value="Problem">Problem</option>
+                                            <option value="Feature Request">Feature Request</option>
+                                            <option value="Question">Question</option>
+                                        </select>
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="createCase.Reason">Case Reason<span class="required-asterisk" style="color:red;">*</span></label>
+                                        <!--<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />-->
+                                        <select class="form-control" ng-model="createCase.Reason">
+                                            <option value="select">--select--</option>
+                                            <option value="User didn't attend training">Person did't attend training</option>
+                                            <option value="Complex functionality">Complex functionality</option>
+                                            <option value="Existing problem">Existing problem</option>
+                                            <option value="Instructions not clear">Instructions not clear</option>
+                                            <option value="New problem">New problem</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Priority<span class="required-asterisk" style="color:red;">*</span></label>
+                                        <select class="form-control" ng-model="createCase.Priority">
+                                            <option value="select">--select--</option>
+                                            <option value="Low">Low</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="High">High</option>
+                                        </select>   
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer</label>
+                                        <select class="form-control" ng-model="createCase.Distributer_Customer__c">
+                                            <option value="select">--select--</option>
+                                            <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                        </select>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-12 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1" >Subject</label>
+                                        <input type="text" class="form-control" ng-model="createCase.Subject"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-12 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Description</label>
+                                        <textarea class="form-control" ng-model="createCase.Description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <button type="submit" class="btn btn-primary p-2 col-sm-6" ng-click="submitCase();">Submit</button>
+                                <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="createCaseForm();">Cancel</button>
+
+                            </div>
+                            	
+                        </form>
+                    </div>
+                    
+                    <div class="row" ng-if="!showCaseForm" style="background:#fff;width:100%;">
+                        <h3 ng-if="!detailCase" style="text-align:center;margin-top:1%">Cases</h3>
+                        <h3 ng-if="detailCase" style="text-align:center;margin-top:1%">Case Details</h3>
+
+                        <div class="d-flex justify-content-lg-end" ng-if="!detailCase">
+
+                            <div class="d-flex justify-content-md-around" style="background:#fff;width:100%;">
+                                <!-- <div class="p-3 col-sm-6">
+                                    Select view : <select ng-change="view(e.targe.value)" class="form-control" ng-model="viewOption"> 
+                                    <option value="Table">Table</option>
+                                    <option value="Cards">Cards</option>
+                                    </select>
+                                </div> -->
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer</label>
+                                        <select class="form-control" ng-change="customerChangeHandler(customerSelected)" ng-model="customerSelected">
+                                            <option selected="" value="All">--All--</option>
+                                            <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p-3 col-sm-6 d-flex justify-content-end ">
+                                    <button class="btn btn-primary" ng-click="createCaseForm();">Create Case</button>
+                                </div>    
+                            </div>
+                        </div>
+                        <!--<div class="d-flex justify-content-lg-end " >
+                            <div class="d-flex justify-content-lg-end" style="background:#fff;width:100%;">
+                            	<div class="p-2"><button class="btn btn-primary" ng-click="createCaseForm();">Crease Case</button></div>    
+                            </div>
+                        </div>-->
+
+                        <div ng-show="cases.length===0">
+                            <p class="card-subtitle m-4  col-sm-12 text-muted text-center">
+                                <b class="ondontefontColor">Cases not found</b>
+                            </p>
+                        </div>
+
+                        <div ng-show="viewOption==='Table' && !detailCase && cases.length>0" class="table-responsive">
+                            <table id="example" class="table table-striped" style="width:100%;background:#fff;" >
+                                <thead>
+                                    <tr>
+                                        <th>Case Number</th>
+                                        <th>Customer Name Name</th>
+                                        <th>Case Subject</th>
+                                        <th>Description</th>
+										<th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="case in cases track by $index">
+                                        <td>{{case.CaseNumber}}</td>
+                                        <td>{{case.Distributer_Customer__r.Name|| 'N/A'}}</td>
+                                        <td>{{case.Subject}}</td>
+                                        <td>{{case.Description}}</td>
+                                        <td>{{case.Status}}</td>
+                                        <td>{{case.Priority}}</td>
+                                        <td>
+                                            <div class="row">
+                                                <a class="col-sm btn btn-primary m-1" title="View" ng-click="details($index)">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="col-sm btn btn-primary m-1" title="Edit" ng-click="editClicked($index)">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                      
+
+                        <div class="col-sm-12 scollable-controlls"  ng-if="viewOption==='Cards' && !detailCase">
+                            
+                        
+                            <div ng-repeat="case in cases track by $index" ng-if="!showCaseForm">
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Case Number  : </b>
+                                        <span style="color:black;">{{case.CaseNumber}}</span>
+                                    </p>
+                                    <a class="btn btn-primary smallEye" ng-click="details($index)" style="width:10%;">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Account Name : </b>
+                                            <span style="color:black;">{{case.Account.Name}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Case Subject : </b>
+                                            <span style="color:black;">{{case.Subject}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Description : </b>
+                                            <span style="color:black;">{{case.Description}}</span>
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between d-block-mobile">
+                                        <div style="width: 50%;">
+                                            <b class="ondontefontColor">Status &nbsp;</b>
+                                            <span style="color:black;">{{case.Status }}</span>
+                                        </div>
+                                        
+                                        <div style="width: 50%;">
+                                            <b class="ondontefontColor">Case priority  :&nbsp;</b>
+                                            <span style="color:black;">{{case.Priority}}</span>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        </div>
+                        
+                        
+                        <div class="col-sm-12 scollable-controlls"  ng-if="detailCase">
+                            
+                            
+                            
+                                <div class="card mb-3">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <p class="card-title" style="margin-top:0.5rem;">
+                                            <b class="ondontefontColor">Case Number  : </b>
+                                            <span style="color:black;">{{detailCase.CaseNumber}}</span>
+                                        </p>
+                                        <a class="btn btn-danger smallEye" ng-click="details('close')" style="width:10%;">
+                                            <i class="fa fa-close"></i>
+                                        </a>
+                                    </div>
+                                    <div class="card-body pt-0 pb-0">
+                                        <div class="d-flex justify-content-between">
+                                            <p class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                                <b class="ondontefontColor">Account Name : </b>
+                                                <span style="color:black;">{{detailCase.Account.Name}}</span>
+                                            </p>
+                                            <p class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                                <b class="ondontefontColor">Case Subject : </b>
+                                                <span style="color:black;">{{detailCase.Subject}}</span>
+                                            </p>
+                                        </div>
+                                        <!--<div class="d-flex justify-content-between">
+                                            <p class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                                <b class="ondontefontColor">Case Subject : </b>
+                                                <span style="color:black;">{{detailCase.Subject}}</span>
+                                            </p>
+                                        </div>-->
+                                        
+                                        
+                                        <div class="d-flex justify-content-between d-block-mobile">
+                                            <div class="col-sm-6">
+                                                <b class="ondontefontColor">Reason &nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Reason || 'N/A'}}</span>
+                                            </div>
+                                            
+                                            
+                                            <div class="col-sm-6">
+                                                <b class="ondontefontColor">Status  :&nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Status || 'N/A'}}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                            <div class="col-sm-6">
+                                                <b class="ondontefontColor">Contact Phone : &nbsp;</b>
+                                                <span style="color:black;">{{detailCase.ContactPhone || 'N/A'}}</span>
+                                            </div>
+                                            
+                                           <div class="col-sm-6">
+                                                <b class="ondontefontColor">Contact Mobile  :&nbsp;</b>
+                                                <span style="color:black;">{{detailCase.ContactMobile || 'N/A'}}</span>
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                         <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                            <div class="col-sm-6">
+                                                <b class="ondontefontColor">Additional Remarks : &nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Additional_Remarks__c || 'N/A'}}</span>
+                                            </div>
+                                            
+                                           <div class="col-sm-6">
+                                                <b class="ondontefontColor">Batch No :&nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Batch_No__c || 'N/A'}}</span>
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                            <div class="col-sm-6">
+                                                <b class="ondontefontColor">DOM : &nbsp;</b>
+                                                <span style="color:black;">{{detailCase.DOM__c || 'N/A'}}</span>
+                                            </div>
+                                            
+                                           <div class="col-sm-6">
+                                                <b class="ondontefontColor">Origin :&nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Origin || 'N/A'}}</span>
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                            <div class="col-sm-6">
+                                                <b class="ondontefontColor">Priority : &nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Priority || 'N/A'}}</span>
+                                            </div>
+                                            
+                                           <div class="col-sm-6">
+                                                <b class="ondontefontColor">Invoice Name :&nbsp;</b>
+                                                <span style="color:black;">{{detailCase.Invoice__r.Name || 'N/A'}}</span>
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between mb-2 mt-2">
+                                            <p class="card-subtitle  col-sm-12 text-muted">
+                                                <b class="ondontefontColor">Description : </b>
+                                                <span style="color:black;">{{detailCase.Description}}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</apex:page>

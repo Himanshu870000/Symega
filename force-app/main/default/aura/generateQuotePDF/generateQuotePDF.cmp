@@ -1,0 +1,62 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+                access="global" controller="QuotePDFController">
+    
+    <aura:attribute name="QuoteLink" type="string" default="{!$Label.c.Quote_PDF_Link}" />
+    <aura:attribute name="showPDF" type="boolean"/>
+    <aura:attribute name="showField" type="boolean"/>
+    <aura:attribute name="freightChrg" type="decimal"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+        
+        <aura:if isTrue="{!NOT(v.showPDF)}">
+            <div class="slds-text-align_center" style="font-size:18px;"> <b>Enter Details </b> </div> <br/>
+            <aura:html tag="style">
+                .modal-body{
+                height: auto !important;
+                max-height: 350px !important;
+                }
+            </aura:html>
+            
+            <tr> 
+                <td> Include Freight Charges? &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> <br/>
+                <td> <ui:inputCheckbox change="{!c.handleChange}" aura:id="checkbox" value="" /> </td>
+            </tr>
+            
+            <aura:if isTrue="{!v.showField}">
+                <br/> <lightning:input type="number" label="Enter Freight Charges" step="0.01" value="{!v.freightChrg}"/>
+            </aura:if>
+            
+            <br/> <br/> <div class="modal-footer slds-align_absolute-center">
+            <lightning:button variant="brand" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" class="marginTop"/>
+            <lightning:button variant="brand" label="Next" title="Next" onclick="{! c.handleNext }" class="marginTop"/>
+            </div>
+            <aura:set attribute="else">
+                
+                <div class="slds-text-align_center" style="font-size:20px;"> <b>Generate Quote PDF </b> </div> <br/><br/>
+                <aura:html tag="style">
+                    .slds-modal__container{
+                    max-width: 80% !important;
+                    width:100% !important;
+                    height:100% !important;
+                    }
+                    .slds-modal__footer{
+                    display:none !important;
+                    }   
+                    .slds-modal__container>.modal-body>.baseDefault.forceChatterBasePublisher.forceChatterLightningComponent,
+                    .slds-modal__container>.modal-body>.baseDefault.forceChatterBasePublisher.forceChatterLightningComponent>.forceChatterPublisherPresentationPanel,
+                    .slds-modal__container>.modal-body>.baseDefault.forceChatterBasePublisher.forceChatterLightningComponent>.forceChatterPublisherPresentationPanel>.container.activeState,
+                    .slds-modal__container>.modal-body>.baseDefault.forceChatterBasePublisher.forceChatterLightningComponent>.forceChatterPublisherPresentationPanel>.container.activeState>.cuf-content
+                    {
+                    height:100%;
+                    }
+                </aura:html>
+                
+                <iframe src="{!v.QuoteLink + v.recordId }" height="auto" width="auto" style="height:100%;width:100%;"/>
+                
+                <div class="modal-footer slds-align_absolute-center">
+                    <lightning:button variant="brand" label="Save" title="Save" onclick="{! c.handleSave }" class="marginTop"/>
+                    <lightning:button variant="brand" label="Email To Customer" title="Email To Customer" onclick="{! c.emailToClient }" class="marginTop"/>
+                </div>
+            </aura:set>
+        </aura:if>
+    
+</aura:component>

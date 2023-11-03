@@ -1,0 +1,1730 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+
+    <apex:includeLightning />
+    <style>
+        .full-table {
+            width: 100%;
+            text-align: center;
+        }
+
+        .full-table>tbody>tr>th,
+        .full-table>tbody>tr>td {
+            padding: 8px;
+        }
+
+        .full-table>tbody>tr>th {
+            background-color: rgb(203 213 225);
+        }
+
+        .full-table>tbody>tr>td>input {
+            text-align: center;
+        }
+
+        .dataTables_wrapper.no-footer {
+            background: #fff;
+        }
+
+        .table>thead {
+            background-color: rgb(203 213 225);
+        }
+
+        .dataTables_wrapper.no-footer {
+            background: #fff;
+            padding: 10px;
+        }
+
+        .dataTables_paginate.paging_simple_numbers>* {
+            margin: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            color: black;
+        }
+
+        .dataTables_paginate.paging_simple_numbers>span>* {
+            margin: 0px 10px;
+            text-decoration: none;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 50%;
+        }
+
+        .paginate_button.current {
+            background: rgb(203 213 225);
+        }
+
+        .fade:not(.show) {
+            opacity: 1;
+        }
+
+        @media only screen and (min-width: 992px) {
+            .splits{
+                display:flex
+            }
+        }
+
+       
+    </style>
+
+    <div class="container mt-3 mb-2" ng-controller="opportunity_ctrl" ng-init="getOpportunities();" ng-keydown="myFunct(e)">
+        
+        <!-- spinner -->
+        <div class="loadingSection" id="spinner" ng-show="showSpinner">
+            <div class="loadingBackground"></div>
+            <div>
+                <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+            </div>
+        </div>
+
+        <!-- end Spinner -->
+
+        <div class="row mt-3 mb-2">
+            <div class="row">
+                <div class="col-sm-12 scollable-controlls">
+                    <div ng-if="!showForm" class="p-3" style="background:#fff;">
+                        <form>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Opportunity Name <span class="required-asterisk" style="color:red;">*</span></label>
+                                        <input type="text" class="form-control" ng-model="opp.Name" />
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer</label>
+                                        <select class="form-control" ng-model="opp.Distributer_Customer__c">
+                                            <option selected="">--select--</option>
+                                            <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Stage</label>
+                                        <select class="form-control" ng-model="opp.StageName" ng-disabled="true">
+                                            <option selected="">--select--</option>
+                                            <option value="New">New</option>
+                                            <option>In-Progress</option>
+                                            <option>Closed Won</option>
+                                            <option>Closed Lost</option>
+                                            <option>Under Quotation</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Close Date<span class="required-asterisk" style="color:red;">*</span></label>
+                                        <input type="date" class="form-control" ng-model="closeDate" />
+                                    </div>
+                                </div>
+                            </div>
+                                
+                            <div class="d-flex col-sm-12 table-responsive">
+                                <table class="full-table mt-3">
+                                    <tr>
+                                        <th>Index</th>
+                                        <th>Product<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Product Code</th>
+                                        <th>Qauntity<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Sales Price</th>
+                                        <th>Markup Amount</th>
+                                        <!-- <th>MarkDown Amount</th> -->
+                                        <th>Packaging Type<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Packaging Quantity<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Packaging Unit<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Quantity Unit<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    <tr ng-repeat="oppProd in OppProduct track by $index">
+                                        <td>{{$index+1}}</td>
+                                        <td>
+                                            <select ng-disabled="oppProd.Id" class="form-control" ng-model="oppProd.Product2Id" ng-change="changeProduct(oppProd.Product2Id,$index);">
+                                                <option selected="true">--select--</option>
+                                                <option ng-repeat="product in products" value="{{product.Id}}">{{product.Name}}</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="oppProd.ProductCode" disabled="true" />
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" ng-model="oppProd.Quantity" />
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" disabled="true" ng-model="oppProd.UnitPrice" />
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" ng-model="oppProd.Markup_Amount__c"  ng-disabled="oppProd.markupDisabled" ng-change="markupHandler($index,'markup')"/>
+                                        </td>
+                                        <!-- <td>
+                                            <input type="number" class="form-control" ng-model="oppProd.MarkDown_Amount__c" ng-disabled="oppProd.markDownDisabled"  ng-change="markupHandler($index,'markdown')" />
+                                        </td> -->
+                                        <td>
+                                            <select class="form-control" ng-model="oppProd.Packaging_Type__c">
+                                                <!-- <option selected="true" value="Private Label">Private Label</option> -->
+                                                <option value="Bulk">Bulk</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" ng-model="oppProd.Packaging_Quantity__c" />
+                                        </td>
+                                        <td>
+                                            <select class="form-control" ng-model="oppProd.Packaging_Unit__c">
+                                                <option selected="true" value="select">--select--</option>
+                                                <option value="MG">MG</option>
+                                                <option value="GM">GM</option>
+                                                <option value="KG">KG</option>
+                                                <option value="Tonne">TONNE</option>
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <select class="form-control" ng-model="oppProd.Quantity_Unit__c">
+                                                <option selected="true" value="select">--select--</option>
+                                                <option value="Kg">Kg</option>
+                                                <option value="Gm">Gm</option>
+                                                <option value="Liter">Liter</option>
+                                                <option value="mL">ML</option>
+                                                <option value="Tonne">Tonne</option>
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <span class="btn-danger btn"  ng-click="removeProduct($index)">
+                                                <i class="fa fa-trash " ng-disabled="true"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="submit" class=" btn-primary btn  p-2 col-sm-3" ng-click="addOppProduct();">Add Product line</button>
+                            </div>
+
+                            <div class="d-flex">
+                                <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="submitOpp();">Submit</button>
+                                <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="showOppForm();">Cancel</button>
+
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div  ng-show="showForm" style="background:#fff;" class="row col-sm-12">
+                        <h3 ng-show="!showDetails && !childOppSelected" style="text-align:center;margin-top:1%">Opportunity</h3>
+
+
+                        <div class="d-flex justify-content-lg-end " ng-show="!showDetails && !childOppSelected">
+                            <div class="d-flex justify-content-md-around" style="background:#fff;width:100%;">
+                                <div class="p-3 col-sm-6">
+                                    <!-- Select view :
+                                    <select class="form-control" ng-model="viewOption" ng-change="view()">
+                                        <option value="Table">Table</option>
+                                        <option value="Cards">Cards</option>
+                                    </select> -->
+                                    <label for="exampleInputEmail1">Customer</label>
+                                    <select class="form-control" ng-model="selectCustomer" ng-change="onChangeCustomer(selectCustomer);">
+                                        <option selected="true">--select--</option>
+                                        <option ng-repeat="customer in allCustomers" value="{{customer.Id}}">{{customer.Name}}</option>
+                                    </select>
+                                </div>
+                                <div class="p-3 col-sm-6 d-flex justify-content-end ">
+                                    <button class="btn btn-primary" ng-click="showOppForm();">Create Opportunity</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="d-flex justify-content-lg-end " ng-show="!showDetails && !childOppSelected">
+                            <div class="col-sm-12 " style="background:#fff;">
+                                <div class="col-sm-6 p-3">
+                                    <select class="form-control" ng-model="selectCustomer" ng-change="onChangeCustomer(selectCustomer);">
+                                        <option selected="true">--select--</option>
+                                        <option ng-repeat="customer in allCustomers" value="{{customer.Id}}">{{customer.Name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- parent Opp table-->
+                        <div ng-show="viewOption==='Table' && !showDetails && !childOppSelected" class="row col-sm-12 table-responsive">
+                            <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                <thead>
+                                    <tr>
+                                        <th>Opportunity Name</th>
+                                        <th>Customer Name</th>
+                                        <th>Opportunity Type</th>
+                                        <th>Stage Name</th>
+                                        <th>Record Type</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="opportunity in customerOpps">
+                                        <td>{{opportunity.Name}}</td>
+                                        <td>{{opportunity.Distributer_Customer__r.Name|| 'N/A'}}</td>
+                                        <td>{{opportunity.Type}}</td>
+                                        <td>{{opportunity.StageName}}</td>
+                                        <td>{{opportunity.RecordType.Name}}</td>
+                                        <td>
+                                        <div class="row">
+                                            <a class="col-sm btn btn-primary m-1" title="View" ng-click="viewDetails($index);">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <a ng-show="!opportunity.Opportunities__r" class="col-sm btn btn-primary m-1" title="Edit" ng-click="editOpp($index)">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        </div>
+                                            <!-- <i class="fa fa-eye" style="color:blue; cursor: pointer;" ng-click="viewDetails($index);"/>
+                                            <i class="fa fa-pencil"></i> -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- end Parent Opp Table -->
+
+                        <!-- parent Opp Cards -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="viewOption==='Cards' && !showDetails && !childOppSelected">
+                            <div ng-repeat="opportunity in customerOpps track by $index">
+                                <div class="card mb-3">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <p class="card-title" style="margin-top:0.5rem;">
+                                            <b class="ondontefontColor">Opportunity Name : </b>
+                                            <span style="color:black;">{{opportunity.Name}}</span>
+                                        </p>
+
+                                        <button class="btn btn-primary " ng-click="viewDetails($index);">
+                                            <i class="fa fa-eye" />
+                                        </button>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <p class="card-subtitle text-muted col-sm-6">
+                                                <b class="ondontefontColor">Account Name : </b>
+                                                <span style="color:black;">{{opportunity.Account.Name}}</span>
+                                            </p>
+                                            <p class="card-subtitle text-muted col-sm-6">
+                                                <b class="ondontefontColor">Stage Name : </b>
+                                                <span style="color:black;">{{opportunity.StageName}}</span>
+                                            </p>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <p class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                                <b class="ondontefontColor">Opportunity Type : </b>
+                                                <span style="color:black;">{{opportunity.Type}}</span>
+                                            </p>
+                                            <p class="card-subtitle mb-2 mt-2 col-sm-6 text-muted">
+                                                <b class="ondontefontColor">Record Type : </b>
+                                                <span style="color:black;">{{opportunity.RecordType.Name}}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end Opp Cards -->
+
+                        <!-- split Opp -->
+                        <div class="modal fade" id="showSplitModal2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup"
+                            aria-hidden="true">
+                            <div class="modal-dialog-centered modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-center" id="fileUploadModel">Opportunity Sale Order</h5>
+                                        <button type="button" class="btn-close " id="closeModel" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body overflow-auto">
+
+                                        <div class="container">
+                                            <div class="row row-cols-auto">
+                                                <div class="col">
+                                                    <h6>Amount :
+                                                        <span class="badge rounded-pill bg-secondary">{{oppRecord.Amount}}</span>
+                                                    </h6>
+                                                </div>
+                                                <div class="col">
+                                                    <h6>Quantity :
+                                                        <span class="badge rounded-pill bg-secondary">{{oppRecord.TotalOpportunityQuantity}}</span>
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div ng-show="!showOppDetails" class="table-responsive">
+                                                <table class="table align-middle mb-0 mt-3 bg-white">
+                                                    <thead class="bg-light">
+                                                        <tr>
+                                                            <th>Product</th>
+                                                            <th>Quantity</th>
+                                                            <th>Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="line in oppRecord.OpportunityLineItems">
+                                                            <td>{{line.Name}}</td>
+                                                            <td>{{line.Quantity}}</td>
+                                                            <td>{{line.UnitPrice}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div ng-show="hasChildSplits" class="splits overflow-auto">
+                                                <div class="row" ng-repeat="record in childSplits">
+                                                  <div class="mt-2" style="margin-right:10px">
+                                                    <div class="card" style="display: inline-block;">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">{{record.oppName}}</h5>
+                                                            <h6 class="card-subtitle mb-2 text-muted">Quantity:- {{record.totalQuantity}}</h6>
+                                                            <p class="card-text"> Total Amount:- {{record.totalAmount}}</p>
+                                                        </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div ng-show="showOppDetails" class="mt-3">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label for="usr">Opportunity Name</label>
+                                                        <input type="text" placeholder="Opp name" required="" ng-model="oppName" class="form-control" />
+                                                    </div>
+                                                    <div class="col">
+                                                        <label for="orderDate">Expected order date</label>
+                                                        <input id="orderDate" class="form-control" type="date" required="" ng-model="dateChoosed" ng-change="nextOrderDateChange(this)"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div class="table-responsive">
+                                                    <table class="table align-middle mb-0 mt-3 bg-white">
+                                                        <thead class="bg-light">
+                                                            <tr>
+                                                                <th>Product</th>
+                                                                <th>Remaining Quantity</th>
+                                                                <th>Split Quantity</th>
+                                                                <th>Split Amount</th>
+                                                                <th>Remaining Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="record in productList">
+                                                                <td>{{record.Name}}</td>
+                                                                <td>{{record.remainingQuantity}}</td>
+                                                                <td>
+                                                                    <input type="text" required="" id="record.Id" ng-model="record.quantityChoosed" class="form-control" ng-change="inputChangeHandler(this)"
+                                                                    />
+                                                                </td>
+                                                                <td>{{record.amountChoosed}}</td>
+                                                                <td>{{record.remainingAmount}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <div ng-show="hasChildSplits">
+                                                <div style="display: flex; justify-content: space-between; margin-top:2%">
+                                                    <div>
+                                                        Child Opportunity Count:
+                                                        <span class="badge rounded-pill bg-secondary">{{childSplits.length}}</span>
+                                                    </div>
+                                                    <div ng-show="isSplitLeft">
+                                                        <div ng-show="showOppDetails">
+                                                            <button type="button" class="btn btn-primary" title="Add Split" ng-click="addNewSplit()">Create Child Opportunity</button>
+                                                        </div>
+                                                        <div ng-show="!showOppDetails">
+                                                            <button type="button" class="btn btn-primary" title="Add Split" ng-click="addNewSplit()">Add New Split</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div ng-show="!hasChildSplits">
+                                                <div style="display: flex; justify-content: space-between; margin-top:2%">
+                                                    Split Not Added:-
+                                                    <div ng-show="showOppDetails">
+                                                        <button type="button" class="btn btn-primary" title="Add Split" ng-click="addNewSplit()">Create Child Opportunity</button>
+                                                    </div>
+                                                    <div ng-show="!showOppDetails">
+                                                        <button type="button" class="btn btn-primary" title="Add Split" ng-click="addNewSplit()">Add New Split</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer text-muted d-flex flex-row-reverse">
+                                        <button class="btn btn-light" title="Cancel" ng-click="closeSplit()">Cancel</button>
+                                        <div ng-show="!isSplitLeft" style="margin-right:1%">
+                                            <button title="Save" class="btn btn-primary" ng-click="createOpp()">Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end Split Opp -->
+
+                        <!-- noSplitDiv -->
+                        <div class="modal fade" id="showNoSplitModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup"
+                            aria-hidden="true">
+                            <div class="modal-dialog-centered modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="text-center">
+                                            <b style="color:green;">
+                                                CREATING ONE TIME OPPORTUNITY RECORD .....
+                                            </b>
+                                        </p>
+                                        <div id="noSplitDiv" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- end noSplitDiv -->
+                        <!-- performa Invoice -->
+
+                        <div class="modal fade" id="showPerformaInvoice" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup"
+                            aria-hidden="true">
+                            <div class="modal-dialog-centered modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-center" id="fileUploadModel">Performa Invoice</h5>
+                                        <button type="button" class="btn-close " ng-click="closePerformaInvoice();" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form ng-if="!showPerformaInvoice">
+                                            <div class="d-flex" ng-if="details.CurrencyIsoCode=='INR'">
+                                                <div class="col-sm-12 p-2">
+                                                    <div class="form-group">
+                                                        <label for="exampleInputEmail1">Enter Propose Date of Dispatch</label>
+                                                        <input type="date" class="form-control" ng-model="performaOpp.Proposed_Date_of_Dispatch__c" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div ng-if="details.CurrencyIsoCode!='INR'">
+                                                <div class="d-flex">
+                                                    <div class="col-sm-6 p-2">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Pre Carriage By</label>
+                                                            <select class="form-control" ng-model="performaOpp.Pre_carriage_By__c">
+                                                                <option selected="true">--select--</option>
+                                                                <option ng-repeat="customer in carriageOption" value="{{customer.value}}">{{ customer.label }} </option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 p-2">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Port Of Discharge</label>
+                                                            <input type="text" class="form-control" ng-model="performaOpp.Port_of_Discharge__c" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div class="col-sm-6 p-2">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Place Of Receipt</label>
+                                                            <input type="text" class="form-control" ng-model="performaOpp.Place_of_Reciept_by_Pre_Carrier__c" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6 p-2">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Port Of Loading</label>
+                                                            <select class="form-control" ng-model="performaOpp.Port_of_Loading__c">
+                                                                <option selected="true">--select--</option>
+                                                                <option ng-repeat="customer in loadingOptions" value="{{customer.value}}">{{ customer.label }} </option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex">
+                                                    <div class="col-sm-6 p-2">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Vessel Flight</label>
+                                                            <input type="text" class="form-control" ng-model="performaOpp.Vessel_Flight_Name_Voy_No__c" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                           
+                                            <div class="d-flex">
+                                                <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="performaInvoiceUpdateDetails();">Next</button>
+                                                <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="closePerformaInvoice();">Cancel</button>
+                                            </div>
+                                        </form>
+                                        <div ng-if="showPerformaInvoice">
+                                            <iframe src="{{performaURL}}" width="100%" height="700" style="border:none;">
+                                            </iframe>
+                                            <div class="d-flex">
+                                                <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="downloadInvoice();">Download</button>
+                                                <button class="btn btn-primary p-2 m-xl-2 col-sm-6" ng-click="sendEmailInvoice();">Send Email</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- end performa invoice -->
+
+                        <!-- quote Invoice -->
+                        
+                        <div class="modal fade" id="showQuoteInvoice" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup"
+                            aria-hidden="true">
+                            <div class="modal-dialog-centered modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-center" id="fileUploadModel">Quote PDF</h5>
+                                        <button type="button" class="btn-close " ng-click="closeQuoteInvoice();" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <iframe src="{{quoteUrl}}" width="100%" height="700" style="border:none;">
+                                        </iframe>
+                                        <div class="d-flex">
+                                            <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="downloadQuoteInvoice();">Download</button>
+                                            <button class="btn btn-primary p-2 m-xl-2 col-sm-6" ng-click="sendQuoteByEmail();">Send Email</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- end quote invoice -->
+
+                        <!-- opp Parent Details -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="showDetails && !addLineItem && !showSalesOrder && !showCreateQuoteForm && !details.selectedQuote">
+
+                            <h3 style="text-align:center;margin-top:1%">Opportunity Details</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary " ng-click="viewDetails();">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" style="display:flex;justify-content: space-between;">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Opportunity Name : </b>
+                                        <span style="color:black;">{{details.Name}}</span>
+                                    </p>
+                                    <div  style="display:flex;justify-content:flex-end">
+                                        <div ng-show="filteredOpps.length===0" style="margin-right: 5px;margin-top: 2px">
+                                            <a class="btn btn-primary smallEye" ng-click="openSplit()">
+                                                split
+                                            </a>
+                                            <a class="btn btn-primary smallEye" ng-click="openNoSplit()">
+                                                No split
+                                            </a>
+                                            <a ng-show="!details.Distributer_Customer__c" class="btn btn-primary smallEye" ng-click="OpenPerformaInvoice()" style="margin-right: 5px">
+                                                Generate Performa Invoice
+                                            </a>
+                                            <a class="btn btn-primary smallEye" ng-click="openCreateQuoteForm()">
+                                                Create Quote
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Account Name : </b>
+                                            <span style="color:black;">{{details.Account.Name}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Stage Name : </b>
+                                            <span style="color:black;">{{details.StageName}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Opportunity Type : </b>
+                                            <span style="color:black;">{{details.Type}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Record Type : </b>
+                                            <span style="color:black;">{{details.RecordType.Name}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 text-muted">
+                                            <b class="ondontefontColor">Quantity (in Kg) : </b>
+                                            <span style="color:black;">{{details.TotalOpportunityQuantity}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 text-muted">
+                                            <b class="ondontefontColor">Amount : </b>
+                                            <span style="color:black;">{{details.Amount}} /-</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 text-muted">
+                                            <b class="ondontefontColor">Customer Name: </b>
+                                            <span style="color:black;">{{details.Distributer_Customer__r.Name || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <ul class="nav nav-tabs" style="margin-top:2%">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" data-bs-toggle="tab" href="#home" ng-click="tabs('lineItem')">Line Items</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#menu1" ng-click="tabs('child')">Child Opportunities</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#menu1" ng-click="tabs('quote')">Quotes</a>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+
+                                    <!-- parent products -->
+                                    <div ng-show="tab==='lineItem' ">
+                                        <div ng-show="lineDetail.length===0">
+                                            <div class="d-flex justify-content-between">
+                                                <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                                    <b class="ondontefontColor">No line items </b>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="lineDetail.length>0">
+                                            <div class="mt-2 table-responsive">
+                                                <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product Name</th>
+                                                            <th>Product code</th>
+                                                            <th>Packaging Type</th>
+                                                            <th>Packaging Unit</th>
+                                                            <th>Quantity</th>
+                                                            <th>Unit price</th>
+                                                            <th>List price</th>
+                                                            <th>Markup Amount</th>
+                                                            
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat=" line in lineDetail ">
+                                                            <td>{{line.Product2.Name}}</td>
+                                                            <td>{{line.ProductCode}}</td>
+                                                            <td>{{line.Packaging_Type__c}}</td>
+                                                            <td>{{line.Packaging_Unit__c}}</td>
+                                                            <td>{{line.Quantity}}</td>
+                                                            <td>{{line.UnitPrice}}</td>
+                                                            <td>{{line.ListPrice}}</td>
+                                                            <td>{{line.Markup_Amount__c|| 'N/A'}}</td>
+                                                            
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!-- end parent products -->
+
+                                    <!-- parent child Opps -->
+                                    <div ng-show="tab==='child'" class="mt-2">
+                                        <div ng-show="filteredOpps.length===0">
+                                            <div class="d-flex justify-content-between">
+                                                <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                                    <b class="ondontefontColor">No Opportunities </b>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="filteredOpps.length>0" class="table-responsive">
+                                            <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Opportunity Name</th>
+                                                        <th>Account Name</th>
+                                                        <th>Opportunity Type</th>
+                                                        <th>Stage Name</th>
+                                                        <th>Record Type</th>
+                                                        <th>Quantity (in Kg) </th>
+                                                        <th>Amount</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="opportunity in filteredOpps">
+                                                        <td>{{opportunity.Name}}</td>
+                                                        <td>{{opportunity.Account.Name}}</td>
+                                                        <td>{{opportunity.Type}}</td>
+                                                        <td>{{opportunity.StageName}}</td>
+                                                        <td>{{opportunity.RecordType.Name}}</td>
+                                                        <td>{{opportunity.TotalOpportunityQuantity}}</td>
+                                                        <td>{{opportunity.Amount}}</td>
+                                                        <td>
+                                                            <i class="fa fa-eye" style="color:blue; cursor: pointer;" ng-click="childOppClickedHandler(opportunity);" />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- end parent child opps -->     
+                                    <!-- start quote  -->
+                                    <div ng-show="tab==='quote'" class="mt-2">
+                                        <div ng-show="!details.Quotes || details.Quotes===0">
+                                            <div class="d-flex justify-content-between">
+                                                <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                                    <b class="ondontefontColor">No Quotes Found </b>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="details.Quotes.length>0" class="table-responsive">
+                                            <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Quote Number</th>
+                                                        <th>Status</th>
+                                                        <th>Month</th>
+                                                        <th>Expiration Date</th>
+                                                        <th>Quantity (in Kg) </th>
+                                                        <th>Total Price</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="oppQuote in details.Quotes">
+                                                        <td>{{oppQuote.Name}}</td>
+                                                        <td>{{oppQuote.QuoteNumber}}</td>
+                                                        <td>{{oppQuote.Status}}</td>
+                                                        <td>{{oppQuote.Month__c}}</td>
+                                                        <td>{{oppQuote.ExpirationDate | date: 'dd-MM-yyyy'}}</td>
+                                                        <td>{{oppQuote.Total_Quantity_In_Kg__c}}</td>
+                                                        <td>{{oppQuote.TotalPrice}}</td>
+                                                        <td>
+                                                            <div class="row">
+                                                                <a class="col-sm btn btn-primary m-1" title="View" ng-click="oppQuoteSelectedHandler(oppQuote);">
+                                                                    <i class="fa fa-eye"></i>
+                                                                </a>
+                                                                <a class="col-sm btn btn-primary m-1" title="Edit" ng-click="editQuote(oppQuote)">
+                                                                    <i class="fa fa-pencil"></i>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- end Quote -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end parent opp details -->
+
+                        <!-- start quote details -->
+
+                        <div class="col-sm-12 scollable-controlls" ng-show="details && details.selectedQuote">
+                        
+                            <h3 style="text-align:center;margin-top:1%">Quote Detail</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary" ng-click="backArrowHandler('quoteSelected');">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                                <div class="p-3 col-sm-12 d-flex justify-content-end ">
+                                    <button class="btn btn-primary" ng-click="OpenQuoteInvoice();">Generate Quote</button>
+                                </div>
+                            </div>
+
+                            <div class="card mb-3">
+                                <div class="card-header" style="justify-content: space-between;">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Quote Name : </b>
+                                        <span style="color:black;">{{details.selectedQuote.Name}}</span>
+                                    </p>
+                                </div>
+                                <div class="card-body">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Quote Number : </b>
+                                            <span style="color:black;">{{details.selectedQuote.QuoteNumber}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Quote Status : </b>
+                                            <span style="color:black;">{{details.selectedQuote.Status}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Quote Month : </b>
+                                            <span style="color:black;">{{details.selectedQuote.Month__c}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Expiration Date : </b>
+                                            <span style="color:black;">{{details.selectedQuote.ExpirationDate | date: 'dd-MM-yyyy'}}</span>
+                                        </p>
+                                    </div>
+                        
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Quantity (in Kg): </b>
+                                            <span style="color:black;">{{details.selectedQuote.Total_Quantity_In_Kg__c}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Total Price : </b>
+                                            <span style="color:black;">{{details.selectedQuote.TotalPrice}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Discount: </b>
+                                            <span style="color:black;">{{details.selectedQuote.Discount}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Grand Total : </b>
+                                            <span style="color:black;">{{details.selectedQuote.GrandTotal}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Billing Country: </b>
+                                            <span style="color:black;">{{details.selectedQuote.BillingAddress.country || 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Billing Postal Code: </b>
+                                            <span style="color:black;">{{details.selectedQuote.BillingAddress.postalCode || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Billing City: </b>
+                                            <span style="color:black;">{{details.selectedQuote.BillingAddress.city || 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Billing Street: </b>
+                                            <span style="color:black;">{{details.selectedQuote.BillingAddress.street || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Shipping Country: </b>
+                                            <span style="color:black;">{{details.selectedQuote.ShippingAddress.country || 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Shipping Postal Code: </b>
+                                            <span style="color:black;">{{details.selectedQuote.ShippingAddress.postalCode || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Shipping City: </b>
+                                            <span style="color:black;">{{details.selectedQuote.ShippingAddress.city || 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Shipping Street: </b>
+                                            <span style="color:black;">{{details.selectedQuote.ShippingAddress.street || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end quotes details -->
+
+                        <!-- start child opps sales order -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="childOppSelected && !childOppSelected.selectedSalesOrder && !showDetails && !addLineItem && !showSalesOrder && !showSalesOrderCreation">
+                        
+                            <h3 style="text-align:center;margin-top:1%">One Time Opportunity</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary" ng-click="backArrowHandler('childOppDetails');">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                                <div ng-show="!childOppSelected.salesOrders || childOppSelected.salesOrders.length===0" class="p-3 col-sm-12 d-flex justify-content-end ">
+                                    <button class="btn btn-primary" ng-click="showCreateSalesOrder();">Create Sales Order</button>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" style="justify-content: space-between;">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Opportunity Name : </b>
+                                        <span style="color:black;">{{childOppSelected.Name}}</span>
+                                    </p>
+                                </div>
+                                <div class="card-body">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Account Name : </b>
+                                            <span style="color:black;">{{childOppSelected.Account.Name}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Stage Name : </b>
+                                            <span style="color:black;">{{childOppSelected.StageName}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Opportunity Type : </b>
+                                            <span style="color:black;">{{childOppSelected.Type}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Record Type : </b>
+                                            <span style="color:black;">{{childOppSelected.RecordType.Name}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Quantity (in Kg): </b>
+                                            <span style="color:black;">{{childOppSelected.TotalOpportunityQuantity}}</span>
+                                        </p>
+                                        <p class="card-subtitle mb-2 mt-2 text-muted">
+                                            <b class="ondontefontColor">Amount : </b>
+                                            <span style="color:black;">{{childOppSelected.Amount}}</span>
+                                        </p>
+                                    </div>
+                        
+                                    <!-- child Opps Sales order List-->
+                                    <div class="mt-2">
+                                        <div ng-show="!childOppSelected.salesOrders || childOppSelected.salesOrders.length===0">
+                                            <div class="d-flex justify-content-between">
+                                                <p class="card-subtitle   justify-content-center d-flex col-sm-12 text-muted">
+                                                    <b class="ondontefontColor justify-content-center">No Sales Order Found</b>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div ng-show="childOppSelected.salesOrders || childOppSelected.salesOrders.length>0" class="table-responsive">
+                                            <div class="d-flex justify-content-between" style="margin-top:2%">
+                                                <p class="card-subtitle   justify-content-center d-flex col-sm-12 text-muted">
+                                                    <b class="ondontefontColor justify-content-center">Sales Orders </b>
+                                                </p>
+                                            </div>
+
+                                            <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Order Name</th>
+                                                        <th>Opportunity</th>
+                                                        <th>Account Name</th>
+                                                        <th>Customer</th>
+                                                        <th>Quantity</th>
+                                                        <th>Amount</th>
+                                                        <th>Submission Date</th>
+                                                        <th>Total Invoice</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="salesOrder in childOppSelected.salesOrders">
+                                                        <td>{{salesOrder.Name}}</td>
+                                                        <td>{{salesOrder.Opportunity__r.Name}}</td>
+                                                        <td>{{salesOrder.Account__r.Name}}</td>
+                                                        <td>{{salesOrder.Distributer_Customer__r.Name?salesOrder.Distributer_Customer__r.Name:'N\A'}}</td>
+                                                        <td>{{salesOrder.Order_quantity__c}}</td>
+                                                        <td>{{salesOrder.Amount__c}}</td>
+                                                        <td>{{salesOrder.Submission_Date__c| date: 'dd-MM-yyyy'}}</td>
+                                                        <td>{{salesOrder.Invoice__r?salesOrder.Invoice__r.length:0}}</td>
+                                                        <td>
+                                                            <i class="fa fa-eye" style="color:blue; cursor: pointer;" ng-click="childSalesOrderClickedHanlder(salesOrder);" />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- end child Opps Sales order List -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end child opps sales order -->
+
+                        
+
+                        <!-- start child opps Create sales order -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="childOppSelected && !childOppSelected.selectedSalesOrder && !showDetails && !addLineItem && !showSalesOrder && showSalesOrderCreation">
+                        
+                            <h3 style="text-align:center;margin-top:1%">Create Sales Order</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary" ng-click="backArrowHandler('hideSalesOrderCreation');">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                               
+                            </div>
+                            <div class="card mb-3 mt-2">
+                                    <form>
+                                        <div class="d-flex">
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Sales Order Name</label>
+                                                    <span class="required-asterisk" style="color:red;">*</span>
+
+                                                    <input type="text" class="form-control" ng-model="salesOrderObj.name" required="true" ng-required="salesOrderObj.name"/>
+                                                </div>
+                                            </div>
+                                            <div ng-show="childOppSelected.Distributer_Customer__c" class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Customer</label>
+                                                    <select class="form-control" ng-model="salesOrderObj.customer" ng-disabled="true">
+                                                        <option selected="true">--select--</option>
+                                                        <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="d-flex">
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Account</label>
+                                                    <input type="text" class="form-control" ng-disabled="true" ng-model="salesOrderObj.accName" />
+                                                </div>
+                                            </div>
+                                        
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Opportunity</label>
+                                                    <input type="text" class="form-control" ng-disabled="true" ng-model="salesOrderObj.oppName" />
+                                                </div>
+                                            </div>
+                                        
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Order Quantity</label>
+                                                    <input type="text" class="form-control" ng-disabled="true" ng-model="salesOrderObj.quantity" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Amount</label>
+                                                    <input type="text" class="form-control" ng-disabled="true" ng-model="salesOrderObj.amount" />
+                                                </div>
+                                            </div>
+                                           
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Plant</label>
+                                                    <select class="form-control" ng-model="salesOrderObj.plant">
+                                                        <option ng-repeat="p in plant" value="{{p}}">{{p}}</option>
+                                                    </select>
+
+                                                    <!-- <select class="form-control" ng-model="salesOrderObj.plant">
+
+                                                        <option selected="true" value="select">--select--</option>
+                                                        <option value="SC">SC</option>
+                                                        <option value="QC">QC</option>
+                                                    </select> -->
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="expected">Expected Delivery Date :</label>
+                                                    <input type="date" class="form-control" ng-model="salesOrderObj.expectedDate" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex">
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Customer PO Number</label>
+                                                    <input type="text" class="form-control" ng-model="salesOrderObj.customerPoNumber" />
+                                                </div>
+                                            </div>
+                                        
+                                            <div class="col-sm-6 p-2">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">Remarks</label>
+                                                    <input type="text" class="form-control" ng-model="salesOrderObj.remarks" maxlength="10"/>
+                                                </div>
+                                            </div>
+                                        
+                                        </div>
+
+                                        <div class="d-flex p-3">
+                                            <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="createSalesOrder();">Create</button>
+                                            <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="backArrowHandler('hideSalesOrderCreation');">Cancel</button>
+                                        </div>
+                                    </form>
+                            </div>
+                        </div>
+                        <!-- end child opps create sales order -->
+
+                        <!-- start create quote -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="showCreateQuoteForm">
+                        
+                            <h3 style="text-align:center;margin-top:1%">Create Quote</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary" ng-click="backArrowHandler('hideQuoteCreation');">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                            </div>
+                            <div class="card mb-3 mt-2">
+                                <form>
+                                    <div class="d-flex">
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Quote Name</label>
+                                                <span class="required-asterisk" style="color:red;">*</span>
+                                                <input type="text" class="form-control" ng-model="quote.Name" required="true" ng-required="quote.Name" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Email</label>
+                                                <input type="text" class="form-control" ng-model="quote.Email" required="true" ng-required="quote.Email" />
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="d-flex">
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Billing Country</label>
+                                                <input type="text" class="form-control" ng-model="quote.BillingCountry" required="true" ng-required="quote.BillingCountry" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Shipping Country</label>
+                                                <input type="text" class="form-control" ng-model="quote.ShippingCountry" required="true" ng-required="quote.ShippingCountry" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Billing State</label>
+                                                <input type="text" class="form-control" ng-model="quote.BillingState" required="true" ng-required="quote.BillingState" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Shipping State</label>
+                                                <input type="text" class="form-control" ng-model="quote.ShippingState" required="true" ng-required="quote.ShippingState" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Billing City</label>
+                                                <input type="text" class="form-control" ng-model="quote.BillingCity" required="true" ng-required="quote.BillingCity" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Shipping City</label>
+                                                <input type="text" class="form-control" ng-model="quote.ShippingCity" required="true" ng-required="quote.ShippingCity" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Billing Postal Code</label>
+                                                <input type="text" class="form-control" ng-model="quote.BillingPostalCode" required="true" ng-required="quote.BillingPostalCode" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Shipping Postal Code</label>
+                                                <input type="text" class="form-control" ng-model="quote.ShippingPostalCode" required="true" ng-required="quote.ShippingPostalCode" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Billing Street</label>
+                                                <input type="text" class="form-control" ng-model="quote.BillingStreet" required="true" ng-required="quote.BillingStreet" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Shipping Street</label>
+                                                <input type="text" class="form-control" ng-model="quote.ShippingStreet" required="true" ng-required="quote.ShippingStreet" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex">
+                                        <div class="col-sm-12 p-2">
+                                            <div class="form-group">
+                                                <label for="exampleInputEmail1">Expiration Date</label>
+                                                <input type="date" class="form-control" ng-model="quoteExpirationDate" required="true" ng-required="quoteExpirationDate" />
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="d-flex p-3">
+                                        <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="createQuote();">{{quote.Id?'Update':'Create'}}</button>
+                                        <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="closeCreateQuoteForm();">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- end create quote -->
+
+                        <!-- start child opps sales order selected -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="childOppSelected && childOppSelected.selectedSalesOrder && !childOppSelected.selectedSalesOrder.invoiceSelected  && !showDetails && !addLineItem && !showSalesOrder">
+                        
+                            <h3 style="text-align:center;margin-top:1%">Sales Order Details</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary " ng-click="backArrowHandler('childOppSOrders');">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                            </div>
+                            <div class="card mb-3 mt-2">
+                                <div class="card-header d-flex" style="justify-content: space-between;">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Order Name : </b>
+                                        <span style="color:black;">{{childOppSelected.selectedSalesOrder.Name}}</span>
+                                    </p>
+                                    <button ng-show="!childOppSelected.selectedSalesOrder.Submission_Date__c" class="btn btn-primary justify-content-end" ng-click="sendSONotification();">Send to sales ops</button>
+
+                                    <!-- <div class="col-sm-12 d-flex justify-content-end ">
+                                        
+                                    </div> -->
+                                </div>
+                                <div class="card-body">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Account Name : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Account__r.Name}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Opportunity : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Opportunity__r.Name}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Amount : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Amount__c}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Submission Date: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Submission_Date__c | date:'dd/MM/yyyy' || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                   
+
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Order Quantity : &nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Order_quantity__c || 'N/A'}}</span>
+                                        </p>
+                                    
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Submitted Date :&nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Submitted_Date__c | date:'dd/MM/yyyy' || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                    
+                                  
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Service Rendering Date : &nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Service_Rendering_date__c || 'N/A'}}</span>
+                                        </p>
+                                    
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Courier :&nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Courier__c || 'N/A' }}</span>
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Item category : &nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Item_category__c || 'N/A'}}</span>
+                                        </p>
+                                    
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Plant :&nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Plant__c || 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Way bill No : &nbsp;</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.Way_Bill_No__c || 'N/A'}}</span>
+                                        </p>
+                                    
+                                    </div>
+                                   
+                        
+                                    <!-- child Opps Sales order Invoices List-->
+                                    <div class="mt-2">
+                                        <div ng-show="childOppSelected.selectedSalesOrder.Invoice__r && childOppSelected.selectedSalesOrder.Invoice__r.length===0">
+                                            <div class="d-flex justify-content-between">
+                                                <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                                    <b class="ondontefontColor">No Invoice Found </b>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div ng-show="childOppSelected.selectedSalesOrder.Invoice__r.length>0" class="table-responsive">
+                                            <div class="d-flex justify-content-between" style="margin-top:2%">
+                                                <p class="card-subtitle   justify-content-center d-flex col-sm-12 text-muted">
+                                                    <b class="ondontefontColor justify-content-center">Invoices </b>
+                                                </p>
+                                            </div>
+                        
+                                            <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Invoice Name :</th>
+                                                        <th>Invoice Number :</th>
+                                                        <th>Due Date :</th>
+                                                        <th>Number of Packs :</th>
+                                                        <th>Total Amount :</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="invoice in childOppSelected.selectedSalesOrder.Invoice__r">
+                                                        <td>{{invoice.Name}}</td>
+                                                        <td>{{invoice.Invoice_Number__c}}</td>
+                                                        <td>{{invoice.Due_Date__c | date:'dd-MM-yyyy'}}</td>
+                                                        <td>{{invoice.Number_of_Packs__c}}</td>
+                                                        <td>{{invoice.Total_Amount__c}}</td>
+                                                        <td>
+                                                            <i class="fa fa-eye" style="color:blue; cursor: pointer;" ng-click="invoiceSelectedHandler(invoice);" />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- end child Opps Sales Invoices List List -->
+                                </div>
+                            </div>
+                        </div>
+                         <!-- end child opps sales order selected -->
+
+                        <!-- Start child opps sales details invoice selected -->
+                        <div class="col-sm-12 scollable-controlls" ng-show="childOppSelected && childOppSelected.selectedSalesOrder && childOppSelected.selectedSalesOrder.invoiceSelected  && !showDetails && !addLineItem && !showSalesOrder">
+                        
+                            <h3 style="text-align:center;margin-top:1%">Invoice Details</h3>
+                            <div class="col-sm-12">
+                                <button class="btn btn-primary " ng-click="backArrowHandler('invoiceSelected');">
+                                    <i class="fa fa-arrow-left" />
+                                </button>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-header" style="justify-content: space-between;">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Invoice Name : </b>
+                                        <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Name}}</span>
+                                    </p>
+                                </div>
+                                <div class="card-body">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Invoice Number : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Invoice_Number__c}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Due Date : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Due_Date__c | date:'dd-MM-yyyy'}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;" class="mb-2 mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Number of Packs : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Number_of_Packs__c}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Total Bill :</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Total_Amount__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Billed Quantity : </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Billed_Quantity__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Amount:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Amount__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">CGST: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.CGST__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">GST:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.GST__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Customer Payment Date: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Customer_Payment_Update__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Dispatch Date:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Dispatch_Date__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Due Date: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Due_Date__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Freight Charges:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Freight_Charges__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">IGST: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.IGST__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Insurance:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Insurance__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Invoice Date: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Invoice_Date__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Net Value:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Net_Value__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">SGST: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.SGST__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Taxable value:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Taxable_value__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">TCS Value: </b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.TCS_Value__c|| 'N/A'}}</span>
+                                        </p>
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Way Bill No:</b>
+                                            <span style="color:black;">{{childOppSelected.selectedSalesOrder.invoiceSelected.Way_Bill_No__c|| 'N/A'}}</span>
+                                        </p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end child opps sales details invoice selected -->
+
+                        <div class="col-sm-12 scollable-controlls card" ng-show="addLineItem">
+                            <h3 style="text-align:center;margin-top:1%">Add Product</h3>
+                            <form>
+                                <div class="d-flex">
+                                    <div class="col-sm-6 p-2">
+
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Opportunity Name </label>
+                                            <input type="text" class="form-control" ng-model="details.Name" disabled="true" />
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-6 p-2">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Account</label>
+                                            <input type="text" class="form-control" ng-model="details.Account.Name" disabled="true" />
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="col-sm-6 p-2">
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Stage</label>
+                                            <input type="text" ng-model="details.StageName" class="form-control" disabled="true" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 p-2">
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">Close Date</label>
+                                            <input type="text" class="form-control" value="{{details.CloseDate | date:'yyyy-MM-dd HH:mm'}}" disabled="true" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex col-sm-12">
+
+                                    <table class="full-table mt-3">
+                                        <tr>
+                                            
+                                            <th>Index</th>
+                                            <th>Product</th>
+                                            <th>Product Code</th>
+                                            <th>Qauntity</th>
+                                            <th>Quantity Unit</th>
+
+                                            <th>List Price</th>
+                                            <th>Sub total</th>
+                                            <th>Total Price</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                        <tr ng-repeat="oppProd in existOppProduct track by $index">
+                                            <td>{{$index+1}}</td>
+                                            <td>
+                                                <select class="form-control" ng-model="oppProd.Product2Id" ng-change="changeProductLine(oppProd.Product2Id,$index);">
+                                                    <option selected="true">--select--</option>
+                                                    <option ng-repeat="product in products" value="{{product.Id}}">{{product.Name}}</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" ng-model="oppProd.ProductCode" disabled="true" />
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" ng-model="oppProd.Quantity" />
+                                            </td>
+                                            <td>
+                                                <select class="form-control" ng-model="oppProd.Quantity_Unit__c">
+                                                    <option selected="true">--select--</option>
+                                                    <option>MG</option>
+                                                    <option>GM</option>
+                                                    <option>KG</option>
+                                                    <option>TONNE</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" ng-model="oppProd.ListPrice" />
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" ng-model="oppProd.Subtotal" />
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" ng-model="oppProd.TotalPrice" />
+                                            </td>
+                                            <td>
+                                                <span class="btn-danger btn" ng-click="removeProductExist($index)">
+                                                    <i class="fa fa-trash " />
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button type="submit" class=" btn-primary btn  p-2 col-sm-3" ng-click="addOppProductExist();">Add Product line</button>
+                                </div>
+                                <div class="d-flex">
+                                    <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="submitOppLine();">Submit</button>
+                                    <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="showLineItem();">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-sm-12 scrollable-controlls card" ng-show="showSalesOrder">
+                            <div class="card mb-3 mt-3">
+                                <div class="card-header d-flex justify-content-between">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Sales Order Name : </b>
+                                        <span style="color:black;">{{salesOrderDetails.Name}}</span>
+                                    </p>
+                                    <a class="btn btn-danger smallEye" ng-click="viewSalesOrder('close')" style="width:10%;">
+                                        <i class="fa fa-close"></i>
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Opportunity Name : &nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Opportunity__r.Name || 'N/A'}}</span>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Account Name :&nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Opportunity__r.Account.Name || 'N/A'}}</span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Order Quantity : &nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Order_quantity__c || 'N/A'}}</span>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Submitted Date :&nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Submitted_Date__c | date:'dd/MM/yyyy'}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Way bill No : &nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Way_Bill_No__c || 'N/A'}}</span>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Submission Date :&nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Submission_Date__c | date:'dd/MM/yyyy'}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Service Rendering Date : &nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Service_Rendering_date__c || 'N/A'}}</span>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Courier :&nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Courier__c || 'N/A' }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Item category : &nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Item_category__c || 'N/A'}}</span>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <b class="ondontefontColor">Plant :&nbsp;</b>
+                                            <span style="color:black;">{{salesOrderDetails.Plant__c || 'N/A'}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

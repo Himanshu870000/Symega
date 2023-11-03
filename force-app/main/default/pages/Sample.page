@@ -1,0 +1,465 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <style>
+        .full-table{
+        	width:100%;
+        	text-align:center;
+		}
+        .full-table>tbody>tr>th,.full-table>tbody>tr>td{
+        	padding:8px;
+        }
+        .full-table>tbody>tr>th{
+        background-color: rgb(203 213 225);	
+        }
+        .full-table>tbody>tr>td>input{
+        	text-align:center;
+        }
+        .imageBtn{
+        	background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        	background-color:unset;
+        	background-repeat:no-repeat !important;
+        }
+        
+        .table>thead{
+        		    background-color: rgb(203 213 225);
+        	}
+        	.dataTables_wrapper.no-footer{
+        		background:#fff;
+        		padding:10px;
+        	}
+        	
+        	.dataTables_paginate.paging_simple_numbers>*{
+        		margin:10px;
+        		text-decoration:none;
+        		cursor:pointer;
+        		color:black;
+        	}
+        	.dataTables_paginate.paging_simple_numbers>span>*{
+                margin: 0px 10px;
+                text-decoration: none;
+        		color:black;
+                padding: 5px 10px;
+                border-radius: 50%;
+        	}
+        	.paginate_button.current{
+        	background:rgb(203 213 225);
+        	}
+    </style>
+    <div ng-controller="sample_ctrl">
+        <div class="container mt-3 mb-2" ng-init="getSample();">
+            <div class="loadingSection" id="spinner" ng-show="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+            <div class="row" >
+                <div class="col-sm-12 scollable-controlls">
+                    <div ng-show="showSampleForm" class="p-3" style="background:#fff;">
+                        <h3 style="text-align:center;margin-top:1%">Create Sample</h3>
+
+                        <form >
+                           
+                            <div class="d-flex">
+                                
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Sample Name<span class="required-asterisk" style="color:red;">*</span></label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.Sample_Name__c" />
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer</label>
+                                        <select class="form-control" ng-model="sampleFormData.Distributer_Customer__c" ng-change="customerChange(sampleFormData.Distributer_Customer__c)">
+                                            <option value='select'>--select--</option>
+                                            <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                           
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Status</label>
+                                        <select class="form-control" ng-model="sampleFormData.Status__c" ng-disabled="true">
+                                            <option selected="">--select--</option>
+                                            <option value="New">New</option>
+                                            <option>Submitted for Sampling</option>
+                                            <option>Sample Ready to Dispatch</option>
+                                            <option>Forwarded Sample Detail to Client</option>
+                                            <option>Sample Received By Client</option>
+                                            <option>Sample Accepted</option>
+                                            <option>Sample Rejected</option>
+                                            <option>Need Amendments</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer Contact</label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.Customer_Name" ng-disabled="true" />
+                                    </div>
+                                </div>
+                              
+                            </div>
+                           
+                            <div class="d-flex">
+                            
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Country</label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.Country__c" />
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">State</label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.State__c" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">City</label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.City__c" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Street</label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.Street__c" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Postal Code</label>
+                                        <input type="text" class="form-control" ng-model="sampleFormData.Postal_Code__c" />
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Opportunity Close Date <span class="required-asterisk" style="color:red;">*</span></label>
+                                        <input type="date" class="form-control" ng-model="sampleFormData.Opportunity_Close_Date__c" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex col-sm-12">
+                                
+                                <table class="full-table mt-3">
+                                    <tr>
+                                        <th>Index</th>
+                                        <th>Product<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Qauntity<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Quantity Unit<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Packing Quantity<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Packing Unit<span class="required-asterisk" style="color:red;">*</span></th>
+                                        <th>Current Shelf Life</th>
+                                        <th>Expected Shelf Life</th>
+                                        <th>Additional Comments</th>
+                                        <th>Customer Instructions</th>
+                                        <th>Regulatory Requirements</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    <tr ng-repeat="sampleLine in sampleLineItems track by $index">
+                                        <td>{{$index+1}}</td>
+                                        <td>
+                                            <select class="form-control" ng-model="sampleLine.Product__c" ng-change="changeProduct(sampleLine.Product__c,$index);">
+                                                <option selected="true">--select--</option>
+                                                <option ng-repeat="product in products" value="{{product.Id}}">{{product.Name}}</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" ng-model="sampleLine.Quantity__c" />
+                                         </td>
+                                        <td>
+                                            <select class="form-control" ng-model="sampleLine.Quantity_Unit__c">
+                                                <!-- <option selected="true">--select--</option> -->
+                                                <option ng-repeat="qu in quantityUnitValues" value="{{qu}}">{{qu}}</option>
+
+                                                <!-- <option value="mg">mg</option>
+                                                <option value="gm">gm</option>
+                                                <option value="Kg">Kg</option>
+                                                <option value="Tonne">Tonne</option>
+                                                <option value="MT">MT</option>
+                                                <option value="ML">ML</option> -->
+                                            </select>
+                                            </td>
+                                        <td>
+                                            <input type="number" class="form-control" ng-model="sampleLine.Packaging_Quantity__c" />
+                                        </td>
+                                        <td>
+                                            <select ng-show="sampleLine.UnitPicklist" class="form-control" ng-model="sampleLine.Packaging_Unit__c" ng-change="packagingUnitChange(sampleLine.Packaging_Unit__c,$index)">
+                                                <option selected="true">--select--</option>
+                                                <option ng-repeat="product in sampleLine.UnitPicklist" value="{{product}}">{{product}}</option>
+                                            </select>
+                                            <select ng-show="!sampleLine.UnitPicklist" class="form-control" ng-model="sampleLine.Packaging_Unit__c">
+                                                <option ng-repeat="qu in packagingUnitValues" value="{{qu}}">{{qu}}</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="sampleLine.Current_Shelf_Life__c" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="sampleLine.Expected_Shelf_Life__c" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="sampleLine.Additional_Comments__c" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="sampleLine.Customer_Instructions__c" />
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" ng-model="sampleLine.Regulatory_Requirements__c" />
+                                        </td>
+                                        <td>
+                                            <span class="btn-danger btn" ng-click="removeSampleLine($index)">
+                                                <i class="fa fa-trash "/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                            </div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="submit" class=" btn-primary btn  p-2 col-sm-3" ng-click="addNewSampleLine();">Add sample line</button>
+                            </div>
+                            <div class="d-flex">
+                                <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="submitSample();">Submit</button>
+                                <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="hideSampleForm();">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+
+                    <div class="row" ng-show="!showSampleForm" style="background:#fff;width:100%;">
+                        <h3 ng-show="!sampleDetails" style="text-align:center;margin-top:1%">Sample</h3>
+                        <h3 ng-show="sampleDetails" style="text-align:center;margin-top:1%">Sample Details</h3>
+                        
+
+                        <div class="d-flex justify-content-lg-end " ng-show="!sampleDetails">
+                            <div class="d-flex justify-content-md-around" style="background:#fff;width:100%;">
+                                <div ng-show="customers.length > 0" class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer</label>
+                                        <select class="form-control" ng-change="customerChangeHandler(customerSelected)" ng-model="customerSelected">
+                                            <option selected="" value="All">--All--</option>
+                                            <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p-3 col-sm-6 d-flex justify-content-end ">
+                                    <button class="btn btn-primary" ng-click="visibleSampleForm();">Create Sample</button>
+                                </div>    
+                            </div>
+                        </div>
+                        
+                     
+                        <div ng-show="samples.samples.length===0">
+                            <p class="card-subtitle m-4  col-sm-12 text-muted text-center">
+                                <b class="ondontefontColor">Samples not found</b>
+                            </p>
+                        </div>
+
+                        <div ng-show="viewOption==='Table' && !sampleDetails && samples.samples.length>0" class="table-responsive">
+                            <table id="example" class="table table-striped" style="width:100%;background:#fff;" >
+                                <thead>
+                                    <tr>
+                                        <th>Customer Name</th>
+                                        <th>Sample Name</th>
+                                        <th>Status</th>
+										<th>Sample Due Date</th>
+                                        <th>Sample Number</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="sample in samples.samples">
+                                        <td>{{sample.Distributer_Customer__r.Name|| 'N/A'}}</td>
+                                        <td>{{sample.Sample_Name__c}}</td>
+                                        <td>{{sample.Status__c}}</td>
+                                        <td>{{sample.First_Sample_due_date__c | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{sample.Name}}</td>
+                                        <td>
+                                            <div class="row">
+                                                <a class="col-sm btn btn-primary m-1" title="View" ng-click="details($index)">
+                                                    <i class="fa fa-eye"></i>
+                                                </a>
+                                                <a  class="col-sm btn btn-primary m-1" ng-show="sample.Status__c=='New'" title="Edit" ng-click="editOpp($index)">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-12 scollable-controlls"  ng-show="viewOption==='Cards' && !sampleDetails">
+                            <div ng-repeat="sample in samples.samples track by $index" >
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between">
+                                    <p class="card-title col-sm-6" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Sample for  : </b>
+                                        <span style="color:black;">{{sample.Account__r.Name}}</span>
+                                    </p>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <a class="btn btn-primary smallEye" ng-click="details($index)" >
+                                            <i class="fa fa-eye"></i>
+                                        </a>    
+                                    </div>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Type : </b>
+                                            <span style="color:black;">{{sample.RecordType.Name}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Status : </b>
+                                            <span style="color:black;">{{sample.Status__c}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Approval Status : </b>
+                                            <span style="color:black;">{{sample.Approval_Status__c}}</span>
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between d-block-mobile">
+                                        <div style="width: 50%;">
+                                            <b class="ondontefontColor">Opportunity Close Date : &nbsp;</b>
+                                            <span style="color:black;">{{sample.Opportunity_Close_Date__c | date:'dd/MM/yyyy'}}</span>
+                                        </div>
+                                        
+                                        <div style="width: 50%;">
+                                            <b class="ondontefontColor">Annual Volume in Units  :&nbsp;</b>
+                                            <span style="color:black;">{{sample.Annual_Volume_in_units__c}}</span>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                        <div class="col-sm-12 scollable-controlls"  ng-show="sampleDetails">
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between">
+                                    <p class="card-title col-sm-6" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Sample for  : </b>
+                                        <span style="color:black;">{{sampleDetails.Account__r.Name}}</span>
+                                    </p>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <button type="submit" ng-show="!sampleDetails.Submit_Sample_To_Optiva__c && !sampleDetails.Submitted_To_SAP_Optiva__c" class=" btn-primary btn col-sm-3" style="margin-right: 10px" ng-click="submitSampleToOptiva(sampleDetails.Id);">Submit Sample</button>
+                                        <a class="btn btn-danger smallEye" ng-click="details('close')" style="width:10%;">
+                                            <i class="fa fa-close"></i>
+                                        </a>    
+                                    </div>
+                                    
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Type : </b>
+                                            <span style="color:black;">{{sampleDetails.RecordType.Name}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Status : </b>
+                                            <span style="color:black;">{{sampleDetails.Status__c}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Approval Status : </b>
+                                            <span style="color:black;">{{sampleDetails.Approval_Status__c}}</span>
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between d-block-mobile">
+                                        <div style="width: 50%;">
+                                            <b class="ondontefontColor">Opportunity Close Date : &nbsp;</b>
+                                            <span style="color:black;">{{sampleDetails.Opportunity_Close_Date__c | date:'dd/MM/yyyy'}}</span>
+                                        </div>
+                                        
+                                        <div style="width: 50%;">
+                                            <b class="ondontefontColor">Annual Volume in Units  :&nbsp;</b>
+                                            <span style="color:black;">{{sampleDetails.Annual_Volume_in_units__c}}</span>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="d-flex justify-content-center mt-3 mb-3">
+                                        <a class="btn imageBtn"  data-toggle="collapse" ng-click="expandLineItem($index);" href="" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                        </a>
+                                    </div>
+                                    <div class="collapse d-block" id="collapseExample" >
+                                        <div class="card card-body" ng-show="sampleDetails.lineItems.length===0">No any line items</div>
+
+                                        <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Quantity Unit Code</th>
+                                                    <th>Packaging Quantity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="lineItem in sampleDetails.lineItems">
+                                                    <td>{{lineItem.Product__r.Name}}</td>
+                                                    <td>{{lineItem.Quantity__c}}</td>
+                                                    <td>{{lineItem.Quantity_Unit__c}}</td>
+                                                    <td>{{lineItem.Packaging_Quantity__c}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <!-- <div class="card card-body mt-2" ng-show="sampleDetails.lineItems.length>0" ng-repeat="lineItem in sampleDetails.lineItems">
+                                            <div class="d-flex justify-content-between d-block-mobile" >
+                                                <div style="width: 50%;">
+                                                    <b class="ondontefontColor">Product Name  : &nbsp;</b>
+                                                    <span style="color:black;">{{lineItem.Product__r.Name }}</span>
+                                                </div>
+                                                
+                                                <div style="width: 50%;">
+                                                    <b class="ondontefontColor">Quantity  :&nbsp;</b>
+                                                    <span style="color:black;">{{lineItem.Quantity__c}}</span>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="d-flex justify-content-between d-block-mobile" >
+                                                <div style="width: 50%;">
+                                                    <b class="ondontefontColor">Qauntity Unit code  : &nbsp;</b>
+                                                    <span style="color:black;">{{lineItem.Quantity_Unit__c }}</span>
+                                                </div>
+                                                
+                                                <div style="width: 50%;">
+                                                    <b class="ondontefontColor">Packaging Quantity  :&nbsp;</b>
+                                                    <span style="color:black;">{{lineItem.Packaging_Quantity__c}}</span>
+                                                </div>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

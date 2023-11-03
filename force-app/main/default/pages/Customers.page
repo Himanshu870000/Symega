@@ -1,0 +1,456 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false">
+    <style>
+        .table>thead{
+        		    background-color: rgb(203 213 225);
+        	}
+        	.dataTables_wrapper.no-footer{
+        		background:#fff;
+        		padding:10px;
+        	}
+        	
+        	.dataTables_paginate.paging_simple_numbers>*{
+        		margin:10px;
+        		text-decoration:none;
+        		cursor:pointer;
+        		color:black;
+        	}
+        	.dataTables_paginate.paging_simple_numbers>span>*{
+                margin: 0px 10px;
+                text-decoration: none;
+        		color:black;
+                padding: 5px 10px;
+                border-radius: 50%;
+        	}
+        	.paginate_button.current{
+        	background:rgb(203 213 225);
+        	}
+    </style>
+    <div ng-controller="customers_ctrl">
+        <div class="container mt-3 mb-2" ng-init="getAllCustomer()">
+            <div class="row">
+               
+                <div class="modal fade" id="customerDuplicacyPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="forgotPasswordPopup"
+                    aria-hidden="true">
+                    <div class="modal-dialog-centered modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="btn-close " data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-center">
+                                    <b style="color:rgb(243, 3, 3);">
+                                        {{duplicacyMsg}}
+                                    </b>
+                                </p>
+                            </div>
+                            <div class="card-footer text-muted d-flex flex-row-reverse">
+                                <button class="btn btn-light" title="Cancel" ng-click="closeDuplicacyPopup()">Cancel</button>
+                                <div style="margin-right:1%">
+                                    <button title="Continue" class="btn btn-primary" ng-click="createCustomerConfirmed()">Continue
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div ng-if="showForm" class="p-3" style="background:#fff;">
+                    <h3 style="text-align:center;margin-top:1%">Create Customers</h3>
+                        
+                        <form >
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer Name</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                                        <input type="text" class="form-control" ng-model="account.Name" required="true" ng-required="account.Name" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Email</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                                        <input type="text" class="form-control" ng-model="account.Email__c" required="true" ng-required="account.Email__c" />
+                                    </div>
+                                </div>
+                               
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Phone</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                                        <input type="text" class="form-control" ng-model="account.Phone" required="true" ng-required="account.Phone" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">FSSAI Number</label>
+                                        <input type="number" class="form-control" ng-model="account.FSSAI__c" required="true" ng-required="account.FSSAI__c" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">GST Number</label>
+                                        <input type="text" class="form-control" ng-model="account.GST_number__c" required="true" ng-required="account.GST_number__c" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">PAN Number</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                                        <input type="text" class="form-control" ng-model="account.PAN_Number__c" required="true" ng-required="account.PAN_Number__c" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Payment Terms</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                                        <select class="form-control" ng-model="account.Payment_terms__c">
+                                            <option ng-repeat="payment in paymentTerms" value="{{payment}}">{{ payment }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="account.Delivery_Plant__c">Delivery Plant</label>
+                                        <select class="form-control" ng-model="account.Delivery_Plant__c">
+                                            <option ng-repeat="plant in deliveryPlant" value="{{plant}}" selected="{{plant}}=='--None--'">{{ plant }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="account.Customer_Type__c">Customer Type</label>
+                                        <select class="form-control" ng-model="account.Customer_Type__c">
+                                            <option ng-repeat="cs in customerType" value="{{cs}}">{{cs}} </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="account.Account_Segment__c">Account Segment</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                                        <select class="form-control" ng-model="account.Account_Segment__c">
+                                            <option ng-repeat="val in accSegment" value="{{val}}">{{val}} </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="account.Tax_Type__c">Tax Type</label>
+                                        <select class="form-control" ng-model="account.Tax_Type__c">
+                                            <option ng-repeat="cs in taxType" value="{{cs}}">{{cs}} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="account.Transportation_Terms__c">TransPortation Terms</label>
+                                        <select class="form-control" ng-model="account.Transportation_Terms__c">
+                                            <option ng-repeat="val in transPortTerms" value="{{val}}">{{val}} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1" ng-model="account.Tax_Collected_At_Source__c">Tax Type</label>
+                                        <select class="form-control" ng-model="account.Tax_Collected_At_Source__c">
+                                            <option ng-repeat="val in taxSource" value="{{val}}">{{val}} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputPassword1">Currency</label>
+                                        <select class="form-control" ng-model="account.Currency__c">
+                                            <option ng-repeat="val in currency" value="{{val}}">{{val}} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Shipping Country</label>
+                                        <input type="text" class="form-control" ng-model="account.ShippingCountry" required="true" ng-required="account.ShippingCountry"/>
+                                        
+                                        <label for="exampleInputEmail1">Shipping Street</label>
+                                        <input type="text" class="form-control" ng-model="account.ShippingStreet" required="true" ng-required="account.ShippingStreet"/>
+                                        
+                                        <label for="exampleInputEmail1">Shipping City</label>
+                                        <input type="text" class="form-control" ng-model="account.ShippingCity" required="true" ng-required="account.ShippingCity"/>
+                                        
+                                        <label for="exampleInputEmail1">Shipping State</label>
+                                        <input type="text" class="form-control" ng-model="account.ShippingState" required="true" ng-required="account.ShippingState"/>
+                                        
+                                        <label for="exampleInputEmail1">Shipping Postal Code</label>
+                                        <input type="text" class="form-control" ng-model="account.ShippingPostalCode" required="true" ng-required="account.ShippingPostalCode"/>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Billing Country</label>
+                                        <input type="text" class="form-control" ng-model="account.BillingCountry" required="true" ng-required="account.BillingCountry"/>
+
+                                        <label for="exampleInputEmail1">Billing Street</label>
+                                        <input type="text" class="form-control" ng-model="account.BillingStreet" required="true" ng-required="account.BillingStreet"/>
+                                        
+                                        <label for="exampleInputEmail1">Billing City</label>
+                                        <input type="text" class="form-control" ng-model="account.BillingCity" required="true" ng-required="account.BillingCity"/>
+                                        
+                                        <label for="exampleInputEmail1">Billing State</label>
+                                        <input type="text" class="form-control" ng-model="account.BillingState" required="true" ng-required="account.BillingState"/>
+
+                                        <label for="exampleInputEmail1">Billing Postal Code</label>
+                                        <input type="text" class="form-control" ng-model="account.BillingPostalCode" required="true" ng-required="account.BillingPostalCode"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                           
+                            <div class="d-flex">
+                                <button type="submit" class="btn-primary btn p-2 col-sm-6" ng-click="addCustomer();">Submit</button>
+                                <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="createCustomerForm();">Cancel</button>
+                            </div>
+                            	
+                        </form>
+                    </div>
+                   
+         
+                <div ng-show="!showForm && !customerDetailsshow" class="row col-sm-12" style="background:#fff;">
+                  
+                    <div class="d-flex justify-content-lg-end " >
+                        <div class=" justify-content-md-around" style="background:#fff;width:100%;">
+                            <h3 style="text-align:center;margin-top:1%">Customers</h3>
+                            <!-- <div class="p-3 col-sm-6">
+                                Select view : <select ng-change="view(e.targe.value)" class="form-control" ng-model="viewOption"> 
+                                <option value="Table">Table</option>
+                                <option value="Cards">Cards</option>
+                                </select>
+                            </div> -->
+                            <div class="col-sm-12 d-flex justify-content-end p-3"><button class="btn btn-primary" ng-click="createCustomerForm();">Create Customer</button></div>   
+                        </div>
+                    </div>
+                    
+                    <div ng-show="viewOption==='Table'" class="table-responsive">
+                        
+                        <table id="example" class="table table-striped" style="width:100%;background:#fff;" >
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Customer Email</th>
+                                    <th>Customer Phone</th>
+                                    <!--<th>Product Code</th>
+                                    <th>Quantity of Unit</th>
+                                    <th>Active ?</th>-->
+                                    <th>Total Sales</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="customer in customers track by $index">
+                                    <td>{{customer.Customer_Account__r.Name}}</td>
+                                    <td>{{customer.Customer_Account__r.Email__c}}</td>
+                                    <td>{{customer.Customer_Account__r.Phone}}</td>
+                                    <td>{{customer.totalSales}} /-</td>
+                                    <td><a class="btn btn-primary smallEye w-100" ng-click="viewDetails($index)" style="width:10%;">
+                                        <i class="fa fa-eye"></i>
+                                    </a></td>
+                                    <!--<td>{{product.ProductCode}}</td>
+                                    <td>{{product.QuantityUnitOfMeasure}}</td>
+                                    <td>{{product.IsActive}}</td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                
+                    <div class="col-sm-12 scollable-controlls" ng-if="viewOption==='Cards'" >
+                        <div ng-repeat="customer in customers track by $index" >
+                            <div class="card mb-3">
+                                <div class="card-header d-flex justify-content-between">
+                                    <p class="card-title" style="margin-top:0.5rem;">
+                                        <b class="ondontefontColor">Customer Name  : </b>
+                                        <span style="color:black;">{{customer.Customer_Account__r.Name}}</span>
+                                    </p>
+                                    <a class="btn btn-primary smallEye" ng-click="viewDetails($index)" style="width:10%;">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle text-muted">
+                                            <b class="ondontefontColor">Customer Email : </b>
+                                            <span style="color:black;">{{customer.Customer_Account__r.Email__c}}</span>
+                                        </p>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="card-subtitle mb-2 mt-2 col-sm-12 text-muted">
+                                            <b class="ondontefontColor">Phone : </b>
+                                            <span style="color:black;">{{customer.Customer_Account__r.Phone}}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row" ng-if="!showForm && customerDetailsshow">
+                   
+                    <div class="card mb-3" style="width:100%;background:#fff;">
+                        <h3 style="text-align:center;margin-top:1%">Customers Details</h3>
+                        <div class="card-header d-flex justify-content-between">
+                               
+                            <p class="card-title" style="margin-top:0.5rem;">
+                                <b class="ondontefontColor">Customer Name  : </b>
+                                <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Name}}</span>
+                            </p>
+                            <a class="btn btn-danger smallEye" ng-click="viewDetails('close')" style="width:10%;">
+                                <i class="fa fa-close"></i>
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Customer Email : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Email__c}}</span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Phone : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Phone}}</span>
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Type : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Type}}</span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Customer Type : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Customer_Type__c}}</span>
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Visible Potential : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Visible_Potential__c}}</span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Partial executed actual order value vs : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Partially_executed_actual_order_value_vs__c}}</span>
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Color Opportunity Closed Value : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.COLOR_Opportunity_Closed_Value__c}}</span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Current year Volume : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Current_year_Volume__c}}</span>
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Payment Terms : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Payment_terms__c}}</span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Current year Volume Unit : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Current_year_Volume_Unit__c}}</span>
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">NDA required : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.NDA_required__c}}</span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Customer Segment : </b>
+                                    <span style="color:black;">{{customerDetailsshow.Customer_Account__r.Account_Segment__c}}</span>
+                                </p>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Billing Address : </b>
+                                    <span style="color:black;">
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.street">{{customerDetailsshow.Customer_Account__r.BillingAddress.street || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.city">{{customerDetailsshow.Customer_Account__r.BillingAddress.city || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.state">{{customerDetailsshow.Customer_Account__r.BillingAddress.state || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.postalCode">{{customerDetailsshow.Customer_Account__r.BillingAddress.postalCode || ''}}</span>
+                                    </span>
+                                </p>
+                                <p class="card-subtitle  col-sm-6 text-muted">
+                                    <b class="ondontefontColor">Shipping Address : </b>
+                                    <span style="color:black;">
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.street">{{customerDetailsshow.Customer_Account__r.ShippingAddress.street || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.city">{{customerDetailsshow.Customer_Account__r.ShippingAddress.city || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.state">{{customerDetailsshow.Customer_Account__r.ShippingAddress.state || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.postalCode">{{customerDetailsshow.Customer_Account__r.ShippingAddress.postalCode || ''}}</span>
+                                    </span>
+                                </p>
+                            </div>
+                            
+
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-6 text-muted">
+                                    <b class="ondontefontColor"> Total Sales : </b>
+                                    <span style="color:black;">
+                                        <span>{{customerDetailsshow.totalSales}} /-</span>
+                                    </span>
+                                </p>
+                            </div>
+
+                            <!-- <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-12 text-muted">
+                                    <b class="ondontefontColor">Billing Address : </b>
+                                    <span style="color:black;">
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.street">{{customerDetailsshow.Customer_Account__r.BillingAddress.street || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.city">{{customerDetailsshow.Customer_Account__r.BillingAddress.city || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.state">{{customerDetailsshow.Customer_Account__r.BillingAddress.state || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.BillingAddress.postalCode">{{customerDetailsshow.Customer_Account__r.BillingAddress.postalCode || ''}}</span>
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-3 mb-3">
+                                <p class="card-subtitle col-sm-12 text-muted">
+                                    <b class="ondontefontColor">Shipping Address : </b>
+                                    <span style="color:black;">
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.street">{{customerDetailsshow.Customer_Account__r.ShippingAddress.street || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.city">{{customerDetailsshow.Customer_Account__r.ShippingAddress.city || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.state">{{customerDetailsshow.Customer_Account__r.ShippingAddress.state || ''}}</span>
+                                        <span ng-if="customerDetailsshow.Customer_Account__r.ShippingAddress.postalCode">{{customerDetailsshow.Customer_Account__r.ShippingAddress.postalCode || ''}}</span>
+                                    </span>
+                                </p>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

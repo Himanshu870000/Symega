@@ -1,0 +1,4 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"  controller="LeadApprovalUtility" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <h1 style="text-align: center;  text-transform: uppercase; color: #4CAF50;"> Submitting for Approval!!!!</h1>
+</aura:component>

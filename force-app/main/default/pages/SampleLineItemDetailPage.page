@@ -1,0 +1,830 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
+    <html>
+        <head>
+        <c:Libraries ></c:Libraries>
+        
+        <!-- <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+        <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <apex:stylesheet value="{!$Resource.OperationsPortalCSS}" />
+
+        <style>
+            .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+                .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+            }
+        </style>
+        </head>
+
+        <body ng-app="sample_app" ng-controller="sample_ctrl" style="background-color: white; !important;">
+            <div class="loadingSection" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="wrapper px-5" ng-if="contactRole == 'Sample'">
+                    <div>
+                        <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                    </div>
+                    <a class="nav-link" ng-click="showCustomerssPage()" style="color:white;">
+                        Customer
+                    </a>
+                    <a class="nav-link" ng-click="showSamplesPage()" style="color:white;">
+                        Samples
+                    </a>
+                    <a class="nav-link" ng-click="showSamplesSLI()" style="color:white;">
+                        Sample Products
+                    </a>
+
+                    <div style="width: 50%;">
+                        <!-- <marquee>
+                            <h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+                         </marquee> -->
+                    </div>
+                    
+                        <div class="d-flex text-align-center">
+                            <div class="dropdown">
+                                <i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                </i>
+                                <ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{contactName}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                 <!-- <li><a class="dropdown-item pe-5"><i class="fa-solid fa-at me-3"></i>{{email}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li> -->
+                                <li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+                                </li>
+                                </ul>
+                              </div>
+                            </div>
+                </div>
+                <div class="wrapper px-5" ng-if="contactRole == 'Operation Team'">
+                    <div>
+                        <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                    </div>
+                    <a class="nav-link" ng-click="showCustomerssPage()" style="color:white;">
+                        Customer
+                    </a>
+                    <a class="nav-link" ng-click="showOpportunitySection()" style="color:white;">
+                        Opportunity
+                    </a>
+                    <a class="nav-link" ng-click="showOLISectionList()" style="color:white;">
+                        Opportunity Products
+                    </a>
+
+                    <div style="width: 50%;">
+                        <!-- <marquee>
+                            <h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+                         </marquee> -->
+                    </div>
+                    
+                        <div class="d-flex text-align-center">
+                            <div class="dropdown">
+                                <i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                </i>
+                                <ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{contactName}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                  <!-- <li><a class="dropdown-item pe-5"><i class="fa-solid fa-at me-3"></i>{{email}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li> -->
+                                <li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+                                </li>
+                                </ul>
+                              </div>
+                            </div>
+                    <!-- </div> -->
+                </div>
+            </nav>
+
+            <div class="row mt-3 mx-5" ng-show="showCustomerDetails">
+                <div class="col-md-12">
+                    <h3 class="pb-3 color-theme"><b>Customers :</b></h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" ng-model="searchKeyAccount"/>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn me-2 mb-5" ng-click="searchAccount()" type="button">Search</button>
+                        <button class="blue-btn me-2 mb-5" ng-click="clearFilter('Account')" type="button">Clear Filter</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width:2%;">S.No.</th>
+                                <th style="width:20%;">Name</th>
+                                <th style="width:20%;">Email</th>
+                                <th style="width:18%;">Phone</th>
+                                <th style="width:20%;">RecordType</th>
+                                <th style="width:20%;">Customer Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="samplLineItem in accDetails3">
+                                <td>{{$index+1}}</td>
+                                <td><a href="#" ng-click="onClickOpenCustomerDetail(samplLineItem.Id)">{{samplLineItem.Name}}</a></td>
+                                <td>{{samplLineItem.Email__c}}</td>
+                                <td>{{samplLineItem.Phone}}</td>
+                                <td>{{samplLineItem.RecordType.Name}}</td>
+                                <td>{{samplLineItem.Customer_Number__c}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious('Account')">Previous</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3 mx-5" ng-show="showSamples">
+                <div class="col-md-8">
+                    <h3 class="pb-3 color-theme"><b>Samples :</b></h3>
+                </div>
+                <div class="col-md-4">
+                    <button class="blue-bordered-btn float-end me-2" ng-click="generateInvoice()" type="button">
+                        Generate Invoice</button>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" ng-model="searchKeySample"/>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn me-2 mb-5" ng-click="searchSample()" type="button">Search</button>
+                        <button class="blue-btn me-2 mb-5" ng-click="clearFilter('Sample')" type="button">Clear Filter</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>S.No.</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Shipping Type</th>
+                                <th>Product Family</th>
+                                <th>Sample Requested By</th>
+                                <th>Record Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="sample in listOfSamples3">
+                                <td><input type="checkbox" ng-model="sample.selected" ng-change="onClickOfSample(sample.Id,$index)" /></td>
+                                <td>{{$index+1}}</td>
+                                <td><a href="#" ng-click="onClickOpenSampleDetailPage(sample.Id)">{{sample.Sample_Name__c}}</a></td>
+                                <td>{{sample.Status__c}}</td>
+                                <td>{{Shipping_Type__c}}</td>
+                                <td>{{sample.Product_Family__c}}</td>
+                                <td>{{sample.Sample_Requested_by__c}}</td>
+                                <td>{{sample.Record_Type_Name__c}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious('Sample')">Previous</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3 mx-5" ng-show="showSLI">
+                <div class="col-md-8">
+                    <h3 class="pb-3 color-theme"><b>Sample LineItems :</b></h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" ng-model="searchKey"/>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn me-2 mb-5" ng-click="searchSLI()" type="button">Search</button>
+                        <button class="blue-btn me-2 mb-5" ng-click="clearFilter('SLI')" type="button">Clear Filter</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                                <th>Sample LineItem No.</th>
+                                <th>Product</th>
+                                <th>Sample Type</th>
+                                <th>Sample Request Status</th>
+                                <th>Product Family</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="SLI in listOfSLI3">
+                                <td>{{$index+1}}</td>
+                                <td><a href="#" ng-click="onClickOpenSLIDetailPage(SLI.Id)">{{SLI.Name}}</a></td>
+                                <td>{{SLI.Product__r.Name}}</td>
+                                <td>{{SLI.Sample_Type__c}}</td>
+                                <td>{{SLI.Sample_Request_Status__c}}</td>
+                                <td>{{SLI.Product_Family__c}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious('SLI')">Previous</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3 mx-5" ng-show="showOppSection">
+                <div class="col-md-8">
+                    <h3 class="pb-3 color-theme"><b>Opportunities :</b></h3>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" ng-model="searchKeyOpp"/>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn me-2 mb-5" ng-click="searchOpportunity()" type="button">Search</button>
+                        <button class="blue-btn me-2 mb-5" ng-click="clearFilter('Opportunity')" type="button">Clear Filter</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                                <th>Opportunity Name</th>
+                                <th>Account Name</th>
+                                <th>Amount</th>
+                                <th>Close Date</th>
+                                <th>Stage</th>
+                                <th>Probability (%)</th>
+                                <th>Type</th>
+                                <th>Opportunity Record Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="opp in listOfOpportunity3">
+                                <td>{{$index+1}}</td>
+                                <td><a href="#" ng-click="onClickOpenOppDetailPage(opp.Id)">{{opp.Name}}</a></td>
+                                <td>{{opp.Account.Name}}</td>
+                                <td>{{opp.Amount}}</td>
+                                <td>{{opp.CloseDate}}</td>
+                                <td>{{opp.StageName}}</td>
+                                <td>{{opp.Probability}}</td>
+                                <td>{{opp.Type}}</td>
+                                <td>{{opp.RecordType.Name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious('Opportunity')">Previous</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3 mx-5" ng-show="showOLISection">
+                <div class="col-md-8">
+                    <h3 class="pb-3 color-theme"><b>Opportunity LineItems :</b></h3>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" ng-model="searchKeyOLI"/>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn me-2 mb-5" ng-click="searchOppProds()" type="button">Search</button>
+                        <button class="blue-btn me-2 mb-5" ng-click="clearFilter('OLI')" type="button">Clear Filter</button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                                <th>Name</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>List Price</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                <th>Price In KG</th>
+                                <th>Quantity In KG</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="OLI in oppProductList3">
+                                <td>{{$index+1}}</td>
+                                <td><a href="#" ng-click="onClickOpenOLIDetailPage(OLI.Id)">{{OLI.Name}}</a></td>
+                                <td>{{OLI.Product2.Name}}</td>
+                                <td>{{OLI.Quantity}}</td>
+                                <td>{{OLI.ListPrice}}</td>
+                                <td>{{OLI.UnitPrice}}</td>
+                                <td>{{OLI.TotalPrice}}</td>
+                                <td>{{OLI.Price_In_KG__c}}</td>
+                                <td>{{OLI.Quantity_In_KG__c}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious('OLI')">Previous</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row box-shadow-2" ng-show="showProfile" style="margin-top:15rem!important;margin-right:40rem!important;margin-left:40rem!important;">
+                <div class="row mt-5 mx-1">
+                    <div class="col-md-12">
+                        <h3 class="pb-3 color-theme"><b>EDIT PROFILE</b></h3>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <label class="font-if">First Name
+                    </label>
+                    <input class="form-control" type="text" ng-model="conDetails.FirstName" ng-disabled="true"/>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <label class="font-if">Last Name
+                    </label>
+                    <input class="form-control" type="text" ng-model="conDetails.LastName" ng-disabled="true"/>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <label class="font-if">Email
+                    </label>
+                    <input class="form-control" type="text" ng-model="conDetails.Email" ng-disabled="true"/>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <label class="font-if">Phone
+                    </label>
+                    <input class="form-control" type="text" ng-model="conDetails.MobilePhone"/>
+                </div>
+                <div class="col-md-6 mt-3 mb-5">
+                    <label class="font-if">Password
+                    </label>
+                    <input class="form-control" type="text" ng-model="conDetails.Password__c"/>
+                </div>
+                <div class="col-md-6 mt-3 mb-5">
+                    <button class="blue-btn float-end" ng-click="saveDetails()" type="button">
+                        <i class="fa-solid fa-check me-2"></i>Update</button>
+                    <button class="blue-bordered-btn float-end me-2" ng-click="backProfile()" type="button">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Previous</button>
+                </div>
+            </div>
+        </body>
+
+        <script>
+            var userHashId = '{!$CurrentPage.parameters.id}';
+            var app = angular.module('sample_app', []);
+            app.controller('sample_ctrl', function ($scope,$rootScope){
+                debugger;
+                $scope.showCustomerDetails = true;
+                $scope.customerDetPage = false;
+                $scope.showSpinner = false;
+                $scope.showProfile = false;
+                $scope.showSamples = false;
+                $scope.showSLI = false;
+                $scope.showOLISection = false;
+                $scope.showOppSection = false;
+                //$scope.conDetails = {"FirstName":"","LastName":""};
+                $scope.currentPage = 1;
+        		$scope.pageSize = 10;
+                $scope.totalPages;
+
+                $scope.getCustomerDetails = function(){
+                    debugger;
+                    OperationsPortalController.getCustomerDetails(userHashId,function(result,event){
+                        debugger;
+                        if(event.status && result){
+                            debugger;
+                            $scope.conDetails = result.conRec;
+                            $scope.showCustomerDetails = true;
+                            $scope.customerDetPage = false;
+                            $scope.showSpinner = false;
+                            $scope.showProfile = false;
+                            $scope.showSamples = false;
+                            $scope.showSLI = false;
+                            $scope.showOLISection = false;
+                            $scope.showOppSection = false;
+                            $scope.accDetails = result.accList;
+                            $scope.accDetails2 = result.accList;
+                            $scope.listOfSamples = result.listOfSamples;
+                            $scope.listOfSamples2 = result.listOfSamples;
+                            $scope.listOfSLI = result.listOfSLI;
+                            $scope.listOfSLI2 = result.listOfSLI;
+                            $scope.conName = result.conRec.Name;
+                            $rootScope.contactName = $scope.conName;
+                            $scope.contactRole = result.conRec.Role__c;
+                            $scope.listOfOpportunity = result.oppList;
+                            $scope.listOfOpportunity2 = result.oppList;
+                            $scope.oppProductList = result.oppProductList;
+                            $scope.oppProductList2 = result.oppProductList;
+                            /* SLI */
+                            $scope.totalRecords = $scope.listOfSLI.length;
+                            $scope.totalPages = Math.ceil($scope.totalRecords / $scope.pageSize);
+                            /* Sample */
+                            $scope.totalRecordsSample = $scope.listOfSamples.length;
+                            $scope.totalPagesSample = Math.ceil($scope.totalRecordsSample / $scope.pageSize);
+                            /* Opportunity */
+                            $scope.totalRecordsOpp = $scope.listOfOpportunity.length;
+                            $scope.totalPagesOpp = Math.ceil($scope.totalRecordsOpp / $scope.pageSize);
+                            /* OLI */
+                            $scope.totalRecordsOLI = $scope.oppProductList.length;
+                            $scope.totalPagesOLI = Math.ceil($scope.totalRecordsOLI / $scope.pageSize);
+                            /* Account */
+                            $scope.totalRecordsAcc = $scope.accDetails.length;
+                            $scope.totalPagesAcc = Math.ceil($scope.totalRecordsAcc / $scope.pageSize);
+                            $scope.paginateData();
+                            $scope.$apply();
+                        }
+                    })
+                }
+                $scope.getCustomerDetails();
+                
+                 $scope.paginateData = function() {
+                    debugger;
+                     const startIndex = ($scope.currentPage - 1) * $scope.pageSize;
+                     const endIndex = startIndex + $scope.pageSize;
+                     $scope.listOfSLI3 = $scope.listOfSLI.slice(startIndex, endIndex);
+                     $scope.listOfSamples3 = $scope.listOfSamples.slice(startIndex, endIndex);
+                     $scope.listOfOpportunity3 = $scope.listOfOpportunity.slice(startIndex, endIndex);
+                     $scope.oppProductList3 = $scope.oppProductList.slice(startIndex, endIndex);
+                     $scope.accDetails3 = $scope.accDetails.slice(startIndex, endIndex);
+                }
+                 
+                 $scope.handleNext = function(){
+                     debugger;
+                     if ($scope.currentPage < $scope.totalPages){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.listOfSLI);
+                     }
+                     if($scope.currentPage < $scope.totalPagesSample){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.listOfSamples);
+                     }
+                     if($scope.currentPage < $scope.totalPagesOpp){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.listOfOpportunity);
+                     }
+                     if($scope.currentPage < $scope.totalPagesOLI){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.oppProductList);
+                     }
+                     if($scope.currentPage < $scope.totalPagesAcc){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.accDetails);
+                     }
+                 }
+                 
+                 $scope.handlePrevious = function(name){
+                     debugger;
+                     if ($scope.currentPage > 1){
+                         this.currentPage -= 1;
+                         if(name == 'SLI'){
+                             this.paginateData(this.listOfSLI);
+                         }else if(name == 'Sample'){
+                             this.paginateData(this.listOfSamples);
+                         }else if(name == 'Opportunity'){
+                             this.paginateData(this.listOfOpportunity);
+                         }else if(name == 'OLI'){
+                             this.paginateData(this.oppProductList);
+                         }else if(name == 'Account'){
+                             this.paginateData(this.accDetails);
+                         }else{
+                         }
+                     }
+                 }
+
+                $scope.onClickOpenCustomerDetail = function(accId){
+                    debugger;
+                    $scope.accId = accId;
+                    var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/CustomerDetailPageOP';
+                    window.location.replace(window.location.origin + sitePrefix +'?id='+userHashId+'&accId='+ $scope.accId);
+                    $scope.customerDetPage = true;
+                    $scope.showCustomerDetails = false;
+                }
+
+                $scope.onClickOpenSampleDetailPage = function(sampleId){
+                    debugger;
+                    $scope.sampleId = sampleId;
+                    var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleDetailPage';
+                    window.location.replace(window.location.origin + sitePrefix +'?id='+userHashId+'&sampleId='+ $scope.sampleId);
+                    $scope.customerDetPage = true;
+                    $scope.showCustomerDetails = false;
+                }
+
+                $scope.onClickOpenSLIDetailPage = function(sliId){
+                    debugger;
+                    $scope.sliId = sliId;
+                    var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SLIDetailPage';
+                    window.location.replace(window.location.origin + sitePrefix +'?id='+userHashId+'&sliId='+ $scope.sliId);
+                    $scope.customerDetPage = true;
+                    $scope.showCustomerDetails = false;
+                    //$scope.showSpinner = false;
+                }
+
+                $scope.onClickOpenOppDetailPage = function(oppId){
+                    debugger;
+                    $scope.oppId = oppId;
+                    var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/OpportunityDetailPage';
+                    window.location.replace(window.location.origin + sitePrefix +'?id='+userHashId+'&oppId='+ $scope.oppId);
+                    $scope.customerDetPage = true;
+                    $scope.showCustomerDetails = false;
+                }
+
+                $scope.onClickOpenOLIDetailPage = function(oliId){
+                    debugger;
+                    $scope.oliId = oliId;
+                    var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/OpportunityProductDetailPage';
+                    window.location.replace(window.location.origin + sitePrefix +'?id='+userHashId+'&oliId='+ $scope.oliId);
+                    $scope.customerDetPage = true;
+                    $scope.showCustomerDetails = false;
+                }
+                $scope.showCustomerssPage = function(){
+                    debugger;
+                    $scope.showCustomerDetails = true;
+                    $scope.customerDetPage = false;
+                    $scope.showProfile = false;
+                    $scope.showSamples = false;
+                    $scope.showSLI = false;
+                    $scope.showOLISection = false;
+                	$scope.showOppSection = false;
+                }
+                
+                $scope.showSamplesPage = function(){
+                    debugger;
+                    $scope.showCustomerDetails = false;
+                    $scope.customerDetPage = false;
+                    $scope.showProfile = false;
+                    $scope.showSamples = true;
+                    $scope.showSLI = false;
+                }
+
+                $scope.showSamplesSLI = function(){
+                    debugger;
+                    $scope.showCustomerDetails = false;
+                    $scope.customerDetPage = false;
+                    $scope.showProfile = false;
+                    $scope.showSamples = false;
+                    $scope.showSLI = true;
+                }
+
+                $scope.showOpportunitySection = function(){
+                    debugger;
+                    $scope.showCustomerDetails = false;
+                    $scope.customerDetPage = false;
+                    $scope.showProfile = false;
+                    $scope.showSamples = false;
+                    $scope.showSLI = false;
+                    $scope.showOLISection = false;
+                    $scope.showOppSection = true;
+                }
+
+                $scope.showOLISectionList = function(){
+                    debugger;
+                    $scope.showCustomerDetails = false;
+                    $scope.customerDetPage = false;
+                    $scope.showProfile = false;
+                    $scope.showSamples = false;
+                    $scope.showSLI = false;
+                    $scope.showOppSection = false;
+                    $scope.showOLISection = true;
+                }
+
+              $scope.showProfileDiv=function(){
+                debugger;
+                $scope.showListViewOfSLI=false;
+                $scope.showDetailPageSLI=false;
+                $scope.customerDetPage = false;
+                $scope.showCustomerDetails = false;
+                $scope.showSamples = false;
+                $scope.showSLI = false;
+                $scope.showOppSection = false;
+                $scope.showOLISection = false;
+                $scope.showProfile = true;
+            }
+
+            $scope.LogoutApplicant=function(){  
+                $scope.showSpinner = true;      
+                OperationsPortalController.LogoutApplicant(userHashId, function (result, event) {
+                debugger
+                console.log(result);
+                console.log(event);
+                if(event.status){
+                    $scope.res=result;
+                    $scope.redirect();
+                    $scope.$apply();
+                }
+        });   
+            }
+
+            $scope.redirect = function(){
+                debugger;
+                var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations';
+                setTimeout(function() {window.location.replace(window.location.origin + sitePrefix )}, 3000);
+            }
+
+            $scope.backProfile = function(){
+                debugger;
+                $scope.showListViewOfSLI=true;
+                $scope.showDetailPageSLI=false;
+                $scope.showProfile = false;
+            }
+
+            $scope.saveDetails = function(){
+                debugger;
+                $scope.showSpinner = true;
+                OperationsPortalController.updateProfile($scope.conDetails,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        $scope.showSpinner = false;
+                        swal("success", "Your profile has been updated.","success");
+                        $scope.showListViewOfSLI=true;
+                        $scope.showDetailPageSLI=false;
+                        $scope.showProfile = false;
+                        $scope.$apply();
+                    }
+                })
+            }
+
+            $scope.searchSLI = function(){
+                debugger;
+                OperationsPortalController.searchOLI($scope.searchKey,userHashId,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        $scope.listOfSLI3 = result;
+                        $scope.$apply();
+                    }
+                })
+            }
+            
+            $scope.searchSample = function(){
+                debugger;
+                for(let i=0; i<$scope.listOfSamples.length; i++){
+                    delete ($scope.listOfSamples[i]['$$hashKey']);
+                }
+                OperationsPortalController.searchSample($scope.searchKeySample,$scope.listOfSamples,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        $scope.listOfSamples3 = result;
+                        $scope.$apply();
+                    }
+                })
+            }
+            
+            $scope.searchOpportunity = function(){
+                debugger;
+                for(let i=0; i<$scope.listOfOpportunity.length; i++){
+                    delete ($scope.listOfOpportunity[i]['$$hashKey']);
+                }
+                OperationsPortalController.searchOpportunity($scope.searchKeyOpp,$scope.listOfOpportunity,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        $scope.listOfOpportunity3 = result;
+                        $scope.$apply();
+                    }
+                })
+            }
+            
+            $scope.searchOppProds = function(){
+                debugger;
+                for(let i=0; i<$scope.oppProductList.length; i++){
+                    delete ($scope.oppProductList[i]['$$hashKey']);
+                }
+                OperationsPortalController.searchOppProds($scope.searchKeyOLI,$scope.oppProductList,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        $scope.oppProductList3 = result;
+                        $scope.$apply();
+                    }
+                })
+            }
+            
+            $scope.searchAccount = function(){
+                debugger;
+                for(let i=0; i<$scope.accDetails.length; i++){
+                    delete ($scope.accDetails[i]['$$hashKey']);
+                }
+                OperationsPortalController.searchAccount($scope.searchKeyAccount,$scope.accDetails,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        $scope.accDetails3 = result;
+                        $scope.$apply();
+                    }
+                })
+            }
+
+            $scope.clearFilter = function(name){
+                debugger;
+                if(name == 'SLI'){
+                    $scope.listOfSLI3 = $scope.listOfSLI2;
+                	this.paginateData(this.listOfSLI3);
+                }else if(name == 'Sample'){
+                    $scope.listOfSamples3 = $scope.listOfSamples2;
+                	this.paginateData(this.listOfSamples3);
+                }else if(name == 'Opportunity'){
+                    this.paginateData(this.listOfOpportunity3);
+                }else if(name == 'OLI'){
+                    this.paginateData(this.oppProductList3);
+                }else if(name == 'Account'){
+                    this.paginateData(this.accDetails3);
+                }else{
+                }
+            }
+            
+            $scope.listOfSampleIds = [];
+            $scope.samples = [];
+            $scope.onClickOfSample = function(sampleId,index){
+                debugger;
+                if($scope.listOfSamples[index].selected == true){
+                    debugger;
+                    $scope.listOfSampleIds.push(sampleId);
+                    $scope.samples.push($scope.listOfSamples[index]);
+                }else{
+                    const index = $scope.listOfSampleIds.indexOf(sampleId);
+                    if (index > -1) {
+                        $scope.listOfSampleIds.splice(index, 1);
+                        $scope.samples.splice(index, 1);
+                    }
+                }
+            }
+            
+            $scope.DomesticSamples = [];
+            $scope.ExportSamples = [];
+            $scope.generateInvoice = function(){
+                debugger;
+                for(var i=0;i<$scope.samples.length;i++){
+                    if($scope.samples[i].Shipping_Type__c == 'Domestic'){
+                        $scope.DomesticSamples.push($scope.samples[i]);
+                    }else if($scope.samples[i].Shipping_Type__c == 'Export'){
+                        $scope.ExportSamples.push($scope.samples[i]);
+                    }
+                }
+                
+                if($scope.DomesticSamples.length > 0 && $scope.ExportSamples.length > 0){
+                    swal("info", "Please select same shipping type to generate invoice.","info");
+                    return;
+                }
+                OperationsPortalController.generateInvoice($scope.listOfSampleIds,function(result,event){
+                    debugger;
+                    if(event.status && result){
+                        debugger;
+                        swal("success", "Invoice generated for selected Samples.","success");
+                    }
+                    $scope.$apply();
+                })
+            }
+        })
+        </script>
+    </html>
+</apex:page>

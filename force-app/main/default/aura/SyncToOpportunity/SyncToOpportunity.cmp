@@ -1,0 +1,15 @@
+<!--   Author: Anjali Singh   -->
+
+<aura:component controller= "SyncToOpportunityHelper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="showModal" type="boolean"/>   
+    <aura:attribute name="recordId" type="string" default=""/>   
+    
+    <aura:if isTrue="{!v.showModal}">
+        <p class="slds-align_absolute-center">
+            <b style="color:green;">
+                SYNCING QUOTE LINE ITEMS RECORD ..... 
+            </b>
+        </p>
+    </aura:if>
+</aura:component>

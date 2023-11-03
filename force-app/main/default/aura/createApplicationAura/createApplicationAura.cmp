@@ -1,0 +1,88 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader"
+                access="global" controller="ProjectHanlder">
+    
+    <aura:attribute name="oppRecList" type="Opportunity[]"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <aura:iteration items="{!v.oppRecList}" var="oppRec"> 
+        <lightning:card>
+            <div class="modal-header slds-modal__header slds-size_1-of-1">
+                <h4 class="title slds-text-heading--medium">Create Application</h4>
+            </div><br/>
+            <lightning:recordEditForm aura:id="recordEditForm" 
+                                      objectApiName="Project__c"
+                                      onerror="{!c.handleError}"
+                                      onsuccess="{!c.handleSuccess}" >
+                
+                <lightning:messages />
+                <lightning:inputField fieldName="Application_Name__c" value="{!oppRec.Account.Name + ' - Application'}"/>
+                <lightning:inputField fieldName="Customer_Name__c" value="{!oppRec.Account.Name}"/>
+                <lightning:inputField fieldName="Opportunity__c" value="{!oppRec.Id}"/>
+                <lightning:inputField fieldName="RecordTypeId" aura:id="recType" disabled="true"/>
+                <lightning:inputField fieldName="Parent_Project__c" />
+                <lightning:inputField fieldName="Business_potential_value_INR__c" />
+                <lightning:inputField fieldName="Annual_Volume_Full__c"/>
+                <lightning:inputField fieldName="Annual_Volume_in_units__c" />
+                <lightning:inputField fieldName="Minimum_order_quantity__c" /> 
+                <lightning:inputField fieldName="Minimum_order_quantity_unit__c" />
+                <lightning:inputField fieldName="Additional_Comments__c" />                
+                <lightning:inputField fieldName="Approval_Status__c" />
+                <lightning:inputField fieldName="Sample_Delivery_Date__c"/>
+                <lightning:inputField fieldName="Dosage_Guidelines__c"/>
+                <lightning:inputField fieldName="Product_Approval_Format_Customer__c" />                
+                <lightning:inputField fieldName="R_D_Approval_Status__c" />
+                <lightning:inputField fieldName="CurrencyIsoCode"/>
+                <lightning:inputField fieldName="End_Application_Category__c" />
+                <lightning:inputField fieldName="Status__c"/>
+                <lightning:inputField fieldName="First_Sample_due_date__c" />                
+                <lightning:inputField fieldName="Opportunity_Close_Date__c" /> 
+                <lightning:inputField fieldName="Sampling_Quantity_details__c" />
+                <lightning:inputField fieldName="Sampling_Quantity_Unit__c"/>
+                <lightning:inputField fieldName="Regulatory_Requirements__c" />                
+                <lightning:inputField fieldName="Customer_Feedback__c" /> 
+                                
+                <!-- Address Information  -->
+                <lightning:inputField fieldName="City__c" value="{!oppRec.Shipping_City__c}"/>
+                <lightning:inputField fieldName="State__c" value="{!oppRec.Shipping_State__c}"/>
+                <lightning:inputField fieldName="Street__c" value="{!oppRec.Shipping_Street__c}"/>
+                <lightning:inputField fieldName="Country__c" value="{!oppRec.Shipping_Country__c}"/>
+                <lightning:inputField fieldName="Postal_Code__c" value="{!oppRec.Shipping_Postal_Code__c}"/>
+                
+                <lightning:inputField fieldName="Billing_City__c" value="{!oppRec.Billing_City__c}"/>
+                <lightning:inputField fieldName="Billing_State__c" value="{!oppRec.Billing_State__c}"/>
+                <lightning:inputField fieldName="Billing_Street__c" value="{!oppRec.Billing_Street__c}"/>
+                <lightning:inputField fieldName="Billing_Country__c" value="{!oppRec.Billing_Country__c}"/>
+                <lightning:inputField fieldName="Billing_Postal_Code__c" value="{!oppRec.Billing_Postal_Code__c}"/>
+                
+                 <!-- Application Specification  -->
+                <lightning:inputField fieldName="Fat__c" /> 
+                <lightning:inputField fieldName="Acidity__c" />
+                <lightning:inputField fieldName="Milk_Solids__c" />
+                <lightning:inputField fieldName="Center_filling_Cream__c" />
+                <lightning:inputField fieldName="Oil_sprinkling_Dust_on__c"/>
+                <lightning:inputField fieldName="of_pulp_if_with_fruit_pulp__c" />                
+                <lightning:inputField fieldName="Total_Solids__c" /> 
+                <lightning:inputField fieldName="Final_SNF__c" />                                
+                <lightning:inputField fieldName="Brix_degrees__c" />
+                <lightning:inputField fieldName="pH__c"/>
+                <lightning:inputField fieldName="Additive_Status__c" />                
+                <lightning:inputField fieldName="Flavour_CIU__c" />
+                <lightning:inputField fieldName="Recipe_Cost__c" />
+                <lightning:inputField fieldName="Processing_condition__c"/>
+                
+                <!-- Contact Information  -->
+                <lightning:inputField fieldName="Customers_Contact__c" value="{!oppRec.Account.Customer_Contact__c}"/>
+                
+                <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-p-around_large slds-align_absolute-center">
+                    <div role="contentinfo">
+                        <lightning:button label="Cancel" onclick="{!c.handleCancel}" class="marginTop" />
+                        <lightning:button label="Save" onclick="{!c.handleSubmit}" class="marginTop" />
+                    </div>
+                </div> 
+                
+            </lightning:recordEditForm>
+        </lightning:card>
+     </aura:iteration>        
+    <!-- onsuccess="{!c.handleSuccess}" -->
+</aura:component>

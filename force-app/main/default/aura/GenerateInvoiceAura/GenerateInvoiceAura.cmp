@@ -1,0 +1,98 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader"
+                access="global" controller="PerformaInvoicePDFController">
+
+                <aura:html tag="style">
+                    .slds-modal__container{
+                    height : auto;
+                    width: 70%;
+                    max-width: 70rem;
+                    }
+                    .modal-body{
+                    height : 500px !important;
+                    max-height: 500px !important;
+                    }
+                
+                    .customFooter{
+                    display: inline !important;
+                    }
+                </aura:html>
+
+        <aura:attribute name="rec" type="Object" />
+        <aura:attribute name="recCopy" type="Object" />
+        <aura:attribute name="url" type="String"/>
+
+        <aura:attribute name="showNext" type="Boolean" default="false"/>
+
+        <aura:attribute name="carriageOptions" type="List" default="[
+            {'label': 'By Road', 'value': 'By_Road'},
+            {'label': 'By Rail', 'value': 'By_Rail'},
+            {'label': 'By Air', 'value': 'By_Air'},
+            {'label': 'By Sea', 'value': 'By_Sea'},
+            ]" />
+
+            <aura:attribute name="loadingPortOptions" type="List" default="[
+                        {'label': 'Port', 'value': 'Port'},
+                        {'label': 'Chennai', 'value': 'Chennai'},
+                        {'label': 'Kochi', 'value': 'Kochi'},
+                        {'label': 'Ennore', 'value': 'Ennore'},
+                        {'label': 'Kolkata', 'value': 'Kolkata'},
+                        {'label': 'Kandla', 'value': 'Kandla'},
+                        {'label': 'Mangalore', 'value': 'Mangalore'},
+                        {'label': 'Mormugao', 'value': 'Mormugao'},
+                        {'label': 'Mumbai Port Trust', 'value': 'Mumbai Port Trust'},
+                        {'label': 'Nhava', 'value': 'Nhava'},
+                        {'label': 'Paradip', 'value': 'Paradip'},
+                        {'label': 'Tuticorin', 'value': 'Tuticorin'},
+                        {'label': 'Visakhapatnam', 'value': 'Visakhapatnam'},
+                        {'label': 'Port Blair', 'value': 'Port Blair'},
+                        ]" />
+
+        <aura:handler name="init" value="{!this}" action="{!c.getRecord}" />
+
+        <div class="slds-modal__container">
+            <div class="modal-header slds-docked-form-header slds-modal__header ">
+                <h4 class="title slds-text-heading--medium">Performa Invoice</h4>
+            </div>
+
+            <div class="slds-modal__content slds-p-around_x-small" style="max-height : 400px; overflow-y:scroll;">
+                <aura:if isTrue="{!AND(v.rec.CurrencyIsoCode == 'INR',v.rec.Proposed_Date_of_Dispatch__c==null)}">
+                    <lightning:input type="date" name="input1" label="Enter Propose Date of Dispatch" />
+            
+                    <br />
+                    <br />
+                    <lightning:button variant="brand" label="Next" title="Next" onclick="{! c.inrNextHandler}" />
+                </aura:if>
+            
+                <aura:if isTrue="{!AND(v.rec,v.rec.CurrencyIsoCode != 'INR')}">
+                    <lightning:combobox name="carriage_by" label="Pre carriage by" value="By_Road"
+                        placeholder="Select pre carrage by" options="{! v.carriageOptions }" />
+            
+                    <lightning:input name="dischargePort" label="Port Of Discharge" type="text" />
+                    <lightning:input name="reciept" label="Place of reciept" type="text" />
+            
+                    <lightning:combobox name="carriage_by" label="Port of loading" value="Chennai" placeholder="Port of loading"
+                        options="{! v.loadingPortOptions }" />
+                    <lightning:input name="vessel" label="Vessel / Flight Name, Voy No." type="text" />
+            
+                    <br />
+                    <br />
+                    <lightning:button variant="brand" label="Next" title="Next" onclick="{!c.usaNextHandler}" />
+                </aura:if>
+            
+            
+                <aura:if isTrue="{!v.showNext}">
+                    <iframe src="{!v.url}" width="100%" height="100%" style="border:none;">
+                    </iframe>
+                </aura:if>
+            
+                <div class="slds-m-top_medium">
+                    <div class="slds-docked-form-footer slds-modal__footer customFooter" style="height:55px;">
+                        <div style="float:right;">
+                            <lightning:button label="Cancel" onclick="{!c.closeQuickAction}" />
+                            <lightning:button variant="brand" type="submit" name="save" label="Save" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</aura:component>

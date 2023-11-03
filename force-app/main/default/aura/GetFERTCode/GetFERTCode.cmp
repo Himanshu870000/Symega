@@ -1,0 +1,219 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader"
+                access="global" controller="GetFERTCodeController">
+    
+    <aura:attribute type="OpportunityLineItem[]" name="OLIList"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="symLogoOptions" type="map" />
+    <aura:attribute name="mtrlSecOptions" type="map" />
+    <aura:attribute name="plantOptions" type="map" />
+    <aura:attribute name="OpplineItemSize" type="Integer" />
+    <aura:attribute name="MissingFieldList" type="List"/>
+    <aura:attribute name="ShowUpdateAccountPage" type="Boolean" default="false"/>
+    <aura:attribute name="ShowSpinner" type="Boolean" default="true"/>
+    <aura:attribute name="myObject" type="sObject" default="{'sOjecttype':'Account', 
+                                                            'Customer_Type__c': '', 
+                                                            'BillingCountry': '',
+                                                            'BillingPostalCode': '',
+                                                            'BillingState': '',
+                                                            'Delivery_Plant__c': '',
+                                                            'Account_Segment__c': '',
+                                                            'Transportation_Terms__c': '',
+                                                            'PAN_Number__c': '',
+                                                            'GST_number__c': ''}" />
+    <aura:attribute name="accountId" type="Id" />
+    
+    
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:120% !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .plant-width{
+        width:10% !important;
+        }
+    </aura:html>
+    
+    <aura:attribute name="Message" type="string" />
+    <aura:attribute name="OppLineItemList" type="List" default="[{'record':{
+                                                                'sobjectType': 'OpportunityLineItem',
+                                                                'Name': '',
+                                                                'Quantity': '',
+                                                                'UnitPrice': '',
+                                                                'TotalPrice': '',
+                                                                'Customized_Label__c': '',
+                                                                'Symega_Logo__c': '',
+                                                                'Material_Sector__c': '',
+                                                                'Plant__c': '',
+                                                                'If_Organised_set_Micro_as_Long_Term__c': ''
+                                                                }}]"/>
+    
+    <aura:if isTrue="{!v.ShowSpinner}">
+        <div class="exampleHolder">
+            <lightning:spinner alternative-text="Loading" size="medium"/>
+        </div>
+        
+        <aura:set attribute="else"> 
+            <div class="modal-header slds-modal__header slds-size_1-of-1">
+                <h4 class="title slds-text-heading--medium"><b>Request FERT Code</b></h4>
+            </div>  
+            
+            <aura:if isTrue="{!v.ShowUpdateAccountPage}">
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon  iconName="utility:close"
+                                                  onclick="{!c.closeModelCreateContact}"  
+                                                  alternativeText ="close"
+                                                  variant="bare-inverse"
+                                                  class="slds-modal__close"/>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                Update Account  
+                            </h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <!--lightning:input type="text"  label="{!item}" aura:id="{!item}" value="{myObject"/-->
+                            <lightning:recordEditForm recordId="{!v.accountId}" objectApiName="Account" onsuccess="{!c.handleUpdate}">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:outputField fieldName="Name" />
+                                        <lightning:inputField fieldName="BillingCity" />
+                                        <lightning:inputField fieldName="BillingStreet" />
+                                        <lightning:inputField fieldName="BillingState" />
+                                        <lightning:inputField fieldName="BillingCountry" />
+                                        <lightning:inputField fieldName="BillingPostalCode" />
+
+                                        <!-- <lightning:inputField fieldName="Owner.SAP_USER_CODE__c" />
+                                        <lightning:inputField fieldName="User__r.SAP_USER_CODE__c" /> -->
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <lightning:inputField fieldName="Customer_Contact__c" />
+
+                                        <lightning:inputField fieldName="Account_Segment__c" />
+                                        <lightning:inputField fieldName="CurrencyIsoCode" />
+                                        <lightning:inputField fieldName="Delivery_Plant__c" />
+                                        <lightning:inputField fieldName="Customer_Type__c" />
+                                    </div>
+                                    
+                                </div>
+                                <div class="slds-border_top slds-align_absolute-center" slot="footer">
+                                    <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update"/> &nbsp;
+                                    <lightning:button class="slds-m-top_small" variant="neutral"
+                                                      label="Cancel"
+                                                      title="Cancel"
+                                                      onclick="{!c.closeModelCreateContact }"/>
+                                </div>
+                            </lightning:recordEditForm>
+                        </div>
+                        
+                    </div>
+                </section> 
+                
+                <aura:set attribute="else"> 
+                    
+                    <div class="slds-m-around_x-small slds-modal_large slds-scrollable_x" style="z-index: 1; padding-bottom: 150px;">
+                        
+                        <div class="container-fluid">
+                            
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                
+                                <thead >
+                                    <tr class="slds-text-title_caps" >
+                                        <th scope="col">
+                                            <div class="slds-truncate" >#</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">Product</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Quantity</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Sales Price</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Total Price</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Primary</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Secondary</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Tertiary</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Customized Label</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Symega Logo</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >Material Sector</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" >If Organised, set Micro as Long Term</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <aura:iteration items="{!v.OppLineItemList}" var="OLI" indexVar="index">
+                                        <tr>
+                                            <td> 
+                                                {!index + 1}
+                                            </td>
+                                            <td><div class="slds-truncate" title="">{!OLI.Name}</div></td>
+                                            <td><div class="slds-truncate" title="">{!OLI.Quantity}</div></td>
+                                            <td><div class="slds-truncate" title="">{!OLI.UnitPrice}</div></td>
+                                            <td><div class="slds-truncate" title="">{!OLI.TotalPrice}</div></td>
+                                            <td><lightning:input value="{!OLI.Primary__c}" required="true"/></td>
+                                            <td><lightning:input value="{!OLI.Secondary__c}" required="true"/></td>
+                                            <td><lightning:input value="{!OLI.Tertiary__c}" required="true"/></td>
+                                            <td><lightning:input value="{!OLI.Customized_Label__c}" required="true"/></td>
+                                            <td>
+                                                <lightning:select value="{!OLI.Symega_Logo__c}" required="true">
+                                                    <option value="">--None--</option>
+                                                    <aura:iteration items="{!v.symLogoOptions}" var="i">
+                                                        <option text="{!i.value}" value="{!i.value}" selected="{!i.selected}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </td>
+                                            <td>
+                                                <lightning:select value="{!OLI.Material_Sector__c}" required="true">
+                                                    <option value="">--None--</option>
+                                                    <aura:iteration items="{!v.mtrlSecOptions}" var="i">
+                                                        <option text="{!i.value}" value="{!i.value}" selected="{!i.selected}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </td>
+                                            <td><lightning:input value="{!OLI.If_Organised_set_Micro_as_Long_Term__c}" required="true"/></td>                           
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if> 
+            <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-p-around_large slds-align_absolute-center">
+                <div role="contentinfo">
+                    <lightning:button label="Send Notification" onclick="{! c.handleSubmit}" class="marginTop"/>
+                    <lightning:button label="Cancel" onclick="{! c.handleCancel }" class="marginTop"/>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if>
+    
+</aura:component>

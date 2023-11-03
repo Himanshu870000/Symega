@@ -1,0 +1,217 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="LeadApprovalUtility" access="global">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="MissingFieldList" type="List"/>
+    <aura:attribute name="ShowUpdateAccountPage" type="Boolean" default="false"/>
+    
+    <aura:attribute name="Show1stPage" type="Boolean" default="false"/>
+    <aura:attribute name="ShowSpinner" type="Boolean" default="true"/>
+    <aura:attribute name="accountId" type="Id"/>   
+    <aura:attribute name="customerId" type="Id"/>
+    <aura:attribute name="userId" type="Id"/>   
+    <aura:attribute name="bhId" type="Id"/>
+    <aura:attribute name="missingCode" type="Boolean" default="false"/> 
+    <aura:attribute name="userSapCode" type="String"/>    
+    <aura:attribute name="bhSapCode" type="String"/>    
+    <aura:attribute name="accFieldsMissing" type="Boolean" default="false"/> 
+    <aura:attribute name="custFieldsMissing" type="Boolean" default="false"/> 
+    
+    <aura:attribute name="showDlvryPlantField" type="Boolean" default="false"/> 
+    <aura:attribute name="showCustTypeField" type="Boolean" default="false"/> 
+    <aura:attribute name="showAccSegField" type="Boolean" default="false"/> 
+    
+    <aura:attribute name="deliveryPlant" type="String"/>    
+    <aura:attribute name="CustomerType" type="String"/>  
+    <aura:attribute name="AccSeg" type="String"/> 
+    
+    <aura:attribute name="custTypOptions" type="List" />
+    <aura:attribute name="accSegOptions" type="List" />
+    <aura:attribute name="dlvryPlantOptions" type="List" />
+    
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:120% !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .plant-width{
+        width:10% !important;
+        }
+    </aura:html>
+    
+    
+    <aura:if isTrue="{!v.ShowSpinner}">
+        <div class="exampleHolder">
+            <lightning:spinner alternative-text="Loading" size="medium"/>
+        </div>
+        
+        <aura:set attribute="else"> 
+            <aura:if isTrue="{!v.Show1stPage}">
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning:buttonIcon  iconName="utility:close"
+                                                  onclick="{!c.closeModal}"  
+                                                  alternativeText ="close"
+                                                  variant="bare-inverse"
+                                                  class="slds-modal__close"/>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                Fill below fields before proceeding...  
+                            </h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <aura:if isTrue="{!v.ShowUpdateAccountPage}">   
+                                <aura:if isTrue="{!v.accFieldsMissing}">
+                                    <!-- When Account Fields are missing -->
+                                    <lightning:recordEditForm recordId="{!v.accountId}" objectApiName="Account" onsuccess="{!c.handleUpdate}">
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <aura:iteration items="{!v.MissingFieldList}" var="mfl">
+                                                    <lightning:inputField fieldName="{!mfl}" />
+                                                </aura:iteration>
+                                            </div> 
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <aura:if isTrue="{!AND(v.userId != null, v.userId != undefined)}">   
+                                                    <lightning:input value="{!v.userSapCode}" name ="userSapCode" label="Owner SAP Code"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!AND(v.bhId != null, v.bhId != undefined)}">   
+                                                    <lightning:input value="{!v.bhSapCode}" name ="bhSapCode" label="BH SAP Code"/>
+                                                </aura:if>
+                                            </div> 
+                                        </div>
+                                        <div class="slds-border_top slds-align_absolute-center" slot="footer">
+                                            <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update Account"/> &nbsp;
+                                            <lightning:button class="slds-m-top_small" variant="neutral"
+                                                              label="Cancel"
+                                                              title="Cancel"
+                                                              onclick="{!c.closeModal}"/>
+                                        </div>
+                                    </lightning:recordEditForm>
+                                    
+                                    <!-- When Account Fields are not missing -->
+                                    
+                                    <aura:set attribute="else">
+                                        
+                                        <div class="slds-grid slds-gutters">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <aura:if isTrue="{!AND(v.userId != null, v.userId != undefined)}">   
+                                                    <lightning:input value="{!v.userSapCode}" name ="userSapCode" label="Owner SAP Code"/>
+                                                </aura:if>
+                                                <aura:if isTrue="{!AND(v.bhId != null, v.bhId != undefined)}">   
+                                                    <lightning:input value="{!v.bhSapCode}" name ="bhSapCode" label="BH SAP Code"/>
+                                                </aura:if>
+                                            </div> 
+                                        </div>
+                                        <div class="slds-border_top slds-align_absolute-center" slot="footer">
+                                            <lightning:button class="slds-m-top_small" variant="brand" name="update" label="Update Account" onclick="{!c.handleUpdate}"/> &nbsp;
+                                            <lightning:button class="slds-m-top_small" variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModal}"/>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <!-- When Customer Address Fields are missing -->
+                                <aura:set attribute="else">
+                                    <!-- When Customer Address Fields are missing -->
+                                    <aura:if isTrue="{!v.custFieldsMissing}">
+                                        <lightning:recordEditForm recordId="{!v.customerId}" objectApiName="Dispatch_Address__c" onsuccess="{!c.handleUpdate}" onerror="{!c.handleError}">
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <aura:iteration items="{!v.MissingFieldList}" var="mfl">
+                                                        <lightning:inputField fieldName="{!mfl}" />
+                                                    </aura:iteration>
+                                                </div>  
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <aura:if isTrue="{!AND(v.userId != null, v.userId != undefined)}">   
+                                                        <lightning:input value="{!v.userSapCode}" name ="userSapCode" label="Owner SAP Code" onchange="{!c.handleChange}"/>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!AND(v.bhId != null, v.bhId != undefined)}">  
+                                                        <lightning:input value="{!v.bhSapCode}" name ="bhSapCode" label="BH SAP Code" onchange="{!c.handleChange}"/>
+                                                    </aura:if>
+                                                </div> 
+                                            </div>
+                                            <div class="slds-border_top slds-align_absolute-center" slot="footer">
+                                                <lightning:button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update Customer Address"/> &nbsp;
+                                                <lightning:button class="slds-m-top_small" variant="neutral"
+                                                                  label="Cancel"
+                                                                  title="Cancel"
+                                                                  onclick="{!c.closeModal }"/>
+                                            </div>
+                                        </lightning:recordEditForm>
+                                        
+                                        <!-- When Customer Address Fields are not missing -->
+                                        
+                                        <aura:set attribute="else">
+                                            
+                                            <div class="slds-grid slds-gutters">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <aura:if isTrue="{!AND(v.userId != null, v.userId != undefined)}">   
+                                                        <lightning:input value="{!v.userSapCode}" name ="userSapCode" label="Owner SAP Code"/>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!AND(v.bhId != null, v.bhId != undefined)}">   
+                                                        <lightning:input value="{!v.bhSapCode}" name ="bhSapCode" label="BH SAP Code"/>
+                                                    </aura:if>
+                                                </div> 
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <aura:if isTrue="{!v.showDlvryPlantField}">  
+                                                        <lightning:select label="Delivery Plant" value="{!v.deliveryPlant}" onchange="{!c.handleChange}" >                                                            
+                                                            <aura:iteration items="{!v.dlvryPlantOptions}" var="item">
+                                                                <option text="{!item.value}" value="{!item.key}" selected="{!item.selected}" />
+                                                            </aura:iteration>
+                                                        </lightning:select>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.showCustTypeField}"> 
+                                                        <lightning:select label="Customer Type" value="{!v.CustomerType}" onchange="{!c.handleChange}" >                                                            
+                                                            <aura:iteration items="{!v.custTypOptions}" var="item">
+                                                                <option text="{!item.value}" value="{!item.key}" selected="{!item.selected}" />
+                                                            </aura:iteration>
+                                                        </lightning:select>
+                                                    </aura:if>
+                                                    <aura:if isTrue="{!v.showAccSegField}">  
+                                                        <lightning:select label="Account Segment" value="{!v.AccSeg}" onchange="{!c.handleChange}" >                                                            
+                                                            <aura:iteration items="{!v.accSegOptions}" var="item">
+                                                                <option text="{!item.value}" value="{!item.key}" selected="{!item.selected}" />
+                                                            </aura:iteration>
+                                                        </lightning:select>
+                                                    </aura:if>
+                                                </div>
+                                            </div>
+                                            <div class="slds-border_top slds-align_absolute-center" slot="footer">
+                                                <lightning:button class="slds-m-top_small" variant="brand" name="update" label="Update Customer Address" onclick="{!c.handleUpdate}"/> &nbsp;
+                                                <lightning:button class="slds-m-top_small" variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closeModal}"/>
+                                            </div>
+                                            
+                                        </aura:set>
+                                        
+                                    </aura:if>
+                                    
+                                </aura:set>
+                            </aura:if>
+                            
+                        </div>
+                    </div>
+                </section> 
+                
+                <aura:set attribute="else"> 
+                    <center>
+                        <div style="height:100px; font-size:20px;">
+                            Submitting For Business Head Approval, Please wait...
+                        </div>
+                    </center>
+                </aura:set>
+                
+            </aura:if> 
+        </aura:set>
+    </aura:if>
+    
+    
+</aura:component>

@@ -1,0 +1,73 @@
+<template>
+    <lightning-quick-action-panel header="Proforma Invoice">
+        <div>
+            <template if:true={loaded}>
+                <template if:true={hideInputFields}>
+                   <iframe src={pdfLink} width="100%" height="700" style="border:none;">
+                   </iframe>
+                </template>
+        
+                <template if:true={record}>
+                    <template if:false={hideInputFields}>
+                        <template if:true={isINR}>
+                            <lightning-input type="date" name="proposeDate" label="Enter Propose Date of Dispatch"
+                                onchange={inputChangeHandler} value={values.propseDate}></lightning-input> <br/>
+
+                            <lightning-input label="Include Freight Charge" name="check" type="checkbox" onchange={inputChangeHandler} value={values.checks}></lightning-input>
+                            <template if:true={values.checks}>
+                                <br/> <lightning-input type="number" formatter="decimal" name="fChrg" label="Enter Freight Charge/Kg" value={values.frCharge} step="any" onchange={inputChangeHandler}></lightning-input>
+                            </template>
+                        </template>
+
+                        <template if:false={isINR}>
+
+                            <lightning-combobox name="carriage_by" label="Pre carriage by" value={values.carriageBy}
+                                placeholder="Select pre carrage by" options={carriageOption} onchange={inputChangeHandler}></lightning-combobox>
+        
+                            <lightning-input name="dischargePort" type="text" label="Port Of Discharge"
+                                onchange={inputChangeHandler} value={values.dischargePort}></lightning-input>
+                            <lightning-input name="reciept" label="Place of reciept" type="text" onchange={inputChangeHandler}
+                                value={values.reciept}></lightning-input>
+        
+                            <lightning-combobox name="portLoading" label="Port of loading" value={values.portLoading}
+                                placeholder="Select Port of loading" options={loadingOptions}  onchange={inputChangeHandler}></lightning-combobox>
+        
+                            <lightning-input name="vessel" label="Vessel / Flight Name, Voy No." type="text"
+                                onchange={inputChangeHandler} value={values.vessel}></lightning-input>
+                        </template>
+                    </template>
+                </template>
+            </template>
+
+            <template if:false={loaded}>
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </template>
+        </div>
+
+        <div slot="footer">
+            <template if:true={hideInputFields}>
+                <lightning-button variant="brand" label="Save" onclick={savePDF}></lightning-button>
+                <lightning-button variant="brand" label="Email to customer" class="slds-m-left_x-small" onclick={emailToClient}>
+                </lightning-button>
+            </template>
+            <template if:false={hideInputFields}>
+                <lightning-button variant="neutral" label="Cancel" onclick={closeAction}></lightning-button>
+                <lightning-button variant="brand" label="Next" class="slds-m-left_x-small" onclick={handleNext}>
+                </lightning-button>
+            </template>
+        </div>
+
+    </lightning-quick-action-panel>
+
+    
+
+    <!-- <div class="slds-align_absolute-center">
+        <lightning-button style="width: auto; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" variant="brand" label="SUBMIT" onclick={savePDF}
+            title="Submit" >
+        </lightning-button>
+
+        <lightning-button style="width: auto; margin-right: 5px;" variant="brand" label="EMAIL TO CUSTOMER" onclick={emailToClient}
+            title="EMAIL TO CUSTOMER">
+        </lightning-button>
+    </div> -->
+</template>

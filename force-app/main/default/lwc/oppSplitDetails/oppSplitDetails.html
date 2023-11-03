@@ -1,0 +1,154 @@
+<template>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_3-of-6">
+            <div class="slds-form-element">
+                <label class="slds-form-element__label" for="text-input-id-47">
+                    <abbr class="slds-required" title="required">* </abbr>Opportunity Name</label>
+                <div class="slds-form-element__control">
+                    <input type="text" placeholder="Opp name" required="" class="slds-input" 
+                        value={oppName} onchange={oppNameChange}/>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col slds-size_3-of-6">
+            <lightning-input type="date" name="date" label="Expected order date" value={dateChoosed}
+                onchange={nextOrderDateChange}  required>
+            </lightning-input>
+        </div>
+    </div>
+    <div style="margin-top: 2%;" class="slds-scrollable_x">
+    
+        <table aria-multiselectable="true"
+            class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid"
+            aria-label="Example advanced table of Opportunities in actionable mode with row selected">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    
+                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:18rem; margin-left:-20px;padding-left: -20px;">
+                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                            <span class="slds-assistive-text">Sort by: </span>
+                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                <span class="slds-truncate" title="Name">Product</span>
+                            </div>
+                        </a>
+                        <div class="slds-resizable">
+                            <input type="range" aria-label="Name column width"
+                                class="slds-resizable__input slds-assistive-text" id="cell-resize-handle-540" max="1000"
+                                min="10" tabindex="0" />
+                            <span class="slds-resizable__handle">
+                                <span class="slds-resizable__divider"></span>
+                            </span>
+                        </div>
+                    </th>
+                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:8rem">
+                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                            <span class="slds-assistive-text">Sort by: </span>
+                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                <span class="slds-truncate" title="Name">Remaining Quantity</span>
+                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon "
+                                        aria-hidden="true">
+                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
+                        <div class="slds-resizable">
+                            <input type="range" aria-label="Account Name column width"
+                                class="slds-resizable__input slds-assistive-text" max="1000" min="20" tabindex="0" />
+                            <span class="slds-resizable__handle">
+                                <span class="slds-resizable__divider"></span>
+                            </span>
+                        </div>
+                    </th>
+                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5rem">
+                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                            <span class="slds-assistive-text">Sort by: </span>
+                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                <span class="slds-truncate" title="Email">Split Quantity</span>
+                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon "
+                                        aria-hidden="true">
+                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
+                        <div class="slds-resizable">
+                            <input type="range" aria-label="Account Name column width"
+                                class="slds-resizable__input slds-assistive-text" max="1000" min="20" tabindex="0" />
+                            <span class="slds-resizable__handle">
+                                <span class="slds-resizable__divider"></span>
+                            </span>
+                        </div>
+                    </th>
+                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5rem">
+                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                            <span class="slds-assistive-text">Sort by: </span>
+                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                <span class="slds-truncate" title="Phone">Split Amount</span>
+                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon "
+                                        aria-hidden="true">
+                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
+                        <div class="slds-resizable">
+                            <input type="range" aria-label="Account Name column width"
+                                class="slds-resizable__input slds-assistive-text" max="1000" min="20" tabindex="0" />
+                            <span class="slds-resizable__handle">
+                                <span class="slds-resizable__divider"></span>
+                            </span>
+                        </div>
+                    </th>
+                    <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:6.5rem">
+                        <a class="slds-th__action slds-text-link_reset" href="#" role="button" tabindex="0">
+                            <span class="slds-assistive-text">Sort by: </span>
+                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                <span class="slds-truncate" title="Duration">Remaining Amount</span>
+                                <span class="slds-icon_container slds-icon-utility-arrowdown">
+                                    <svg class="slds-icon slds-icon-text-default slds-is-sortable__icon "
+                                        aria-hidden="true">
+                                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
+                        <div class="slds-resizable">
+                            <input type="range" aria-label="Close Date column width"
+                                class="slds-resizable__input slds-assistive-text" max="1000" min="20" tabindex="0" />
+                            <span class="slds-resizable__handle">
+                                <span class="slds-resizable__divider"></span>
+                            </span>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+    
+            <tbody class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <template for:each={productList} for:item="record">
+                    <tr class="slds-table slds-table_cell-buffer slds-table_bordered" key={record.Id}>
+                        <th class="slds-cell_action-mode" scope="col">
+                            <div class="slds-truncate"><a data-id={record.Id} onclick={openCanidateDetailPage}>{record.Name}</a></div>
+                        </th>
+                        <th class="slds-cell_action-mode" scope="col">
+                            <div>{record.remainingQuantity}</div>
+                        </th>
+                        <th class="slds-cell_action-mode" scope="col">
+                            <input type="text" aria-describedby="error-message-01" class="slds-input" data-id={record.Id} required=""
+                                value={record.quantityChoosed} onchange={inputChangeHandler}></input>
+                        </th>
+                        <th class="slds-cell_action-mode" scope="col">
+                            <div>{record.amountChoosed}</div>
+                        </th>
+                        <th class="slds-cell_action-mode" scope="col">
+                            <h2>{record.remainingAmount}</h2>
+                        </th>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>

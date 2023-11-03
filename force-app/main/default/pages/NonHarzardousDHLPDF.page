@@ -1,0 +1,89 @@
+<apex:page applyHtmlTag="false" docType="html-5.0" showHeader="false" sidebar="false" renderAs="pdf" controller="NonHarzardousDHLPDFController">
+     <head>
+        <style>
+            @page {
+           
+            margin-left: 0.5cm;
+            margin-right: 0.5cm;      
+            }
+            
+        </style>
+        
+    </head>
+    <body>
+        
+         <table style="width:100%;">
+            <tr>
+                   <td ><p>{!sampDetails.MasterLabel}, <br/>
+                       {!sampDetails.NHC_HNO__c}, {!sampDetails.SyntPark__c}, <br/> 
+                       {!sampDetails.Pancode__c}, {!sampDetails.Landmark__c}, <br/>
+                       {!sampDetails.City__c} District <br/>
+                       {!sampDetails.State__c} -{!sampDetails.Pincode__c},{!sampDetails.Country__c}  <br/>   
+                       CIN-{!sampDetails.CIN__c} <br/> 
+                       GST:32AAKCS0062P1Z6  <br/> <br/>
+                      <b>19.08.2023</b> 
+                       </p> </td>
+                      
+                <td style="padding-right:20px;" >  <span style="float:right;"><apex:image url="{!$Resource.logo}" width="120px" height="30px"/></span> <br/> <br/> 
+                    <span style="float:right;text-align:center font-size:18px;background-color:orange;">POSSIBILITIES<br/>UNLIMITED</span> <br/> <br/><br/><br/><br/><br/><br/>
+                </td>
+              </tr>   
+          </table>
+              
+        <br/>
+       
+        
+        <center  style="font-size:19px;">SHIPPER'S CERTIFICATION FOR NON-HAZARDOUS CARGO </center>
+        <br/>
+        <br/>
+        
+        <span><b>AWB No. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Airport Of Departure  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Airport Of Destination</b> </span><br/><br/>
+        <span><b> {!projRec.AWB_NO__c} &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {!projRec.Airport_Of_Departure__c}  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; {!projRec.Airport_Of_Destination__c}</b> </span>
+        <br/>
+        <br/>
+     
+        <p>This is to certify that the Articles/ Substances of this Shipment are properly described by name, that they are not<br/>
+            listed in the current edition of IATA Dangerous Goods Regulation (DGR). Alphabetical List of Dangerous Goods,<br/>
+            nor do they correspond to any of the Hazard Classes appearing in the DGR, Section 3, classification of dangerous<br/>
+            goods and that <b>they are known to be not Dangerous,i.e. Not restricted.</b> Furthermore the shipper confirms<br/>
+            that the goods are in proper condition for transportation on passenger carrying aircraft<br/><br/>
+            (DGR, Para 8.1.23)
+        </p>
+       <!--
+        <span> &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; No. and Kind  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;  Description of Goods  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; Net Quantity/Package</span><br/>
+        <span> &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; of Pkgs.</span>  <br/> <br/>
+          <apex:repeat value="{!sampLineItemList}" var="sliList">
+              <span style="font-size:12px;"><b>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp; 1 CARTON  &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  {!sliList.Product_Name__c}   &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;  {!sliList.Quantity__c} {!sliList.Quantity_Unit__c}  </b></span><br/>
+        </apex:repeat> -->
+         
+        <table style="width:100%">
+          <tr>
+            <td style="font-size:14px; text-align:center; width:33%">No.and Kind of<br/>Pkgs</td>
+            <td style="font-size:14px; text-align:center; width:33%">Description of Goods</td>
+            <td style="font-size:14px; text-align:center; width:33%">Net Quantity/Package</td>
+          </tr>
+            <apex:repeat value="{!sampLineItemList}" var="sliList"> 
+          <tr>
+            <td style="font-size:14px; text-align:center; width:33%"><b> 1 CARTON</b></td>
+            <td style="font-size:14px; text-align:center; width:33%"><b>{!sliList.Product_Name__c}</b></td>
+            <td style="font-size:14px; text-align:center; width:33%"><b>{!sliList.Quantity__c} {!sliList.Quantity_Unit__c}</b> </td>
+          </tr>
+                 </apex:repeat>
+        </table>
+        <br/>
+        <br/>
+        
+        <span>For&nbsp;<b>SYMEGA FOOD INGREDIENTS LTD</b></span> <br/>
+        <p>
+           <b> Authorised Signatory </b><br/>  </p>
+        <span style="color:Red;">{!userRec.FirstName} {!userRec.LastName} </span><br/>
+        <span> Sr.Executive-Sales Support</span><br/><br/><br/>
+         
+         <span>
+            E:info@symega.com <br/>
+            T: +91 (0) 484 2714636 <BR/>
+            F: +91 (0) 484 2731470 <br/>
+        </span>
+        <span style="color:Red;">www.symega.com</span>
+    </body>
+</apex:page>

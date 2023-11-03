@@ -1,0 +1,1037 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
+    <html>
+        <head>
+            <c:Libraries ></c:Libraries>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js">
+            </script>
+            <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet"/>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <apex:stylesheet value="{!$Resource.OperationsPortalCSS}" />
+    
+            <style>
+                .loadingBackground {
+                    position: fixed;
+                    height: 100%;
+                    width: 100%;
+                    background: #F6F6F6;
+                    z-index: 11111;
+                    opacity: 0.7;
+                    top: 0px;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                }
+                    .loading {
+                    top: 50%;
+                    left: 50%;
+                    margin: -50px 0px 0px -50px;
+                    z-index: 111111;
+                    position: fixed;
+                }
+
+                .tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: mintcream;
+    border-radius: 11px;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+            </style>
+            </head>
+
+            <body ng-app="customerDet_App" ng-controller="customerDet_ctrl" style="background-color: white; !important;">
+                <div class="loadingSection" ng-if="showSpinner">
+                    <div class="loadingBackground"></div>
+                    <div>
+                        <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                    </div>
+                </div>
+
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <div class="wrapper px-5">
+                        <div>
+                            <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                        </div>
+                        <!-- <a class="nav-link" ng-click="customerPage()" style="color:white;">
+                            Customer
+                        </a>
+                        <a class="nav-link" href="#/Home" style="color:white;">
+                            Samples
+                        </a>
+                        <a class="nav-link" href="#/Home" style="color:white;">
+                            Sample Products
+                        </a> -->
+    
+                        <div style="width: 50%;">
+                            <!-- <marquee>
+                                <h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+                             </marquee> -->
+                        </div>
+                        
+                            <!--div class="d-flex text-align-center">
+                                <div class="dropdown">
+                                    <i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                    </i>
+                                    <ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+                                      <li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{contactName}}</a></li>
+                                      <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+                                      <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+                                    </li>
+                                    </ul>
+                                  </div>
+                                </div-->
+                    </div>
+                </nav>
+
+              <div class="container-fluid px-5">
+                  
+                   <div class="row mb-5">
+                       <div class="col-md-12">
+                           <div class="tab">
+                                <button class="tablinks" ng-click="onClickOfDetailPage()">Details</button>
+                                <button class="tablinks" ng-click="onClickOfSamplePage()">Samples</button>
+                               	<button ng-if="conRec.Role__c == 'Operation Team'" class="tablinks" ng-click="onClickOfComments()">Comments</button>
+                      		</div>    
+                       </div> </div>                       
+                    	<div ng-show="showDetailPage">
+                        
+                            <div class="row mt-5">
+                                <div class="col-md-8">
+                                    <h3 class="pb-3 color-theme"><b>BASIC DETAILS</b></h3>
+                                </div>
+                                <div class="col-md-4">
+                        			<button ng-if="conRec.Role__c == 'Operation Team'" class="blue-btn float-end me-2 mb-5" ng-click="editCustomerRec()" type="button">Edit</button>
+                        </div>
+                            </div>
+        					<div class="row">
+            					<div class="col-md-6 mt-3">
+                                    <label class="font-if">Account Name</label>                                
+                                    <input class="form-control" type="text" ng-model="accDetails.Name" ng-disabled="true"/>
+                            	</div>
+                                <div class="col-md-6 mt-3">
+                                    <label class="font-if">Account Record Type</label>                                
+                                    <input class="form-control" type="text" ng-model="accDetails.Record_Type_Name__c" ng-disabled="disbledFields"/>
+                            	</div>
+                            </div>
+                            
+                            <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Email</label>
+                                <input class="form-control" type="text" ng-model="accDetails.Email__c" ng-disabled="true"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Lead Generated By</label>
+                                <input class="form-control" type="text" ng-model="accDetails.Lead_generated_by__r.Name" ng-disabled="disbledFields"/>
+                            </div>
+                       </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Customer Contact
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Customer_Contact__r.Name" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Account Segment
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Account_Segment__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Visible Potential
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Visible_Potential__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Billing Block
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Billing_Block__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Delivery Plant
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Delivery_Plant__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Account Currency
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.CurrencyIsoCode" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Single/Multiple
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Single_Multiple__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Credit Limit(Finance)
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Credit_Limit__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Customer Discount
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Customer_Discount__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Credit Period(Finance)
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Credit_Period_Finance__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Language
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Language__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Outstanding Balance
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Outstanding_Balance__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Transportation Terms
+                                </label>
+                                <select class="form-control" ng-model="accDetails.Transportation_Terms__c">
+                                                        <option ng-repeat="item in transportationTerms" value="{{item}}">{{item}}</option>
+                                                    </select>
+                                <!--input class="form-control" type="text" ng-model="accDetails.Transportation_Terms__c" ng-disabled="disbledFields"/-->
+                            </div>
+                                
+                            
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-3 mt-3">
+                                <label class="font-if">InitiatedCustomerCreation
+                                </label>
+                                
+                                <input class="form-check-input" type="checkbox" ng-model="accDetails.InitiatedCustomerCreation__c" ng-disabled="disbledFields"/>
+                            </div>
+                                <div class="col-md-3 mt-3">
+                                <label class="font-if">Billing To Shipping
+                                </label>
+                                
+                                <input class="form-check-input" type="checkbox" ng-model="accDetails.Billing_To_Shipping__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-3 mt-3">
+                                <label class="font-if">Submitted To Optiva
+                                </label>
+                                
+                                <input class="form-check-input" type="checkbox" ng-model="accDetails.Submitted_to_Optiva__c" ng-disabled="disbledFields"/>
+                            </div>
+                                <div class="col-md-3 mt-3">
+                                <label class="font-if">Submitted To SAP
+                                </label>
+                                
+                                <input class="form-check-input" type="checkbox" ng-model="accDetails.Submitted_to_SAP__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                
+
+                            <div class="row mt-5 mx-1">
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>ACCOUNT INFORMATION</b></h3>
+                                </div>
+                            </div>
+                            </div>
+                            
+
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Customer Code SAP
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Customer_Code_SAP__c" ng-disabled="disbledFields"/>
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Customer Code OPTIVA
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Customer_Code_OPTIVA__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Website
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Website" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Description
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Description" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Industry
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Industry" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">GST Number
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.GST_number__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Employees
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.NumberOfEmployees" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Next Follow up Date
+                                </label>
+                                
+                                <input class="form-control" type="date" ng-model="accDetails.Next_Follow_up_Date__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Customer Type
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Customer_Type__c" ng-disabled="disbledFields"/>
+                            </div>
+
+                            <div class="row mt-5 mx-1">
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>ADDRESS DETAILS</b></h3>
+                                </div>
+                            </div>
+                            </div>
+                            
+
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <h4><b>Billing Address</b></h4>
+                                <label class="font-if">Billing Country
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.BillingCountry" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <h4><b>Shipping Address</b></h4>
+                                <label class="font-if">Shipping Country
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.ShippingCountry" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Billing Street
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.BillingStreet" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Shipping Street
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.ShippingStreet" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Billing City
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.BillingCity" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Shipping City
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.ShippingCity" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Billing State
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.BillingState" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Shipping State
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.ShippingState" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Billing PostalCode
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.BillingPostalCode" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Shipping PostalCode
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.ShippingPostalCode" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+
+                            <div class="row mt-5">
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>BILLING DETAILS</b></h3>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Payment Terms
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Payment_terms__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">NDA Required
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.NDA_required__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">PAN Number
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.PAN_Number__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Credit Period
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Credit_Period__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Contract Period (In Months)
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Contract_period__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Credit Limit
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Credit_Limit__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+
+                            <div class="row">
+                                <div class="row mt-5 mx-1">
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>ADDITIONAL INFO</b></h3>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Launching in (brands associated)
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Launching_in_brands_associated__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Current year Volume
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Current_year_Volume__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Existing product portfolio of the compny
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Existing_product_portfolio_of_the_compny__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Brands
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Brands__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Current year Volume Unit
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Current_year_Volume_Unit__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+
+                            <div class="row">                                
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>AUDIT TRAIL</b></h3>
+                                </div>
+                            </div>
+                            <div class="row"> 
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Account Owner
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Owner.FirstName" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Business Head
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.User__r.Name" ng-disabled="disbledFields"/>
+                            </div>
+							</div>
+                            <div class="row mt-5">
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>ACCOUNT PORTFOLIO</b></h3>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Number of Total Opportunity
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Number_of_Total_Opportunity__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Potential Opportunity
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Potential_Opportunity__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Number of open opportunity
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Number_of_open_opportunity__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Won opportunity value product wise
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Won_opportunity_value_product_wise__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Number Of Won Opportunity
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Number_Of_Won_Opportunity__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Number Of Won Opportunity New
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Number_Of_Won_Opportunity_new__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Number of closed opportunity
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Number_of_closed_opportunity__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Win rate
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Win_rate__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Closed Opportunity - Value
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Closed_Opportunity_Value__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">Number of won opportunity partially exec
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Number_of_won_opportunity_partially_exec__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Partially executed actual order value vs
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Partially_executed_actual_order_value_vs__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+
+                            <div class="row mt-5">
+                                <div class="col-md-12">
+                                    <h3 class="pb-3 color-theme"><b>OPPORTUNITY RELATED</b></h3>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">Total Team Members To Be Added
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.Total_Team_Members__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">FLAVOR Opportunity Closed Value
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.FLAVOR_Opportunity_Closed_Value__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3">
+                                <label class="font-if">COLOR Opportunity Closed Value
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.COLOR_Opportunity_Closed_Value__c" ng-disabled="disbledFields"/>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <label class="font-if">PLANT BASED Opportunity Closed Value
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.PLANT_BASED_Opportunity_Closed_Value__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mt-3 mb-3">
+                                <label class="font-if">SPD Opportunity Closed Value
+                                </label>
+                                
+                                <input class="form-control" type="text" ng-model="accDetails.SPD_Opportunity_Closed_Value__c" ng-disabled="disbledFields"/>
+                            </div>
+                            </div>
+                            
+                        </div>                   
+
+                    <div class="row mt-5 mx-5" ng-show="showSamplePage">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td>S.No.</td>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Shipping Type</th>
+                                        <!--th>Product Family</th-->
+                                        <th>Sample Requested By</th>
+                                        <th>Record Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="sample in samples">
+                                        <td>{{$index+1}}</td>
+                                        <td>{{sample.Sample_Name__c}}</td>
+                                        <td>{{sample.Status__c}}</td>
+                                        <td>{{sample.Shipping_Type__c}}</td>
+                                        <!--td>{{sample.Product_Family__c}}</td-->
+                                        <td>{{sample.Sample_Requested_by__c}}</td>
+                                        <td>{{sample.Record_Type_Name__c}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                  
+                  <div class="row mt-3 mx-5" ng-show="showComments">
+                <div class="col-md-8">
+                    <h3 class="pb-3 color-theme"><b>Comments :</b></h3>
+                </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn float-end me-2 mb-5" ng-click="openPopUp()" type="button">
+                            New</button>
+                        </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                    			<th>Comment No.</th>
+                                <th>Comment</th>
+                                <th>Commentted By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="com in listOfComments">
+                                <td>{{$index+1}}</td>
+                                <td>{{com.Name}}</td>
+                                <td>{{com.Comment__c}}</td>
+                                <td>{{com.Comment_By__r.Name}}</td>
+                                <td><button type="button" data-bs-dismiss="modal" style="background:green;" class="blue-btn" ng-click="openReplyPopUp($index,com.Id)"><i class="fa fa-reply" aria-hidden="true"></i>Reply</button>
+                                    <div class="modal" id="flipFlop2{{$index}}">
+                                            <div class="modal-dialog" style="min-width:1000px">
+                                              <div class="modal-content">
+                                          
+                                                <div class="modal-header">
+                                                  <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                                                    <h3 class="color-theme2" style="color:green;">
+                                                        <b>Add Reply</b>
+                                                    </h3>
+                                                </div></h4> 
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                          
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            {{cmnt.Reply__c}}
+                                                    <ng-ckeditor ng-model="cmnt.Reply__c" ng-config="config" ></ng-ckeditor>
+                                                </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-12">
+                                                    <button type="button" data-bs-dismiss="modal" class="blue-btn float-end" ng-click="saveReply()">Save</button>
+                                                </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                               <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious()">Previous</a>
+                    </div>
+                </div>
+            </div>
+                  
+                  <div class="modal" id="flipFlop">
+                                            <div class="modal-dialog" style="min-width:1000px">
+                                              <div class="modal-content">
+                                          
+                                                <div class="modal-header">
+                                                  <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                                                    <h3>
+                                                        <b>Add Comment</b>
+                                                    </h3>
+                                                </div></h4> 
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                          
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                    <ng-ckeditor ng-model="come.Comment__c" ng-config="config" ></ng-ckeditor>
+                                                </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-12">
+                                                    <button type="button" data-bs-dismiss="modal" class="blue-btn float-end" ng-click="saveComment()">Save</button>
+                                                </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                  
+                  
+<div class="row">
+    <div class="col-md-6 mt-3">
+                        <button class="blue-btn float-end me-2 mb-5" ng-click="back()" type="button">
+                            <i class="fa-solid fa-arrow-left me-2"></i>Back</button>
+        <button ng-if="showSaveButton == true" class="blue-btn float-end me-2 mb-5" style="background: green;" ng-click="saveAccDetails()" type="button">
+                            Save</button>
+                    </div>
+                  </div>
+                     
+        </div>
+            </body>
+
+            <script>
+                var userHashId = '{!$CurrentPage.parameters.id}';
+                var accId = '{!$CurrentPage.parameters.accId}';
+        		var transportationTerms = JSON.parse('{!transportationTerms}');
+                var app = angular.module('customerDet_App', ['ng.ckeditor']);
+                app.controller('customerDet_ctrl', function ($scope){
+                    debugger;
+                    $scope.transportationTerms = transportationTerms;
+                    $scope.showDetailPage = true;
+                    $scope.showSamplePage = false;
+                    $scope.showComments = false;
+                    $scope.listOfComments = [];
+                    $scope.cmnt = {"Reply__c":""};
+                    $scope.disbledFields = true;
+                    $scope.showSaveButton = false;
+
+                    $scope.getCustomerDetail = function(){
+                        debugger;
+                        OperationsPortalController.getCustomerDetail(accId,userHashId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                debugger;
+                                $scope.conRec = result.conRec;
+                                $scope.accDetails = result.accRecord;
+                                if(result.accRecord.Next_Follow_up_Date__c != null){
+                                    $scope.accDetails.Next_Follow_up_Date__c = new Date(result.accRecord.Next_Follow_up_Date__c);
+                                }
+                                $scope.samples = result.listOfSamples;
+                                if(result.accRecord.Comments__r != undefined){
+                                    $scope.listOfComments = result.accRecord.Comments__r;
+                                if($scope.listOfComments.length > 0){
+                                    for(var i=0;i<$scope.listOfComments.length;i++){
+                                        if($scope.listOfComments[i].Comment__c != undefined || $scope.listOfComments[i].Comment__c != ''){
+                                            $scope.listOfComments[i].Comment__c = $scope.listOfComments[i].Comment__c ? $scope.listOfComments[i].Comment__c.replace(/&amp;/g,'&').replaceAll('&amp;amp;','&').replaceAll('&amp;gt;','>').replaceAll('&lt;','<').replaceAll('lt;','<').replaceAll('&gt;','>').replaceAll('gt;','>').replaceAll('&amp;','&').replaceAll('amp;','&').replaceAll('&quot;','\'') : $scope.listOfComments[i].Comment__c;
+                                        }
+                                    }
+                                }
+                                $scope.listOfComments2 = result.listOfComments;
+                                $scope.totalRecords = $scope.listOfComments.length;
+                            	$scope.totalPages = Math.ceil($scope.totalRecords / $scope.pageSize);
+                                    $scope.$apply();
+                                }else{
+                                    //$scope.listOfComments.push({"Comment__c":""});
+                                }
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    $scope.getCustomerDetail();
+                    
+                    $scope.paginateData = function() {
+                    debugger;
+                     const startIndex = ($scope.currentPage - 1) * $scope.pageSize;
+                     const endIndex = startIndex + $scope.pageSize;
+                     $scope.listOfComments3 = $scope.listOfComments.slice(startIndex, endIndex);
+                }
+                    
+                    $scope.handleNext = function(){
+                     debugger;
+                     if ($scope.currentPage < $scope.totalPages){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.listOfComments);
+                     }
+                 }
+                
+                $scope.handlePrevious = function(){
+                     debugger;
+                     if ($scope.currentPage > 1){
+                         this.currentPage -= 1;
+                         this.paginateData(this.listOfComments);
+                     }
+                 }
+
+                    $scope.onClickOfDetailPage = function(){
+                        debugger;
+                        $scope.showDetailPage = true;
+                        $scope.showSamplePage = false;
+                        $scope.showComments = false;
+                    }
+                    $scope.onClickOfSamplePage = function(){
+                        debugger;
+                        $scope.showSamplePage = true;
+                        $scope.showDetailPage = false;
+                        $scope.showComments = false;
+                    }
+
+                    $scope.customerPage = function(){
+                        debugger;
+                        var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleLineItemDetailPage';
+                        window.location.replace(window.location.origin + sitePrefix +'?id='+ userHashId); 
+                    }
+
+                    $scope.back = function(){
+                        debugger;
+                        var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleLineItemDetailPage';
+                        window.location.replace(window.location.origin + sitePrefix +'?id='+ userHashId);
+                    }
+                    
+                    $scope.onClickOfComments = function(){
+                        debugger;
+                        $scope.showSamplePage = false;
+                        $scope.showDetailPage = false;
+                        $scope.showComments = true;
+                    }
+                    
+                     $scope.openPopUp = function () {
+                    debugger;
+                    var myModal = new bootstrap.Modal(document.getElementById('flipFlop'));
+                    myModal.show('slow');
+                    $scope.$apply();
+    			}
+                    
+                    $scope.openReplyPopUp = function(index,comId){
+                        debugger;
+                        $scope.comId = comId;
+                        var myModal = new bootstrap.Modal(document.getElementById('flipFlop2' + index));
+                        myModal.show('slow');
+                        $scope.$apply();
+                    }
+                    
+                    $scope.saveComment = function(){
+                        debugger;
+                        OperationsPortalController.saveComment2($scope.come,userHashId,accId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                swal("success", "Comment added successfully.","success");
+                                $scope.come.Comment__c = "";
+                                $scope.getCustomerDetail();
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    
+                    $scope.saveReply = function(){
+                        debugger;
+                        OperationsPortalController.saveReply($scope.cmnt,userHashId,$scope.comId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                swal("success", "Reply added successfully.","success");
+                                $scope.cmnt.Reply__c = "";
+                                $scope.getCustomerDetail();
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    
+                    $scope.editCustomerRec = function(){
+                        debugger;
+                        $scope.disbledFields = false;
+                    	$scope.showSaveButton = true;
+                    }
+                    
+                    $scope.saveAccDetails = function(){
+                        debugger;
+                        var year=0;
+                        var month=0;
+                        var day=0;
+                        if($scope.accDetails.Next_Follow_up_Date__c!=undefined && $scope.accDetails.Next_Follow_up_Date__c!=''){
+                            year = $scope.accDetails.Next_Follow_up_Date__c.getUTCFullYear();
+                            month = $scope.accDetails.Next_Follow_up_Date__c.getUTCMonth()+1;
+                            day = $scope.accDetails.Next_Follow_up_Date__c.getDate();
+                        }
+                        delete ($scope.accDetails.Next_Follow_up_Date__c);
+                        delete ($scope.accDetails['Comments__r']);
+                        delete ($scope.accDetails['Opportunities']);
+                        OperationsPortalController.saveAccDetails($scope.accDetails,year,month,day,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                debugger;
+                                swal("success", "Customer Details have been updated successfully.","success");
+                            }
+                            $scope.$apply();
+                        })
+                    }
+                })
+            </script>
+    </html>
+</apex:page>

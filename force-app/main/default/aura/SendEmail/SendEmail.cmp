@@ -1,0 +1,84 @@
+<aura:component controller="SendEmailHandler" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+    
+    <aura:attribute name="subject" type="String" default=''/> 
+    <aura:attribute name="myMessage" type="String" default=''/>    
+    <aura:attribute name="recordId" type="String" default=''/> 
+    <aura:attribute name="offerValidityDate" type="String" default=''/> 
+    <aura:attribute name="emailId" type="String" default=''/> 
+    <aura:attribute name="TemplateName" type="List" default=''/> 
+    <aura:attribute name="emailTemps" type="EmailTemplate" default=''/> 
+    <aura:attribute name="emailBody" type="boolean" default="true"/>
+    
+    <aura:attribute name="selectedValue" type="String" default='' />
+    <aura:attribute name="OppRecord" type="Opportunity" default=''/>
+    
+    <aura:attribute name="DepartmentName" type="list" default=''/>
+    <aura:attribute name="DepartmentList" type="list" default=''/>
+    <aura:attribute name="DepartmentMemberList" type="list" default=''/>
+    <aura:attribute name="selectedDepartmemebers" type="list" />
+    
+    <aura:attribute name="selectedDepartValue" type="object" default='' />
+    <aura:attribute name="options" type="list" default="[]"/>
+    <aura:attribute name="selectedMember" type="list" default='' />
+    <aura:attribute name="selectedMemberList" type="list" default='' />   
+    
+     <aura:attribute name="ArrayNameListFromEvent" type="List"/> 
+    <aura:registerEvent name="PassArrayFromChildToParent" type="c:PassArrayFromChildToParent"/>
+   	<aura:handler name="PassArrayFromChildToParent" event="c:PassArrayFromChildToParent" action="{!c.Send}"/> 
+    
+    <lightning:card>
+    <div class="slds-form-element" style="margin:2%">        
+                    <div style="background-color: #ECF0F1;padding:2%;margin-bottom:2%;">
+
+            <b>Email Converstion</b>
+        </div>       
+        <label class="slds-form-element__label" for="form-element-01">Email</label>
+        <div class="slds-form-element__control">
+            <lightning:input type="text" id="txtEmail" class="" value="{!v.emailId}" aura:id="inpsummary"/>
+        </div>
+        
+        <lightning:select name="select" label="Select a Email Template:" aura:id="select" value="{!v.selectedValue}" onchange="{! c.onChange }" >
+            <aura:iteration items="{!v.TemplateName}" var="Option">
+                <option text="{!Option}" value="{!Option}" />
+            </aura:iteration>
+        </lightning:select>
+        
+        <lightning:select name="select" label="Select a Department:"  aura:id="selectDepart" value="{!v.selectedDepartValue}" onchange="{! c.onChangeDepart }">
+            <aura:iteration items="{!v.DepartmentName}" var="Option">
+                <option text="{!Option.Name}" value="{!Option.Name}" />
+            </aura:iteration>
+        </lightning:select>
+        <br></br>
+        <lightning:dualListbox name="Members"
+                           			label= "Select Members"
+                           			selectedLabel="Selected"
+                           			fieldLevelHelp="Select your Members"
+                           			options="{!v.options}"
+                                   size= "3"
+                           			values="{!v.selectedMember}"
+                           			onchange="{!c.handleSelectedMember}"/>
+        
+        <!-- <c:MultiSelectCombobox options="{!v.options}" values="{!v.selectedMemberList}" multiSelect="true" label="Select Members"/> -->
+        
+        <aura:if isTrue="{!v.emailBody}">
+            
+            <label class="slds-form-element__label" for="form-element-01">Subject</label>
+            <div class="slds-form-element__control">
+                <input type="text" id="txtSubject" class="slds-input" value="{!v.subject}" disabled="true"/>
+            </div>
+            
+            <label class="slds-form-element__label" for="form-element-01">Message</label>
+            <div class="slds-form-element__control">
+                <lightning:inputRichText value="{!v.myMessage}" placeholder="Type something interesting" disabled="true"/>
+            </div>
+            <br/>
+            <lightning:button variant="success" label="Send Email" title="Send Email" onclick="{!c.Send}"/>  
+        
+        </aura:if>
+    </div>
+    </lightning:card>
+ </aura:component>

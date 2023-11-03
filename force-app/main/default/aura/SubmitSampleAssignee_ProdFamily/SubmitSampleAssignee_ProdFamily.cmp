@@ -1,0 +1,7 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" 
+                access="global" controller="sampleAssignNotification_ProdFamily">
+    
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <h4 style="font-size:20px; text-align: center; color: #4CAF50;"> Submitting Sample!!!!</h4>
+    
+</aura:component>

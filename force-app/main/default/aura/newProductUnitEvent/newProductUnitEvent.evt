@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT" description="New product selection">
+    <aura:attribute name="productUnits" type="Object" />
+    <aura:attribute name="product" type="Object" />
+</aura:event>

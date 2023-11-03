@@ -1,0 +1,59 @@
+<apex:page standardController="PIR__c" recordSetVar="selected" tabStyle="PIR__c" extensions="SAP_PIRController" docType="html-5.0" applyBodyTag="false" lightningStylesheets="true">
+    <apex:slds />
+    <apex:outputpanel rendered="{!noIds}" > 
+        <h1 style="text-align:center; margin-top:100px;"> Please select some PIR! </h1>
+    </apex:outputpanel>
+    
+    <apex:outputpanel rendered="{!NOT(noIds)}" > 
+        
+        <apex:outputpanel rendered="{!selectedAccs.size > 0}" > 
+            <apex:form styleClass="slds-scope">
+                <apex:pageBlock >
+                    <h1 style="color : red;">
+                        <b>
+                            Below {!selectedAccs.size} customers have to be created in SAP but the following required fields are missing for each customer.<br/> <br/> 
+                            Please fill the required data by clicking on View link below and retry again.
+                        </b>
+                    </h1><br/> 
+                    
+                    <apex:pageBlockTable value="{!selectedAccs}" var="a">
+                        <apex:column value="{!a.name}"/>
+                        <apex:column value="{!a.Missing_Fields__c}"/>
+                        <apex:column >
+                            <apex:outputLink target="_self" value="/{!a.id}">View</apex:outputLink>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                </apex:pageBlock>
+            </apex:form> <br/><br/><br/><br/>
+        </apex:outputpanel> 
+        
+        <apex:outputpanel rendered="{!pirToSendToSAP.size > 0}" >  
+            <apex:form styleClass="slds-scope">
+                <apex:pageBlock >
+                    <h1 style="color : green;">
+                        <b>
+                            PIRs to be send to SAP
+                        </b>
+                    </h1><br/> 
+                    
+                    <apex:pageBlockTable value="{!pirToSendToSAP}" var="pir">
+                        <apex:column >
+                            <apex:outputLink target="_self" value="/{!pir.Name}">{!pir.Name}</apex:outputLink>
+                        </apex:column>
+                        <apex:column value="{!pir.Customer_Name__c}"/>
+                        <apex:column value="{!pir.Customer_Code__c}"/>
+                        <apex:column value="{!pir.Product__c}"/>
+                        <apex:column value="{!pir.Product_Code_HALB__c}"/>                        
+                    </apex:pageBlockTable> <br/><br/>
+                    
+                    <apex:pageBlockButtons location="bottom">
+                        <apex:commandButton value="Submit to SAP" action="{!updatePIR}"/>
+                        <apex:commandButton value="Cancel" action="{!cancel}"/>
+                    </apex:pageBlockButtons>
+                    
+                </apex:pageBlock>
+            </apex:form>
+        </apex:outputpanel>
+        
+    </apex:outputpanel>
+</apex:page>

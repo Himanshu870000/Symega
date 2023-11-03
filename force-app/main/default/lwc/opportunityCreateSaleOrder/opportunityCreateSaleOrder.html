@@ -1,0 +1,57 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <lightning-quick-action-panel header="Opportunity Split">
+        <div style="color: rgb(233, 0, 0);text-align: center;font-size: 18px;">{errorMsg}</div>
+        <div>Total Percentage : <lightning-badge label={totalPercentage} icon-name="utility:percent" icon-position="end"></lightning-badge></div>
+        <br/>
+        <template for:each={opportunityList} for:item="oppWrp">
+            <div key={oppWrp.index} class="slds-border_bottom slds-p-bottom_x-small">
+                <div class="slds-grid slds-gutters" >
+                    <div class="slds-col slds-size_1-of-6">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="text-input-id-47">Number</label>
+                            <div class="slds-form-element__control">
+                                {oppWrp.index}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_2-of-6">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="text-input-id-47">
+                                <abbr class="slds-required" title="required">* </abbr>Opportunity Qty in %</label>
+                            <div class="slds-form-element__control">
+                                <input type="number" id={oppWrp.index} placeholder="enter qty %…" required="" class="slds-input" min="1" max="100" value={oppWrp.opp.percent} onchange={percentChange} disabled={oppWrp.disable} data-id={oppWrp.index}/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_3-of-6">
+                        <template if:true={oppWrp.displayOrderDate}>
+                            <lightning-input type="date" name="input1" label="Expected order date" value={oppWrp.opp.nextOrderDate} onchange={nextOrderDateChange} disabled={oppWrp.disable} data-id={oppWrp.index} required></lightning-input>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <div slot="footer">
+            <lightning-button
+                variant="neutral"
+                label="Cancel"
+                onclick={closePopup}
+            ></lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Add Row"
+                class="slds-m-left_x-small"
+                disabled={disableAddRow}
+                onclick={addRow}
+            ></lightning-button>
+            <lightning-button
+                variant="brand"
+                label="Save"
+                class="slds-m-left_x-small"
+                onclick={createOpp}
+            ></lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+</template>

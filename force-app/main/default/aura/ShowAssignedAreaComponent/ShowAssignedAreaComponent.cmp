@@ -1,0 +1,17 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <!--lightning:button class="testButton">Test me</lightning:button-->
+        <!-- style=" padding-left: 2%; padding-right: 1%; width:70%; background: #F3F3F3;" -->
+        <div class="slds-grid slds-wrap slds-size_12-of-12">
+            <div class="slds-grid slds-wrap slds-size_12-of-12">
+                <div class="slds-card" style="width: -webkit-fill-available;">
+                    <c:AssignedAreaMap/>
+                </div>
+                        
+            </div>
+            <div class="slds-grid slds-wrap slds-size_12-of-12" style="margin-top:5px;">
+                <c:ClientsSummary/>
+            </div>
+        </div>
+        
+        
+</aura:component>

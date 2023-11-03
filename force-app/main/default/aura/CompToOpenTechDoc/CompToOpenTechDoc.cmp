@@ -1,0 +1,14 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" 
+                access="global" controller="Utility">
+    
+    <aura:attribute name="recordId" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="linkLabel" type="string" default="Right-click and open the link in a new tab:"/>    
+    <aura:attribute name="linkUrl" type="string" default=""/>
+    
+    <br/><br/><br/>
+    <p class="slds-align_absolute-center" style="font-size:15px;">
+        <a href="{!v.linkUrl}" target="_blank">{!v.linkLabel}</a> 
+    </p>
+    
+</aura:component>

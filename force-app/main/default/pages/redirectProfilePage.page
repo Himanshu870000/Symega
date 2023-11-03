@@ -1,0 +1,29 @@
+<apex:page sidebar="false" showHeader="false" controller="Distributor_LoginPage_Controller" action="{!googleAuth}"> 
+    <script>
+	debugger;
+     
+
+    console.warn("{!hasCode}");
+    let email = encodeURIComponent('{!gId}');
+    let firstName = encodeURIComponent('{!gFname}');
+    var hashcode = '{!hasCode}';
+    var SignupCustomer = '{!SignupCustomer}';
+    let SignupDistributor = encodeURIComponent('{!SignupDistributor}');
+    let docUplaodCustomer = encodeURIComponent('{!docUplaodCustomer}');
+    // window.location.replace(siteURL+'RegistrationFromFacebook?gemail='+email+'&first_name='+firstName);
+    
+    
+    // window.location.replace='https://testingv2-leadersinternational.cs18.force.com/login/RegistrationFromFacebook?gemail='+email+'&first_name='+firstName;
+    let mainURL = window.location.origin+'/apex';
+    if(SignupDistributor == "true" && hashcode == ""){
+        window.location.replace("{!$Label.SymegaSiteURL}" + "Distributor_LoginPage?gemail="+email+'&first_name='+firstName+'&signUp=customer&register=true');
+    }else{
+        if(docUplaodCustomer == "true"){
+            window.location.replace("{!$Label.SymegaSiteURL}" + "documentUpload?hc="+hashcode+'#/Home');
+        }else{
+            window.location.replace("{!$Label.SymegaSiteURL}" + "DistributorDashboard?hc="+hashcode+'#/Home');
+        }
+    }
+    
+    </script>
+</apex:page>

@@ -1,0 +1,12 @@
+<aura:component controller= "NoSplitOpportunityHelper" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global">
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="showModal" type="boolean"/>   
+    <aura:attribute name="recordId" type="string" default=""/>   
+    
+    <!-- <aura:if isTrue="{!v.showModal}">  -->
+    <p class="slds-align_absolute-center">
+        <b style="color:green;">
+            CREATING ONE TIME OPPORTUNITY RECORD ..... 
+        </b>
+    </p>
+</aura:component>

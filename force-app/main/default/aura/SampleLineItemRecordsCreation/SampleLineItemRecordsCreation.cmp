@@ -1,0 +1,201 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" 
+                access="global" controller="SampleLineItemCreation_UI">
+    
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:120% !important;
+        }
+        
+    </aura:html>
+    
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+    
+    <aura:attribute name="responseMap" type="Map"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="recordTypeIds" type="string" />
+    <!-- <aura:attribute name="productFamily" type="string" /> -->
+    <aura:attribute name="Message" type="string" />
+    <aura:attribute name="SampleLineItemList" type="List" default="[{'record':{
+                                                                   'sobjectType': 'Sample_Line_Item__c',
+                                                                   'Lead_Stage__c': '',
+                                                                   'Welcome_Call_Response__c':'',
+                                                                   'Welcome_Call_No_Response_Reason__c': ''
+                                                                   },}]"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.loadOptions}" />
+    <aura:attribute name="PickUnitOptions" type="List" />
+    <aura:attribute name="QtyUnitOptions" type="List" />
+    <aura:attribute name="SamplelineItemSize" type="Integer" />
+    <aura:attribute name="productXqtyMap" type="Map" default="{'123':['a','b','c']}" />
+    <aura:attribute name="recsToDelete" type="List" default="[]"/>
+    
+    <aura:handler name="newProductAddition" event="c:newProductUnitEvent" action="{!c.handleNewProductUnitEvent}" />
+    
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h4 class="title slds-text-heading--medium">Create Sample Line Items</h4>
+    </div>
+    
+    <div class="slds-m-around_x-small slds-modal_large slds-scrollable_x" style="z-index: 1; padding-bottom: 150px;">
+        
+        <div class="container-fluid">
+            
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                
+                <thead >
+                    <tr class="slds-text-title_caps" >
+                        <th scope="col">
+                            <div class="slds-truncate" >#</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">Product</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Quantity</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Quantity Unit</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Packaging Quantity</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Packaging Unit</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Regulatory Requirements</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Current Shelf Life</div>
+                        </th> 
+                        <th scope="col">
+                            <div class="slds-truncate" >Expected Shelf Life</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" >Customer Instructions</div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" >Delete</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.SampleLineItemList}" var="SLI" indexVar="index">
+                        <tr data-row="{!index}">
+                            <td> 
+                                {!index + 1}
+                            </td>
+                            <td style="width:20%"> 
+                                <c:ProductCustomLookUp sampleId="{!v.recordId}" productXqtyMap="{!v.productXqtyMap}" IconName="standard:product2" qntSSC_Code ="{!SLI.Project_Quotient__r.SSC_Code__c}" sscCode="{!SLI.OPTIVA_Recipe__r.SSC_Code__c}" prodCode="{!SLI.Product__r.ProductCode}" parentId="{!index}" mainList="{!v.SampleLineItemList}" label="Select Product" samplerecid="{!SLI.Id}"/>
+                            </td>
+                            <td style="width:10%">
+                                <lightning:input name="{!index}" type="number" label="Quantity" onchange="{!c.update}" value="{!SLI.Quantity__c}" required="true" min="0.0"/>
+                            </td>
+                            <td style="width:10%">
+                                <aura:if isTrue="{!AND(SLI.Product__c, SLI.samplingQuantity)}">
+                                    <lightning:select name="mySelectQU" label="Select Quantity Unit:" aura:id="mySelectQU" value="{!SLI.Quantity_Unit__c}"
+                                                      required="true">
+                                        <option value="">--None--</option>
+                                        <aura:iteration items="{!SLI.samplingQuantity}" var="item">
+                                            <option text="{!item.value}" value="{!item.key}" selected="{!item.selected}" />
+                                        </aura:iteration>
+                                    </lightning:select>
+                                    <aura:set attribute="else">
+                                        <lightning:select name="mySelectQU" label="Select Quantity Unit:" aura:id="mySelectQU" value="{!SLI.Quantity_Unit__c}"
+                                                          required="true">
+                                            <option value="">--None--</option>
+                                            <aura:iteration items="{!v.QtyUnitOptions}" var="item">
+                                                <option text="{!item.value}" value="{!item.key}" selected="{!item.selected}" />
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </td>
+                            <td style="width:10%">
+                                <lightning:input name="{!index}" type="number" label="Packaging" onchange="{!c.update}" value="{!SLI.Packaging_Quantity__c}" required="true" min="0.0" />
+                            </td>
+                            
+                            <td style="width:10%; text-align:center;">
+                                <lightning:formattedNumber name="Packaging Quantity Unit" label="Packaging Quantity Unit:" maximumFractionDigits="2" value="{!SLI.Quantity__c / SLI.Packaging_Quantity__c}" />&nbsp;{!SLI.Quantity_Unit__c}                                
+                            </td>
+                            
+                            <td style="width:10%; text-align:center">
+                                <aura:if isTrue="{!SLI.regRequirement}">
+                                    <div class="slds-truncate" title="Regulatory Requirements">{!SLI.regRequirement}</div>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!SLI.OPTIVA_Recipe__c}">
+                                            <div class="slds-truncate" title="Regulatory Requirements">{!SLI.OPTIVA_Recipe__r.Regulatory__c}</div>
+                                            <aura:set attribute="else">
+                                                <div class="slds-truncate" title="Regulatory Requirements">{!SLI.Product__r.Regulatory__c}</div>
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </td>
+                            
+                            <td style="width:10%; text-align:center;">
+                                
+                                <aura:if isTrue="{!SLI.cShelfLife}">
+                                    <div class="slds-truncate" title="Current Shelf Life">{!SLI.cShelfLife}</div>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!SLI.OPTIVA_Recipe__c}">
+                                            <div class="slds-truncate" title="Current Shelf Life">{!SLI.OPTIVA_Recipe__r.Shelf_Life__c}</div>
+                                            <aura:set attribute="else">
+                                                
+                                                <aura:if isTrue="{!SLI.Project_Quotient__c}">
+                                                    <div class="slds-truncate" title="Current Shelf Life">{!SLI.Project_Quotient__r.Current_Shelf_Life__c}</div>
+                                                    <aura:set attribute="else">
+                                                        <div class="slds-truncate" title="Current Shelf Life">{!SLI.Product__r.Current_Shelf_Life__c}</div>
+                                                    </aura:set>
+                                                </aura:if>
+                                                
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                                
+                            </td> 
+                            <td style="width:10%">
+                                <lightning:input name="Expected Shelf Life" type="Text" label="Expected Shelf Life" value="{!SLI.Expected_Shelf_Life__c}" />
+                            </td>
+                            <td style="width:10%">
+                                <lightning:input name="Customer Instructions" type="Text" label="Customer Instructions" value="{!SLI.Customer_Instructions__c}"/>
+                            </td>
+                            <td>
+                                <a onclick="{!c.removeRow}" data-record="{!index}" data-recid="{!SLI.Id}">
+                                    <lightning:icon iconName="utility:delete" size="medium" alternativeText="Delete"/>
+                                    <span class="slds-assistive-text">Delete</span>
+                                </a>
+                            </td> 
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-p-around_large slds-align_absolute-center">
+        <div role="contentinfo">
+            <lightning:button label="Save" title="Save" onclick="{! c.SaveSampleDetails }" class="marginTop"/>
+            <lightning:button label="Add Row" title="Add Row" onclick="{! c.addRow }" class="marginTop"/>
+            <lightning:button label="Cancel" title="Cancel" onclick="{! c.CloseQuickAction }" class="marginTop"/>
+        </div>
+    </div>
+    
+</aura:component>

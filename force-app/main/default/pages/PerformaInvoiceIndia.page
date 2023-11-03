@@ -1,0 +1,205 @@
+<apex:page readOnly="true" applyHtmlTag="false" sidebar="false" showHeader="false" cache="true" docType="html-5.0" renderAs="pdf" controller="PerformaInvoicePDFController">
+    
+    <html>
+        <head>
+            <style type="text/css">
+                @page {
+                padding-left: 5px;    
+                padding-right: 5px;      
+                }
+                
+                th {  
+                font-weight: bold;
+                text-align: center;
+                color: black;
+                padding: 8px;
+                }
+                
+                td {    
+                font-size: 15px;
+                text-align: left;
+                padding: 8px;
+                }
+                
+                table{
+                border-collapse: collapse;
+                }
+                
+                table, th, td {
+                border: 1px solid black;
+                }
+                
+            </style>
+        </head>
+        <body>
+            <table style="width:100%; font-family: Dialog; table-layout: fixed;"> 
+                <tr>
+                    <td style="width:30%; font-size: 10px;">
+                        <div style=" margin-top: -15px; margin-left: -2.5%; text-align: center">
+                            <apex:image url="{!$Resource.SymegaLogo}" width="160" height="60"/>
+                        </div>
+                    </td>
+                    <td style="width:45%; font-size: 12px;">
+                        <div style="margin-top: -6px; margin-left: -1%;">
+                            <b> SYMEGA FOOD INGREDIENTS LTD</b> <br/><br/>
+                            {!symObj.symega_address__c}<br/>
+                            {!symObj.Symega_Contact_Info__c}<br/>
+                            {!symObj.Symega_Web_Info__c}
+                        </div>
+                    </td>
+                    
+                    <td style="width:30%; font-size: 10px;">
+                        <div style="margin-top: -3px; margin-left: -2%;">
+                            GSTIN     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {!symObj.GSTIN__c} <br/>
+                            CIN       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     : {!symObj.CIN__c}  
+                            PAN        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    : {!symObj.PAN__c}  <br/>
+                            FSSAI No   &nbsp;&nbsp;    : {!symObj.FSSAI_No__c}   <br/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: sans-serif;">
+                    <th style="font-size: 14px;">PROFORMA INVOICE</th>
+                </tr>
+            </table>
+            
+            <table style="width:100%; font-family: Dialog; table-layout: fixed;"> 
+                <tr>
+                    <td style="width:33%; font-size: 10px;">
+                        <div style=" margin-top: -6px; margin-left: -2%;">
+                            <b>Details of Receiver (Bill to):</b> <br/>
+                            {!oppDetails.Account.Name} <br/>
+                            {!oppDetails.Account.BillingStreet}  <br/>
+                            {!oppDetails.Account.BillingCity}  <br/>
+                            {!oppDetails.Account.BillingState}, {!oppDetails.Account.BillingCountry} <br/>
+                            Postal Code: {!oppDetails.Account.BillingPostalCode} <br/>
+                            State Code: {!oppDetails.Account.BillingStateCode} <br/>
+                            <apex:outputpanel rendered="{!oppDetails.Account.GST_number__c != NULL}" > GSTIN : {!oppDetails.Account.GST_number__c}</apex:outputpanel><br/>
+                            <apex:outputpanel rendered="{!oppDetails.Account.PAN_Number__c != NULL}" > PAN : {!oppDetails.Account.PAN_Number__c}</apex:outputpanel>
+                        </div>
+                    </td>
+                    <td style="width:35%; font-size: 10px;">
+                        <div style="margin-top: -6px; margin-left: -1%;">
+                            <b>Details of Consignee (Ship to):</b><br/>
+                            {!oppDetails.Account.Name}<br/>
+                            <apex:outputpanel rendered="{!oppDetails.accShipAdr__c == TRUE}"> 
+                                {!oppDetails.Account.ShippingStreet}  <br/>
+                                {!oppDetails.Account.ShippingCity}  <br/>
+                                {!oppDetails.Account.ShippingState}, {!oppDetails.Account.ShippingCountry} <br/>
+                                Postal Code: {!oppDetails.Account.ShippingPostalCode} <br/>
+                                State Code: {!oppDetails.Account.ShippingStateCode} <br/>
+                            </apex:outputpanel>
+                            
+                            <apex:outputpanel rendered="{!oppDetails.accShipAdr__c == false}">  
+                                {!oppDetails.Account.BillingStreet}  <br/>
+                                {!oppDetails.Account.BillingCity}  <br/>
+                                {!oppDetails.Account.BillingState}, {!oppDetails.Account.BillingCountry} <br/>
+                                Postal Code: {!oppDetails.Account.BillingPostalCode} <br/>
+                                State Code: {!oppDetails.Account.BillingStateCode} <br/>
+                            </apex:outputpanel>
+                            <apex:outputpanel rendered="{!oppDetails.Account.GST_number__c != NULL}" > GSTIN : {!oppDetails.Account.GST_number__c}</apex:outputpanel><br/>
+                            <apex:outputpanel rendered="{!oppDetails.Account.PAN_Number__c != NULL}" > PAN : {!oppDetails.Account.PAN_Number__c}</apex:outputpanel>  
+                        </div>
+                    </td>
+                    
+                    <td style="width:33%; font-size: 10px;">
+                        <div style="margin-top: 3px; margin-left: -2%;">
+                            Puchase Order Details     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  {!oppDetails.Account.Name} - Dt.{!day}.{!month}.{!year}<br/>
+                            Proforma Invoice &amp; Date     &nbsp;&nbsp;&nbsp;&nbsp; :  {!oppDetails.Performa_Invoice_No__c} - {!day}.{!month}.{!year}  <br/>
+                            Expected Date of Dispatch        &nbsp;   : {!dispatchDay}.{!dispatchMonth}.{!dispatchYear}<br/>
+                            Terms of  Delivery  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   :  {!oppDetails.Account.Transportation_Terms__c}  <br/>
+                            Terms of Payment  &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :  {!oppDetails.Account.Payment_terms__c}<br/>
+                            Net weight  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; :  {!oppDetails.TotalOpportunityQuantity} <br/>
+                            Place of Supply   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {!oppDetails.Account.ShippingState}  <br/>
+                            <apex:outputpanel rendered="{!oppDetails.Include_Freight_Charges__c}" > 
+                                Freight Charge / kg   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; : {!oppDetails.Freight_charges__c}  <br/>
+                                Total Freight Charge  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : {!oppDetails.Total_Freight_Charges__c} 
+
+                            </apex:outputpanel>  <br/>
+
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:9%;font-size: 10px; text-align:center"><b> SL. No.</b></td>
+                    <td style="width:13%; font-size: 10px; text-align:center"><b>  Item Description/Code</b></td>
+                    <td style="width:11%; font-size: 10px; text-align:center"><b>HSN/SAC</b></td>
+                    <td style="width:11%; font-size: 10px; text-align:center"><b>Quantity</b></td>
+                    <td style="width:11%; font-size: 10px; text-align:center"><b>UoM</b></td>
+                    <td style="width:13%; font-size: 10px; text-align:center"><b>Rate</b></td>
+                    <td style="width:8%; font-size: 10px; text-align:center"><b>Value</b></td>         
+                    <td style="width:9%; font-size: 10px; text-align:center"><b>  Taxable Value </b></td>
+                    <td style="width:8.25%; font-size: 10px; text-align:center"><b>Rate of Tax</b></td>
+                    <td style="width:8.25%; font-size: 10px; text-align:center"><b>Sub Total</b></td>
+                </tr>
+                <apex:variable var="cnt" value="{!0}" />
+                <apex:repeat value="{!oppDetails.OpportunityLineItems}" var="opp">
+                    <apex:variable var="cnt" value="{!cnt+1}"/>
+                    <tr style="font-family: dialog; font-size: 14pt;">
+                        <td style="font-size: 10px;  text-align:center"><apex:OutputText value="{!cnt}"/></td>
+                        <td style="font-size: 10px;  text-align:center">{!opp.Product2.Name} - {!opp.FERT_Code__c} <apex:outputpanel rendered="{!opp.FERT_Code__c == null}" > {!opp.ProductCode} </apex:outputpanel> </td>
+                        <td style="font-size: 10px;  text-align:center">{!opp.Product2.HSN_Code__c}</td>
+                        <td style="font-size: 11px;  text-align:center">{!opp.Quantity}</td>
+                        <td style="font-size: 11px; text-align:center"> Kg </td>
+                        <td style="font-size: 11px;  text-align:center">{!opp.UnitPrice}</td>
+                        <td style="font-size: 11px; text-align:center">{!opp.TotalPrice} </td>
+                        <td style="font-size: 11px;  text-align:center">{!opp.TotalPrice}</td>
+                        <td style="font-size: 11px;  text-align:center">{!opp.Product2.HSN_TAX__c} 
+                            <apex:outputpanel rendered="{!opp.Product2.HSN_TAX__c != null}" >  %  </apex:outputpanel> 
+                        </td>
+                        <td style="font-size: 11px; text-align:center">{!opp.Sub_Total__c}</td>
+                    </tr>
+                </apex:repeat>    
+            </table>
+            
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:33%; font-size: 10px; text-align:center"><b>  Grand total</b></td>
+                    <td style="width:11%; font-size: 10px; text-align:center">{!sumOfQuantity}</td>
+                    <td style="width:24%; font-size: 10px; text-align:center"></td>
+                    <td style="width:8%; font-size: 10px; text-align:center">{!sumOfValue}</td>
+                    <td style="width:9%; font-size: 10px; text-align:center">{!sumOfValue}</td>
+                    <td style="width:8.25%; font-size: 10px; text-align:center"></td>
+                    <td style="width:8.25%; font-size: 10px; text-align:center">{!sumOfSubTotal}</td>
+                </tr>
+            </table>
+            
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:33%; font-size: 10px;"><b>  Grand total value ( In words )</b></td>
+                    <td style="width:68.5%; font-size: 10px; text-align:right"> <apex:outputpanel rendered="{!sumOfAmtINRWords != null}" >  <b> Rs. {!sumOfAmtINRWords} </b> </apex:outputpanel></td>
+                </tr>
+            </table>
+            
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:100%; font-size: 10px;"><b>  Grand total <apex:outputpanel rendered="{!oppDetails.Include_Freight_Charges__c}" > including Freight Charges </apex:outputpanel> :  {!sumOfTotalCharges} </b></td>
+                </tr>
+            </table>
+            
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:100%; font-size: 10px;"><b>  Packing Details : </b></td>
+                </tr>
+            </table>
+            
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:100%; font-size: 10px;"><b>  Remarks : </b>
+                        Insurance if any, will be an additional cost : {!insurance}</td>
+                </tr>
+            </table>
+            
+            <div style="font-family: Dialog; font-size:10px; position: fixed; bottom: 0px;">
+                Page 1 of 1 &nbsp; &nbsp;
+                Registered Office - Symega Food Ingredients Ltd. {!symObj.symega_address__c} (**All disputes subject to Cochin Jurisdiction only). &nbsp; &nbsp;
+                End of page
+            </div>
+            
+        </body>
+    </html>
+</apex:page>

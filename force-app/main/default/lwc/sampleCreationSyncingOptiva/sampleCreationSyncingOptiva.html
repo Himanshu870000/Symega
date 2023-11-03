@@ -1,0 +1,132 @@
+<template>
+    <lightning-quick-action-panel header="Submitting">
+        <template if:true={showSpinner}>
+            <div class="slds-modal__content slds-p-around_medium modalBody">
+                <lightning-spinner alternative-text="Loading" size="medium" class="spinnerClass"></lightning-spinner>
+            </div>
+        </template>
+        <template if:false={showSpinner}>
+            <template if:true={showAccountPage}>
+                <template if:true={isAccount}>
+                    <lightning-quick-action-panel header="Update Account"> 
+                        <template if:true={accFieldsMissing}>
+                            <lightning-record-edit-form record-id={accId} object-api-name="Account" onsuccess={handleSuccess}>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <template for:each={missingFieldsList} for:item="mfl">
+                                            <lightning-input-field key={mfl} field-name={mfl}>
+                                            </lightning-input-field>
+                                        </template>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <template if:true={showUserField}>
+                                            <lightning-input type="text" variant="standard" name="UserCode" label="User SAP Code" placeholder="type here..." value={userSapCode} onchange={handleChange}></lightning-input>
+                                        </template>
+                                        <template if:true={showBhField}>
+                                            <lightning-input type="text" variant="standard" name="BHCode" label="BH SAP Code" placeholder="type here..." value={bhSapCode} onchange={handleChange}></lightning-input>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="slds-align_absolute-center slds-border_top">
+                                    <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update"></lightning-button>&nbsp;&nbsp;
+                                    <lightning-button  class="slds-m-top_small" variant="neutral" label="Cancel" onclick={closeModal} ></lightning-button>
+                                </div>
+                            </lightning-record-edit-form>
+                        </template>
+
+                        <template if:false={accFieldsMissing}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <template if:true={showUserField}>
+                                        <lightning-input type="text" variant="standard" name="UserCode" label="User SAP Code" placeholder="type here..." value={userSapCode} onchange={handleChange}></lightning-input>
+                                    </template>
+                                    <template if:true={showBhField}>
+                                        <lightning-input type="text" variant="standard" name="BHCode" label="BH SAP Code" placeholder="type here..." value={bhSapCode} onchange={handleChange}></lightning-input>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="slds-align_absolute-center slds-border_top">
+                                <lightning-button class="slds-m-top_small" variant="brand" name="update" label="Update" onclick={handleSuccess}></lightning-button>&nbsp;&nbsp;
+                                <lightning-button  class="slds-m-top_small" variant="neutral" label="Cancel" onclick={closeModal} ></lightning-button>
+                            </div>
+                        </template>                            
+                    </lightning-quick-action-panel>
+
+                </template>
+                <template if:false={isAccount}>
+                    <!-- Customer Address  -->
+                    <lightning-quick-action-panel header="Update Customer Address"> 
+                        <template if:true={custAddFieldsMissing}>
+                            <lightning-record-edit-form record-id={dispId} object-api-name="Dispatch_Address__c" onsuccess={handleSuccess} onerror={handleError}>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <template for:each={missingFieldsList} for:item="mfl">
+                                            <lightning-input-field key={mfl} field-name={mfl}>
+                                            </lightning-input-field>
+                                        </template>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <template if:true={showDlvryPlantField}>
+                                            <lightning-combobox name="dlvryPlant" label="Delivery Plant" value={dlvryPlantVal} options={dlvryPlantList} onchange={handleChange} ></lightning-combobox>                           
+                                        </template>
+                                        <template if:true={showCustTypeField}>
+                                            <lightning-combobox name="custType" label="Customer Type" value={custTypeVal} options={custTypeList} onchange={handleChange} ></lightning-combobox>                           
+                                        </template>
+                                        <template if:true={showAccSegField}>
+                                            <lightning-combobox name="accSeg" label="Account Segment" value={accSegVal} options={accSegList} onchange={handleChange} ></lightning-combobox>                           
+                                        </template>
+                                        <template if:true={showUserField}>
+                                            <lightning-input type="text" variant="standard" name="UserCode" label="User SAP Code" placeholder="type here..." value={userSapCode} onchange={handleChange}></lightning-input>
+                                        </template>
+                                        <template if:true={showBhField}>
+                                            <lightning-input type="text" variant="standard" name="BHCode" label="BH SAP Code" placeholder="type here..." value={bhSapCode} onchange={handleChange}></lightning-input>
+                                        </template>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="slds-align_absolute-center slds-border_top">
+                                    <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Update"></lightning-button>&nbsp;&nbsp;
+                                    <lightning-button  class="slds-m-top_small" variant="neutral" label="Cancel" onclick={closeModal} ></lightning-button>
+                                </div>
+                            </lightning-record-edit-form> 
+                        </template>
+                        <template if:false={custAddFieldsMissing}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <template if:true={showDlvryPlantField}>
+                                        <lightning-combobox name="dlvryPlant" label="Delivery Plant" value={dlvryPlantVal} options={dlvryPlantList} onchange={handleChange} ></lightning-combobox>                           
+                                    </template>
+                                    <template if:true={showCustTypeField}>
+                                        <lightning-combobox name="custType" label="Customer Type" value={custTypeVal} options={custTypeList} onchange={handleChange} ></lightning-combobox>                           
+                                    </template>
+                                    <template if:true={showAccSegField}>
+                                        <lightning-combobox name="accSeg" label="Account Segment" value={accSegVal} options={accSegList} onchange={handleChange} ></lightning-combobox>                           
+                                    </template>
+                                    <template if:true={showUserField}>
+                                        <lightning-input type="text" variant="standard" name="UserCode" label="User SAP Code" placeholder="type here..." value={userSapCode} onchange={handleChange}></lightning-input>
+                                    </template>
+                                    <template if:true={showBhField}>
+                                        <lightning-input type="text" variant="standard" name="BHCode" label="BH SAP Code" placeholder="type here..." value={bhSapCode} onchange={handleChange}></lightning-input>
+                                    </template>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="slds-align_absolute-center slds-border_top">
+                                <lightning-button class="slds-m-top_small" variant="brand" name="update" label="Update" onclick={handleSuccess}></lightning-button>&nbsp;&nbsp;
+                                <lightning-button  class="slds-m-top_small" variant="neutral" label="Cancel" onclick={closePopup} ></lightning-button>
+                            </div>
+                        </template>
+                    </lightning-quick-action-panel>
+                </template>
+        </template>
+        </template>
+        <template if:false={showAccountPage}>
+            <div style="width: 100%;">
+                <h1 class="slds-text-heading_medium slds-text-align_center" style={msgStyle}>{responseMsg}</h1>
+            </div>
+            <div slot="footer">
+                <lightning-button variant="neutral" label="Close" onclick={closePopup}></lightning-button>
+            </div>
+        </template>
+    </lightning-quick-action-panel>
+</template>

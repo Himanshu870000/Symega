@@ -1,0 +1,297 @@
+<apex:page showHeader="false" sidebar="false" docType="html-5.0" controller="VisitSchedulerController" standardStylesheets="false" lightningStylesheets="false">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <apex:slds />
+        <head>
+            <meta charset='utf-8'/>
+            
+            <apex:stylesheet value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/fullcalendar.min.css')}"/>    
+            <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/moment.min.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/jquery.min.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/theme.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/jquery-ui.min.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/fullcalendar.min.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.Calendar, '/FullCalendarJS/jquery.ui.touch-punch.min.js')}"/>
+            <apex:includeScript value="{!URLFOR($Resource.visitScheduler)}"/>
+            <style>
+                body {
+                padding: 1% !important;
+                font-size: 14px;
+                background: rgba(235, 234, 232, 0.459) !important;
+                font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif !important;
+                }
+                
+                #external-events h4 {
+                font-size: 16px;
+                margin-top: 0;
+                padding-top: 1em;
+                }
+                
+                #external-events .fc-event {
+                margin: 10px 0;
+                cursor: pointer;
+                padding: 5px;
+                background-color: #5a6ccc !important;
+                border: #5a6ccc !important;
+                }
+                
+                .fc-day-grid-event {
+                border-color: #5a6ccc !important;
+                background-color: #5a6ccc !important;
+                }
+                
+                .slds-scope a {
+                color: #5a6ccc !important;
+                }
+                
+                #external-events p {
+                margin: 1.5em 0;
+                font-size: 11px;
+                color: #666;
+                }
+                
+                #external-events p input {
+                margin: 0;
+                vertical-align: middle;
+                }
+                /* #calendar {
+                float: right;
+                width: 900px;
+                } */
+                .fc-content {
+                background: #5a6ccc;
+                color: white;
+                }
+                
+                .circular-event-status {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                }
+                
+                button:disabled,
+                button[disabled]{
+                background-color: #cccccc !important;
+                }
+            </style>
+        </head>
+        <body class="slds-scope"> 
+            <div class="slds-spinner_container" id="spinner">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+            <div id="wrap" class="slds-grid slds-gutters">
+                <div id="external-events" class="slds-col slds-size_1-of-4">
+                    <!-- Users here -->
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-task" title="task">
+                                        <svg class="slds-icon slds-icon_small" aria-hidden="true" style="background: #5a6ccc;">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#user')}"></use>
+                                        </svg>
+                                        <span class="slds-assistive-text">Sales representative</span>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Tasks">
+                                            <span>Sales Representative</span>
+                                        </a>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-form-element">
+                                <label class="slds-form-element__label" for="select-01">Select User</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <select class="slds-select" id="user-select">
+                                            <option id="pick-none" value="">Select...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    
+                    <article class="slds-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div style="width: 100%">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col">
+                                            <button id="dealersTab" class="slds-button slds-button_brand" style="display: grid; width: 100%">Dealers</button>
+                                        </div>
+                                        <div class="slds-col">
+                                            <button id="leadTab" class="slds-button slds-button_neutral" style="display: grid; width: 100%">Lead</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- <div class="slds-media__figure">
+<span class="slds-icon_container slds-icon-standard-task" title="task">
+<svg class="slds-icon slds-icon_small" aria-hidden="true" style="background: #5a6ccc;">
+<use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+</svg>
+<span class="slds-assistive-text" style="color:black;">Dealers</span>
+</span>
+</div> -->
+                                    <div class="slds-media__body">
+                                        <h2 class="slds-card__header-title">
+                                            <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Tasks">
+                                                <!-- <span>Dealers</span> -->
+                                            </a>
+                                        </h2>
+                                        <a id="search-account" style="display:none;">Search specific ?</a>
+                                    </div>
+                                    
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div class="slds-border_bottom" id="search-pannel" style="display:none;padding-bottom:4%;">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_12-of-12">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="text-input-id-1">
+                                                <abbr class="slds-required" title="required">* </abbr>Search Dealers</label>
+                                            <div class="slds-form-element__control">
+                                                <input type="text" id="search-box" placeholder="min 3 letters…" required="" class="slds-input" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-grid_align-end" style="padding-top:3%;">
+                                    <div class="slds-col" style="padding-right:0px;">
+                                        <button id="search-dealer" style="background-color:#f7941d;" class="slds-button slds-button_brand">Search</button>
+                                        <button id="clear-dealer" class="slds-button slds-button_outline-brand">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="event-container" style="/*overflow-y: scroll;*/max-height: 650px;display:none;padding-top:2%;"/>
+                        </div>
+                        <footer class="slds-card__footer">
+                            <p class="slds-card__footer-action">
+                                <input type='checkbox' id='drop-remove' checked="true"/>
+                                <label for='drop-remove'>Remove account after drop</label><br/><br/>
+                                <button id="upsert-visit" style="background-color:#f7941d;" class="slds-button slds-button_brand" disabled="true">Update Visits</button>
+                            </p>
+                        </footer>
+                    </article>
+                    
+                </div>
+                <div class="slds-col slds-size_3-of-4">
+                    
+                    <article class="slds-card" id="calendar-card">
+                        <div class="slds-card__header slds-grid">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-task" title="Calendar">
+                                        <svg class="slds-icon slds-icon_small" aria-hidden="true" style="background: #5a6ccc;">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#date_input')}"></use>
+                                        </svg>
+                                        <span class="slds-assistive-text">Calendar</span>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <h2 class="slds-card__header-title">
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate" title="Calendar">
+                                            <span>Calendar</span>
+                                        </a>
+                                        <div class="slds-align_absolute-center" style="font-size:unset !important; font-weight:400 !important;">
+                                            <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:orange" />
+                                            IN-PROGRESS&nbsp;&nbsp;
+                                            <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:#15c05c" />
+                                            PENDING&nbsp;&nbsp;
+                                            <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:#4a4a4a" />
+                                            COMPLETED&nbsp;&nbsp;
+                                            <div class="circular-event-status slds-m-right_xx-small" style="display:inline-block;background-color:red"/> LAPSE
+                                        </div>
+                                    </h2>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body slds-card__body_inner">
+                            <div id='calendar'></div>
+                            <div style='clear:both'></div>
+                        </div>
+                    </article>
+                    
+                </div>
+            </div>
+            <!-- Modal -->
+            <div id="event-modal" style="display:none;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="close-modal slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"></h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p>Click on <b style="color:red;">Delete</b> to delete selected event.</p>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="close-modal slds-button slds-button_neutral">Cancel</button>
+                            <button id="delete-event" class="slds-button slds-button_destructive">Delete</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+            <!-- address model -->
+            <div id="address-modal" style="display:none;">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1"
+                         class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="close-modal slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate"></h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <fieldset class="slds-form-element">
+                                <legend class="slds-form-element__legend slds-form-element__label">Available Address</legend>
+                                <div class="slds-form-element__control" id="address-parent">
+                                    <!-- <span class="slds-radio">
+<input type="radio" id="radio-61" value="radio-61" name="default" checked="" />
+<label class="slds-radio__label" for="radio-61">
+<span class="slds-radio_faux"></span>
+<span class="slds-form-element__label">Radio Label One</span>
+</label>
+</span>
+<span class="slds-radio">
+<input type="radio" id="radio-62" value="radio-62" name="default" />
+<label class="slds-radio__label" for="radio-62">
+<span class="slds-radio_faux"></span>
+<span class="slds-form-element__label">Radio Label Two</span>
+</label>
+</span> -->
+                                </div>
+                            </fieldset>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="close-modal slds-button slds-button_neutral">Cancel</button>
+                            <button id="save-event" class="slds-button slds-button_brand">Save</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </body>
+    </html>
+    
+</apex:page>

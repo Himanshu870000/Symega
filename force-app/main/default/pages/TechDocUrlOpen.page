@@ -1,0 +1,10 @@
+<apex:page standardController="User_Document__c">
+    <script type="text/javascript">
+        function openLocalFile() {
+            debugger;
+            var filePath = 'file://172.16.9.150/windows/temp/optiva/tamarind flavour_dsl0003287_spec.638252016204131762.pdf';
+            window.location.href = filePath;
+        }
+    </script>
+    <button onclick="openLocalFile()">Open Local File</button>
+</apex:page>

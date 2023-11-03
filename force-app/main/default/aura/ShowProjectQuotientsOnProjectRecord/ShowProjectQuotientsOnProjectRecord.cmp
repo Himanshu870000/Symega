@@ -1,0 +1,72 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" 
+                controller="ShowAndUpdateProjectQuotients" >
+    <aura:handler  name="init" value="{!this}" action="{!c.doinit}"/>
+    <aura:attribute  name="qntList" type="List"/>
+    <aura:attribute name="stagepicklist" type="List" />
+    <aura:attribute name="pickvalue" type="String" />
+    <!--aura:attribute name="lostDisable" type="Boolean" default="True" /-->
+    <!-- <aura:attribute name="disable" type="Boolean" default="True" /> -->
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 60rem !important;
+        width:120% !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+        .plant-width{
+        width:10% !important;
+        }
+    </aura:html>
+    <div class="slds-modal__container">
+        
+        <header class="slds-modal__header">
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                Update Quotient Status  
+            </h2>
+        </header>
+        
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Stage</th>
+                        <th>Lost Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.qntList}" var="project"  indexVar="index">
+                        <tr id ="{!index}">
+                            <td>{!project.Name}</td>
+                            <td data-id="{!project.Id}"> 
+                                <lightning:select aura:Id="selectpick" name="{!project.Id}" value="{!project.Stage__c}" onchange="{!c.handleSelectChange}">
+                                    <aura:iteration items="{!v.stagepicklist}" var="stage">
+                                        <option value="{!stage}">{!stage}</option>
+                                    </aura:iteration>
+                                </lightning:select>
+                                
+                            </td>
+                            <td> 
+                                <lightning:input type="text" value="{!project.Lost_Reason__c}" disabled="{!project.isInputDisable}"></lightning:input>  
+                            </td>
+                            <!-- Add more columns as needed -->
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        <div class="slds-align_absolute-center" slot="footer">
+            <lightning:button label="Save" onclick="{!c.handleSave}" />
+            <lightning:button label="Cancel" variant="neutral" onclick="{!c.closeModal }" />
+        </div>
+    </div>
+</aura:component>

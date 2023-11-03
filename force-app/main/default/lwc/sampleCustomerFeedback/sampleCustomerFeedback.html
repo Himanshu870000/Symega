@@ -1,0 +1,27 @@
+<template>
+    <lightning-quick-action-panel header="Amendment">
+
+        <div class="slds-border_bottom slds-p-bottom_x-small">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_4-of-6">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning-textarea name="feedback" label="Enter Feedback" value={feedback} onchange={inputChange} required></lightning-textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_2-of-6">
+                    <lightning-input type="date" name="date" label="Actual Date of Dispatch" value={dateChoosed}
+                        onchange={inputChange} required>
+                    </lightning-input>
+                </div>
+            </div>
+        </div>
+    
+        <div slot="footer">
+            <lightning-button variant="neutral" label="Cancel" onclick={closeAction}></lightning-button>
+            <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={submitForm}>
+            </lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+</template>

@@ -1,0 +1,89 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="BoundaryMapController">
+  <html>
+    <head>
+      <title>City Boundaries</title>
+      <style>
+        #map-container {
+          position: relative;
+          width: 100%;
+          height: 400px;
+        }
+
+        #map {
+          width: 100%;
+          height: 100%;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="map-container">
+        <div id="map"></div>
+      </div>
+
+      <script>
+        function initMap() {
+          debugger;
+          const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 10,
+            center: { lat: 12.9716, lng: 77.5946}
+          });
+
+          BoundaryMapController.getBoundaryMap(function(result, event) {
+            if (event.status) {
+              const routeData = {}; 
+
+              for (const routeName in result) {
+                const accounts = result[routeName];
+
+                console.log('RouteName------->',routeName);
+
+
+                const coordinateData = accounts.map(account => ({
+                  lat: account.Geo_Location__Latitude__s,
+                  lng: account.Geo_Location__Longitude__s
+                }));
+
+                routeData[routeName] = coordinateData;
+              }
+
+
+
+              for (const routeName in routeData) {
+                const coordinates = routeData[routeName];
+
+                const polygonCoordinates = coordinates.map(coord => ({
+                  lat: coord.lat,
+                  lng: coord.lng
+                }));
+
+                const routePolygon = new google.maps.Polygon({
+                  paths: polygonCoordinates,
+                  strokeColor: getRandomColor(),
+                  strokeOpacity: 0.8,
+                  strokeWeight: 2,
+                  fillColor: getRandomColor(),
+                  fillOpacity: 0.5
+                });
+
+                routePolygon.setMap(map);
+              }
+            } else {
+              alert('Error: ' + event.message);
+            }
+          });
+        }
+
+        function getRandomColor() {
+          const letters = "0123456789ABCDEF";
+          let color = "#";
+          for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+        }
+      </script>
+    </body>
+  </html>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAki1KNhw8H36mkjnT_BBsJyX-dsV3hmnA&callback=initMap" async="true" defer="true"></script>
+</apex:page>

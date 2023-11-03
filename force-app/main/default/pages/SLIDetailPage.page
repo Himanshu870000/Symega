@@ -1,0 +1,735 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
+    <html>
+        <head>
+            <c:Libraries ></c:Libraries>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js">
+            </script>
+            <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet"/>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <apex:stylesheet value="{!$Resource.OperationsPortalCSS}" />
+
+
+
+            <style>
+                .loadingBackground {
+                    position: fixed;
+                    height: 100%;
+                    width: 100%;
+                    background: #F6F6F6;
+                    z-index: 11111;
+                    opacity: 0.7;
+                    top: 0px;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                }
+                    .loading {
+                    top: 50%;
+                    left: 50%;
+                    margin: -50px 0px 0px -50px;
+                    z-index: 111111;
+                    position: fixed;
+                }
+
+                .tab {
+                    overflow: hidden;
+                    border: 1px solid #ccc;
+                    background-color: mintcream;
+                    padding-left: 1%;
+                        margin-left: 1%;
+                        margin-right: 2%;
+                        border-radius: 11px;
+                    }
+
+                    /* Style the buttons inside the tab */
+                    .tab button {
+                    background-color: inherit;
+                    float: left;
+                    border: none;
+                    outline: none;
+                    cursor: pointer;
+                    padding: 14px 16px;
+                    transition: 0.3s;
+                    font-size: 17px;
+                    }
+
+                    /* Change background color of buttons on hover */
+                    .tab button:hover {
+                    background-color: #ddd;
+                    }
+
+                    /* Create an active/current tablink class */
+                    .tab button.active {
+                    background-color: #ccc;
+                    }
+
+                    /* Style the tab content */
+                    .tabcontent {
+                    display: none;
+                    padding: 6px 12px;
+                    border: 1px solid #ccc;
+                    border-top: none;
+                    }
+            </style>
+        </head>
+
+        <body ng-app="SLIDet_App" ng-controller="SLIDet_ctrl" style="background-color: white; !important;">
+            <!--div class="loadingSection" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div-->
+
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="wrapper px-5">
+                    
+                </div>
+                    <div>
+                        <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                    </div>
+                    <div style="width: 50%;">
+                        <!-- <marquee>
+                            <h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+                         </marquee> -->
+                    </div>
+                    
+                        <!--div class="d-flex text-align-center">
+                            <div class="dropdown">
+                                <i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                </i>
+                                <ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{conName}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-at me-3"></i>{{email}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+                                </li>
+                                </ul>
+                              </div>
+                            </div-->
+            </nav>
+            
+            <div class="container-fluid px-5">
+                <div class="row mb-5">
+                    <div class="col-md-12">
+                        <div class="tab">
+                            <button class="tablinks" ng-click="onClickOfDetails()">Details</button>
+                            <button class="tablinks" ng-click="onClickOfComments()">Comments</button>
+                          </div>
+                    </div>
+                </div>
+                
+                <div ng-show="showDetailPage">
+                <!--div class="row box-shadow-2 mb-5"-->
+                    <div class="row mt-5">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>BASIC DETAILS</b></h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Customer_Name__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Request Status
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Sample_Request_Status__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Line Item Number
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Sample__r.Name" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                       <div class="col-md-6 mt-3">
+                        <label class="font-if">Reason For Rejection
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Reason_For_Rejection__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample delivery date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="SLIDetails.Sample_delivery_date__c" ng-disabled="true"/>
+                    </div> 
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Currency
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.CurrencyIsoCode" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Start Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="SLIDetails.Start_Date__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+					<div class="col-md-6 mt-3">
+                        <label class="font-if">OwnerEmail
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.OwnerEmail__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Submitted?
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="SLIDetails.Submitted__c" ng-disabled="true"/>
+                    </div>                        
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Family
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Product_Family__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Type
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Sample_Type__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Role
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Role__c" ng-disabled="true"/>
+                    	</div>
+                    </div>
+                    
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>PRODUCT DETAILS</b></h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Product_Name__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Exclusive customer product code
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Exclusive_customer_product_code__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Current Shelf Life
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Current_Shelf_Life__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Max Qty
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Product_Max_Qty__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Formula Packaging Qty
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Formula_Packaging_Qty__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">OPTIVA Recipe
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.OPTIVA_Recipe__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Project Quotient
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Project_Quotient__r.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Qty in KGs
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Qty_in_KGs__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>SAMPLE REQUIREMENT BY SALES</b></h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Code
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Product_Code__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Line Item Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Line_Item_Name__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Quantity
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Quantity__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Submitted Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="SLIDetails.Sample_Submitted_Date__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Quantity Unit
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Quantity_Unit__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Expected Shelf Life
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Expected_Shelf_Life__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Packaging Unit
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Packaging_Unit__c" ng-disabled="true"/>
+                    </div>
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">First Sample Due Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="SLIDetails.First_Sample_Due_Date__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Packaging Quantity
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Packaging_Quantity__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Target price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Customer_Target_price__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Instructions
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Customer_Instructions__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Regulatory Requirements
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Regulatory_Requirements__c" ng-disabled="true"/>
+                    </div>
+                    </div>
+                    
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>SAMPLE DISPATCH BY SAMPLING TEAM</b></h3>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Sample Invoice Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="SLIDetails.Sample_Invoice_Date__c" ng-disabled="false"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Actual date of dispatch
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="SLIDetails.Actual_date_of_dispatch__c" ng-disabled="false"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3">
+                        <label class="font-if">Courier
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Courier__c" ng-disabled="false"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Dispatch Details
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Dispatch_Details__c" ng-disabled="false"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mt-3 mb-3">
+                        <label class="font-if">Way Bill No
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Way_Bill_No__c" ng-disabled="false"/>
+                    </div>
+                    <div class="col-md-6 mt-3 mb-3">
+                        <label class="font-if">Additional Comments
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="SLIDetails.Additional_Comments__c" ng-disabled="false"/>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mt-3">
+                        <button class="blue-btn float-end me-2 mb-5" style="background: green;" ng-click="saveDetails()" type="button">
+                            Save</button>
+                    </div>
+                    </div>  
+                    
+                <!--/div-->
+            </div>
+                
+                <div class="row mt-3 mx-5" ng-show="showComments">
+                <div class="col-md-8">
+                    <h3 class="pb-3 color-theme"><b>Comments :</b></h3>
+                </div>
+                    <div class="col-md-4">
+                        <button class="blue-btn float-end me-2 mb-5" ng-click="openPopUp()" type="button">
+                            New</button>
+                        </div>
+                <div class="col-md-12">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S.No.</th>
+                    			<th>Comment No.</th>
+                                <th>Comment</th>
+                                <th>Commentted By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="com in listOfComments">
+                                <td>{{$index+1}}</td>
+                                <td>{{com.Name}}</td>
+                                <td>{{com.Comment__c}}</td>
+                                <td>{{com.Comment_By__r.Name}}</td>
+                                <td><button type="button" data-bs-dismiss="modal" style="background:green;" class="blue-btn" ng-click="openReplyPopUp($index,com.Id)"><i class="fa fa-reply" aria-hidden="true"></i>Reply</button>
+                                    <div class="modal" id="flipFlop2{{$index}}">
+                                            <div class="modal-dialog" style="min-width:1000px">
+                                              <div class="modal-content">
+                                          
+                                                <div class="modal-header">
+                                                  <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                                                    <h3 class="color-theme2" style="color:green;">
+                                                        <b>Add Reply</b>
+                                                    </h3>
+                                                </div></h4> 
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                          
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            {{cmnt.Reply__c}}
+                                                    <ng-ckeditor ng-model="cmnt.Reply__c" ng-config="config" ></ng-ckeditor>
+                                                </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-12">
+                                                    <button type="button" data-bs-dismiss="modal" class="blue-btn float-end" ng-click="saveReply()">Save</button>
+                                                </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                               <div class="row">
+                    <div class="col-md-12">
+                        <a class="pe-5 float-end" ng-click="handleNext()">Next</a>
+                        <a class="pe-5 float-end" ng-click="handlePrevious()">Previous</a>
+                    </div>
+                </div>
+            </div>
+                
+                
+                <div class="modal" id="flipFlop">
+                                            <div class="modal-dialog" style="min-width:1000px">
+                                              <div class="modal-content">
+                                          
+                                                <div class="modal-header">
+                                                  <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                                                    <h3>
+                                                        <b>Add Comment</b>
+                                                    </h3>
+                                                </div></h4> 
+                                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                          
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                    <ng-ckeditor ng-model="come.Comment__c" ng-config="config" ></ng-ckeditor>
+                                                </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-12">
+                                                    <button type="button" data-bs-dismiss="modal" class="blue-btn float-end" ng-click="saveComment()">Save</button>
+                                                </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+
+
+            <div class="col-md-6 mt-3">
+                <button class="blue-btn float-end me-2 mb-5" ng-click="back()" type="button">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back</button>
+            </div>
+                
+            </div>
+        </body>
+
+        <script>
+            var userHashId = '{!$CurrentPage.parameters.id}';
+            var sliId = '{!$CurrentPage.parameters.sliId}';
+            var app = angular.module('SLIDet_App', ['ng.ckeditor']);
+            app.controller('SLIDet_ctrl', function ($scope){
+                debugger;
+                        $scope.showDetailPage = true;
+                        $scope.showComments = false;
+                $scope.showSpinner = false;
+                $scope.cmnt = {"Reply__c":""};
+
+                $scope.getSLIDetails = function(){
+                        debugger;
+                        OperationsPortalController.getSLIDetails(sliId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                debugger;
+                                $scope.SLIDetails = result;
+                                if(result.Comments__r != undefined){
+                                    $scope.listOfComments = result.Comments__r;
+                                if($scope.listOfComments.length > 0){
+                                    for(var i=0;i<$scope.listOfComments.length;i++){
+                                        if($scope.listOfComments[i].Comment__c != undefined || $scope.listOfComments[i].Comment__c != ''){
+                                            //alert($scope.listOfComments[i].Comment__c);
+                                            $scope.listOfComments[i].Comment__c = $scope.listOfComments[i].Comment__c.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+                                            //.replaceAll('&amp;amp;','&').replaceAll('&amp;gt;','>').replaceAll('lt;','<').replaceAll('gt;','>').replaceAll('&amp;','&').replaceAll('amp;','&').replaceAll('&quot;','\'') : $scope.listOfComments[i].Comment__c;
+                                        }
+                                    }
+                                }
+                                    $scope.listOfComments2 = result.listOfComments;
+                                $scope.totalRecords = $scope.listOfComments.length;
+                            	$scope.totalPages = Math.ceil($scope.totalRecords / $scope.pageSize);
+                                }
+                        		
+                                
+                                
+                                if(result.Actual_date_of_dispatch__c != null){
+                                    $scope.SLIDetails.Actual_date_of_dispatch__c = new Date(result.Actual_date_of_dispatch__c);
+                                }
+                                if(result.Sample_Invoice_Date__c != null){
+                                    $scope.SLIDetails.Sample_Invoice_Date__c = new Date(result.Sample_Invoice_Date__c);
+                                }
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    $scope.getSLIDetails();
+                
+                $scope.paginateData = function() {
+                    debugger;
+                     const startIndex = ($scope.currentPage - 1) * $scope.pageSize;
+                     const endIndex = startIndex + $scope.pageSize;
+                     $scope.listOfComments3 = $scope.listOfComments.slice(startIndex, endIndex);
+                }
+                
+                $scope.handleNext = function(){
+                     debugger;
+                     if ($scope.currentPage < $scope.totalPages){
+                         $scope.currentPage += 1;
+                         $scope.paginateData($scope.listOfComments);
+                     }
+                 }
+                
+                $scope.handlePrevious = function(){
+                     debugger;
+                     if ($scope.currentPage > 1){
+                         this.currentPage -= 1;
+                         this.paginateData(this.listOfComments);
+                     }
+                 }
+
+                    $scope.back = function(){
+                        debugger;
+                        var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleLineItemDetailPage';
+                        window.location.replace(window.location.origin + sitePrefix +'?id='+ userHashId);
+                    }
+
+                     $scope.saveDetails = function(){
+                        debugger;
+                        var dispatchYear=0;
+                        var dispatchmonth=0;
+                        var dispatchday=0;
+                        if($scope.SLIDetails.Actual_date_of_dispatch__c!=undefined && $scope.SLIDetails.Actual_date_of_dispatch__c!=''){
+                            dispatchYear = $scope.SLIDetails.Actual_date_of_dispatch__c.getUTCFullYear();
+                            dispatchmonth = $scope.SLIDetails.Actual_date_of_dispatch__c.getUTCMonth()+1;
+                            dispatchday = $scope.SLIDetails.Actual_date_of_dispatch__c.getDate();
+                        }
+                        var invoiceYear=0;
+                        var invoicemonth=0;
+                        var invoiceday=0;
+                        if($scope.SLIDetails.Sample_Invoice_Date__c!=undefined && $scope.SLIDetails.Sample_Invoice_Date__c!=''){
+                            invoiceYear = $scope.SLIDetails.Sample_Invoice_Date__c.getUTCFullYear();
+                            invoicemonth = $scope.SLIDetails.Sample_Invoice_Date__c.getUTCMonth()+1;
+                            invoiceday = $scope.SLIDetails.Sample_Invoice_Date__c.getDate();
+                        }
+
+                        $scope.detailRec = {"Id":$scope.SLIDetails.Id,"Courier__c":$scope.SLIDetails.Courier__c,"Dispatch_Details__c":$scope.SLIDetails.Dispatch_Details__c,"Way_Bill_No__c":$scope.SLIDetails.Way_Bill_No__c,"Additional_Comments__c":$scope.SLIDetails.Additional_Comments__c};
+                        OperationsPortalController.updateSLIRecord($scope.detailRec,dispatchYear,dispatchmonth,dispatchday,invoiceYear,invoicemonth,invoiceday,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                swal("success", "Record has been update successfully.","success");
+                                $scope.$apply();
+                            }
+                        })
+                }
+                    
+                    $scope.onClickOfDetails = function(){
+                        debugger;
+                        $scope.showDetailPage = true;
+                        $scope.showComments = false;
+                    }
+                    $scope.onClickOfComments = function(){
+                        debugger;
+                        $scope.showDetailPage = false;
+                        $scope.showComments = true;
+                    }
+                    
+                    $scope.openPopUp = function () {
+                    debugger;
+                    var myModal = new bootstrap.Modal(document.getElementById('flipFlop'));
+                    myModal.show('slow');
+                    $scope.$apply();
+    			}
+                    
+                    $scope.openReplyPopUp = function(index,comId){
+                        debugger;
+                        $scope.comId = comId;
+                        var myModal = new bootstrap.Modal(document.getElementById('flipFlop2' + index));
+                        myModal.show('slow');
+                        $scope.$apply();
+                    }
+                    
+                    $scope.saveComment = function(){
+                        debugger;
+                        OperationsPortalController.saveComment($scope.come,userHashId,sliId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                swal("success", "Comment added successfully.","success");
+                                $scope.come.Comment__c = "";
+                                $scope.getSLIDetails();
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    
+                    $scope.saveReply = function(){
+                        debugger;
+                        OperationsPortalController.saveReply($scope.cmnt,userHashId,$scope.comId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                swal("success", "Reply added successfully.","success");
+                                $scope.cmnt.Reply__c = "";
+                                $scope.getSLIDetails();
+                                $scope.$apply();
+                            }
+                        })
+                    }
+            })
+        </script>
+    </html>
+</apex:page>

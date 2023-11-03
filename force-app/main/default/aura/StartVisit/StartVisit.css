@@ -1,0 +1,35 @@
+.THIS .page-section {
+     border: solid 1px #ccc;
+     padding: 1rem;
+ }
+ 
+ .THIS .buttonCard{
+     padding-top:1%;
+ }
+ 
+ .THIS .page-header,
+ .THIS .page-footer {
+     height: 50px;
+     background: #6CA1E9;
+ }
+ 
+ .THIS .visitMainButtons {
+     float: right;
+     margin-right: 1%;
+     font-size: 12.5px;
+     background-color:#6BBD6E;
+     color:white;
+ }
+ 
+ .THIS .visitMainButtons:disabled {
+     background-color: gray;
+ }
+ 
+ .THIS .headerStartVisitPage {
+         margin-top: 1%;
+     
+ }
+ .THIS .map{
+     position:relative;
+     top:-25%
+ }

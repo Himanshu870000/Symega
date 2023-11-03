@@ -1,0 +1,248 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OrderManagementController">
+    <html>
+        <head>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular-csp.min.css" integrity="sha512-nptw3cPhphu13Dy21CXMS1ceuSy2yxpKswAfZ7bAAE2Lvh8rHXhQFOjU+sSnw4B+mEoQmKFLKOj8lmXKVk3gow==" crossorigin="anonymous" />
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+             <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.js">
+                </script>
+            <script src="{!$Resource.OrderManagementjs}">
+            </script>
+            <script>
+            debugger;
+            var accId = '{!accId}'
+            var visitId = '{!visitId}'
+            </script>
+            <apex:slds />
+            <style>
+                .slds-scope .slds-media__figure{
+                	cursor:pointer;
+                }
+                .pbtn{
+                background:#f7941d !important;
+                }
+                .pheader{
+                background: #073e5f ! important;
+                }
+               @media screen and (max-width: 800px) {
+                	.slds-scope .slds-size_1-of-3{
+                		width:50%;
+                	}
+                }
+                @media screen and (max-width: 600px) {
+                	.slds-scope .slds-size_1-of-3{
+                		width:100%;
+                	}
+                .slds-scope .slds-size_3-of-4{
+                	width:100%;
+                	}
+                }
+            </style>
+            
+        </head>
+        <body ng-app="myapp" ng-controller="myctrl" class="slds-scope" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <div class="slds-grid slds-grid_horizontal slds-align_absolute-center slds-p-bottom_small">
+                <div class="slds-col slds-size_3-of-4 ">
+                    <article class="slds-card" ng-show="!mycart">
+                        <div class="slds-card__header slds-grid pheader" >
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-p-top_small slds-p-bottom_small">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-account" title="Back To Visitdetail Page">
+                                        <svg class="slds-icon slds-icon_medium pheader" aria-hidden="true" ng-click="backToDealerPage();">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#back')}"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                                
+                                <div class="slds-media__body slds-align_absolute-center">
+                                    <h2 class="slds-card__header-title">
+                                        <span style="color:white;font-size: large;text-align:center">PRODUCT DETAILS</span>
+                                    </h2>
+                                </div>
+                                
+                                <div class="slds-p-right_small">
+                                    <input type="text" id="lookup" class="slds-input" aria-haspopup="true" role="textbox" placeholder="Search Product" aria-activedescendant="" aria-autocomplete="list" aria-controls="lookup-grouped-table-id-1" ng-model="searchResult" ng-change="searchProduct(searchResult);"/>
+                                </div>
+                                <div class="slds-no-flex">
+                                    <span style="color:white;font-size: 20px;"><i class="fa fa-cart-arrow-down" aria-hidden="true" ng-bind="productquantity"></i></span> 
+                                </div>
+                            </header>
+                        </div>
+                        <header class="slds-card__header slds-align_absolute-center" >
+                            <button class="slds-button slds-button_brand pbtn" ng-click="showproductcart();" ng-show="!alertRole && cartItemBtn">Check Cart Lineitems</button>
+                        </header>
+                        <div class="slds-card__body slds-card__body_inner" >
+                            <div class="slds-grid slds-gutters slds-wrap ">
+                                <div class="slds-col slds-size_1-of-3 slds-p-top_small" ng-repeat="x in recentList" ng-show="allProd">
+                                    <article class="slds-card slds-card_boundary ">
+                                        <div class="slds-card__header slds-grid slds-border_bottom slds-p-bottom_x-small pheader" style="color:white;">
+                                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                                        <svg class="slds-icon slds-icon_small pheader" aria-hidden="true">
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/standard-sprite/svg/symbols.svg#product_service_campaign_item')}"></use>
+                                                        </svg>
+                                                        <span class="slds-assistive-text">{{x.Name}}</span>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <h2 class="slds-card__header-title">
+                                                        <span>{{x.Name}}</span>
+                                                    </h2>
+                                                </div>
+                                            </header>
+                                        </div>
+                                        <div class="slds-card__body slds-form-element slds-form-element_readonly slds-p-left_small">
+                                            <div class="slds-form-element slds-form-element_horizontal">
+                                                <label class="slds-form-element__label" for="stacked-form-element-id-08"><b>Product Name :</b></label>
+                                                <div class="slds-form-element__control">
+                                                    <input type="text" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="x.Name" style="width:auto;" readonly="true"/>
+                                                </div>
+                                                <label class="slds-form-element__label" for="stacked-form-element-id-08"><b>Unit Price :</b></label>
+                                                <div class="slds-form-element__control">
+                                                    <input type="text" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="x.UnitPrice" style="width:auto;" readonly="true"/>
+                                                </div>
+                                                <label class="slds-form-element__label" for="stacked-form-element-id-08">Number Of Quantity</label>
+                                                <div class="slds-form-element__control">
+                                                    <input type="number" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="x.quant" style="width:auto;"/>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                        <footer class="slds-card__footer slds-p-top_xxx-small"  style="border-top-style: hidden;">
+                                            <button class="slds-button slds-button_brand pbtn" ng-click="addtocart($index,x.quant)">Add To Cart</button>
+                                        </footer>
+                                    </article>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-3 slds-p-top_small" ng-repeat="x in searchList" ng-show="!allProd">
+                                    <article class="slds-card slds-card_boundary ">
+                                        <div class="slds-card__header slds-grid slds-border_bottom slds-p-bottom_x-small pheader" style="color:white;">
+                                            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                                <div class="slds-media__figure">
+                                                    <span class="slds-icon_container slds-icon-standard-account" title="account">
+                                                        <svg class="slds-icon slds-icon_small pheader" aria-hidden="true">
+                                                            <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                                        </svg>
+                                                        <span class="slds-assistive-text">{{x.Name}}</span>
+                                                    </span>
+                                                </div>
+                                                <div class="slds-media__body">
+                                                    <h2 class="slds-card__header-title">
+                                                        <a href="#" class="slds-card__header-link slds-truncate" title="Card Header">
+                                                            <span>{{x.Name}}</span>
+                                                        </a>
+                                                    </h2>
+                                                </div>
+                                            </header>
+                                        </div>
+                                        <div class="slds-card__body slds-form-element slds-form-element_readonly">
+                                            <div class="slds-form-element slds-form-element_horizontal">
+                                                <label class="slds-form-element__label" for="stacked-form-element-id-08"><b>Product Name :</b></label>
+                                                <div class="slds-form-element__control">
+                                                    <input type="text" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="x.Name" style="width:auto;" readonly="true"/>
+                                                </div>
+                                                <label class="slds-form-element__label" for="stacked-form-element-id-08"><b>Unit Price :</b></label>
+                                                <div class="slds-form-element__control">
+                                                    <input type="text" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="x.UnitPrice" style="width:auto;" readonly="true"/>
+                                                </div>
+                                                <label class="slds-form-element__label" for="stacked-form-element-id-08">Number Of Quantity</label>
+                                                <div class="slds-form-element__control">
+                                                    <input type="number" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="x.quant" style="width:auto;"/>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                        <footer class="slds-card__footer slds-p-top_xxx-small" style="border-top-style: hidden;">
+                                            <button class="slds-button slds-button_brand pbtn" ng-click="addtocart($index,x.quant)">Add To Cart</button>
+                                        </footer>
+                                    </article>
+                                </div>
+                            </div>
+                            <div class="slds-notify slds-notify_alert" role="alert" style="background:#FFCC00;color:black;font-size: initial;" ng-show="alertRole">
+                                <span class="slds-assistive-text">info</span>
+                                <h2>Product which you are looking for is not available now.
+                                </h2>
+                            </div>
+                        </div>
+                        <!--<footer class="slds-card__footer" >
+                            <button class="slds-button slds-button_brand pbtn" ng-click="showproductcart();" ng-show="!alertRole && cartItemBtn">Check Cart Lineitems</button>
+                        </footer>-->
+                    </article>
+                    <article class="slds-card" ng-show="mycart">
+                        <div class="slds-card__header slds-grid pheader">
+                            <header class="slds-media slds-media_center slds-has-flexi-truncate slds-p-top_small slds-p-bottom_small">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-account" title="Back To Visitdetail Page">
+                                        <svg class="slds-icon slds-icon_medium pheader" aria-hidden="true" ng-click="cancelCartItem();">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#back')}"></use>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body slds-align_absolute-center">
+                                    <h2 class="slds-card__header-title">
+                                        <span style="text-align=center;color:white;">Total Order Items</span>
+                                    </h2>
+                                </div>
+                                <div class="slds-no-flex">
+                                    <button class="slds-button slds-button_brand pbtn" ng-click="insertorderItem();" ng-show="placeOrder">Place Order</button>
+                                </div>
+                            </header>
+                        </div>
+                        <div class="slds-card__body noCardFooter slds-grid"> 
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-table_fixed-layout" role="grid" ng-show="placeOrder">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="pheader" scope="col" style=" color: white;">
+                                            <div class="slds-truncate" title="Opportunity Name">Product Name</div>
+                                        </th>
+                                        <th class="pheader" scope="col" style=" color: white;">
+                                            <div class="slds-truncate" title="Account Name">Quantity</div>
+                                        </th>
+                                        <th class="pheader" scope="col" style=" color: white;">
+                                            <div class="slds-truncate" title="Close Date"> Unit Price</div>
+                                        </th>
+                                        <th class="pheader" scope="col" style=" color: white;">
+                                            <div class="slds-truncate" title="Stage">Total Price</div>
+                                        </th>
+                                        <th class="pheader" scope="col" style=" color: white;">
+                                            <div class="slds-truncate" title="Stage">Remove Item</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody ng-repeat="eachRec in selecteditemlist">
+                                    <tr class="slds-hint-parent">
+                                        <td data-label="Account Name">
+                                            <div class="slds-truncate" title="Cloudhub">{{eachRec.Name}}</div>
+                                        </td>
+                                        <td data-label="Close Date">
+                                            <input type="number" min="0" id="stacked-form-element-id-08" required="" class="slds-input" value="0" ng-model="eachRec.quant"/>
+                                        </td>
+                                        <td data-label="Prospecting">
+                                            <div class="slds-truncate" title="Prospecting">{{eachRec.UnitPrice}}</div>
+                                        </td>
+                                        <td data-label="Confidence">
+                                            <div class="slds-truncate" title="20%">{{(eachRec.quant)*(eachRec.UnitPrice)}}</div>
+                                        </td>
+                                        <td data-label="Confidence">
+                                            <button class="slds-button slds-button_brand pbtn" ng-click="removeItem($index);">Remove Item</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="slds-notify slds-notify_alert" role="alert" style="background:#FFCC00;color:black;font-size: initial;" ng-show="!placeOrder">
+                            <span class="slds-assistive-text">info</span>
+                            
+                            <h2>There is no order line item to be procced.
+                            </h2>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </body>
+        
+    </html>
+</apex:page>

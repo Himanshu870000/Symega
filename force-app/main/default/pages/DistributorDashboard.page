@@ -1,0 +1,425 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="DistributorDashboard_Controller" docType="html-5.0">
+    <!--action="{!authenticateUser}"-->
+
+    <head>
+        
+        <c:Libraries />
+        <script src="{!$Resource.AngularMultiSelectDirective}" />
+        <!--<script src="{!$Resource.CP_Calendar}" />-->
+        <!--<script src="{!$Resource.moment}">
+        </script>-->
+        <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.0.min.js">
+        </script>
+        <script src="{!$Resource.uicalendar}">
+        </script>
+        <script src="{!$Resource.datetimepicker}">
+        </script>
+        <script src="{!$Resource.script}">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.7.0/lodash.min.js">
+        </script>
+         <c:Controllers />
+        <script>
+        //debugger;
+            var domainURL = '{!$Label.SymegaSiteURL}';
+           
+        </script>
+        
+
+
+
+        <style>
+            html {
+                overflow-x: hidden;
+            	height:100%;
+            }
+
+            body {
+                margin: 0;
+            	height:100%;
+            font-family: sans-serif;
+            /*line-height: 1.15;*/
+                overflow-x: hidden !important;
+                background-color: rgb(203 213 225);
+            }
+
+            tr:hover {
+                background-color: rgb(203 213 225);
+
+            }
+
+            button,
+            .btn.btn-primary,
+            .btn {
+                background: #4299e1;
+                border: unset;
+
+            }
+
+            a:hover,
+            .activeColor,
+            .burger:hover,
+            i.material-icons.md-light.ml-2.pmd-sm.ng-binding:hover,
+            .nav-pills .nav-link.active {
+                color: #f4a52e !important;
+            }
+
+            .form-control:focus {
+                box-shadow: none;
+                border-color: #BA68C8
+            }
+
+            .profile-button {
+                background: #BA68C8;
+                box-shadow: none;
+                border: none
+            }
+            .recommendedJobs{
+                overflow-y: auto;
+                max-height: 500px;
+            }
+            .profile-button:hover {
+                background: #682773
+            }
+
+            .profile-button:focus {
+                background: #682773;
+                box-shadow: none
+            }
+
+            .profile-button:active {
+                background: #682773;
+                box-shadow: none
+            }
+
+            .back:hover {
+                color: #682773;
+                cursor: pointer
+            }
+
+            #formFile::before {
+                content: "Pick file";
+                position: absolute;
+                z-index: 2;
+                display: block;
+                background-color: #eee;
+                width: 80px;
+            }
+
+            .dropzone-wrapper {
+                border: 2px dashed #91b0b3;
+                color: #92b0b3;
+                position: relative;
+                height: 150px;
+            }
+
+            .dropzone-desc {
+                position: absolute;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                text-align: center;
+                width: 40%;
+                top: 50px;
+                font-size: 16px;
+            }
+
+            .dropzone,
+            .dropzone:focus {
+                position: absolute;
+                outline: none !important;
+                width: 100%;
+                height: 150px;
+                cursor: pointer;
+                opacity: 0;
+            }
+
+            .dropzone-wrapper:hover,
+            .dropzone-wrapper.dragover {
+                background: #ecf0f5;
+            }
+
+            .dropdown-menu[data-bs-popper] {
+                top: 100%;
+                left: none !important;
+                margin-top: 0.125rem;
+            }
+
+            .loadingBackground {
+                position: fixed;
+                height: 100%;
+                width: 100%;
+                background: #F6F6F6;
+                z-index: 11111;
+                opacity: 0.7;
+                top: 0px;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+
+            .loading {
+                top: 50%;
+                left: 50%;
+                margin: -50px 0px 0px -50px;
+                z-index: 111111;
+                position: fixed;
+            }
+
+            .divline {
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid #000;
+                line-height: 0.1em;
+                margin: 10px 0 20px;
+            }
+
+            .divline span {
+                background: #fff;
+                padding: 0 10px;
+            }
+
+            ul.navbar-nav.me-auto.mb-2.mb-lg-0>*,
+            .dropdown-menu.me-5.mobile-drops.show {
+                text-transform: uppercase;
+            }
+
+            @media only screen and (max-width:991px) {
+                .mobile-drops {
+                    margin: unset !important;
+                }
+                ul.navbar-nav.me-auto.mb-2.mb-lg-0>.nav-item {
+                    display: flex;
+                    justify-content: center;
+
+                }
+
+                ul.navbar-nav.me-auto.mb-2.mb-lg-0>li.nav-item {
+                    border-bottom: 1px solid #fff;
+                }
+                .navbar-nav.ms-auto.me-5 {
+                    margin: unset !important;
+                }
+                a.nav-link.dropdown-toggle {
+                    display: flex;
+                    flex-direction: column;
+                }
+                a.nav-link.dropdown-toggle>*,
+                ul.dropdown-menu.me-5.mobile-drops.show>li>a {
+                    display: flex;
+                    justify-content: center;
+                }
+                .dropdown-toggle::after {
+                    border-top: unset;
+
+                }
+            }
+
+            @media only screen and (max-width:900px) {
+                .flexibleTabs {
+                    display: block!important;
+                }
+
+            }
+
+            .card:hover {
+                box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075)!important;
+            }
+
+            .popupFooterButton>* {
+                width: 50%;
+            }
+
+            .cancelBtn {
+                background: red;
+            }
+
+            .nav.flex-column.nav-pills.colsFlex>* {
+                text-align: inherit;
+            }
+
+            .rounded-circle {
+                border: 2px solid;
+            }
+
+            .ondontefontColor {
+                color: #1e83ec;
+            }
+
+            @media only screen and (max-width:600px) {
+                .d-block-mobile {
+                    display: block !important;
+                }
+                .container-fluid {
+                    padding: unset;
+                }
+            }
+
+            @media only screen and (max-width:699px) {
+                .modalpadd {
+                    padding: 1rem !important;
+                }
+            }
+
+            .navbar-light .navbar-toggler {
+                border: 1px solid #fff;
+                color: #fff;
+            }
+
+            @media only screen and (max-width:459px) {
+                nav.navbar.navbar-expand-lg.navbar-light>.container-fluid {
+                    display: block !important;
+                }
+                .ul.navbar-nav.m    e-auto.mb-2.mb-lg-0{
+                    width: 100%;
+                }
+            }
+            .btn-danger{
+            color: #fff;
+            background-color: #bb2d3b;
+            border-color: #b02a37;
+            }
+
+            .swal2-title {
+                font-size: 0.875em !important;
+            }
+        </style>
+
+
+        <script>
+            var tabValues = JSON.parse('{!tabValues}');
+            var userId = '{!$CurrentPage.parameters.hc}';
+            var JobId = '{!$CurrentPage.parameters.JobId}';
+            var siteURL = '{!candidateSiteURL}';
+            var candidateId = '{!candidateId}';
+            console.log('{!distributorProfile}');
+            var profilePic = '{!ProfilePictureId}'
+
+            console.log("ProfilePic-----", profilePic);
+            
+
+            var distributorProfile = JSON.parse('{!distributorProfile}');
+
+            
+            console.log("Proifle-----", JSON.parse(distributorProfile));
+           
+        
+
+        /*var workingDaysValues = JSON.parse('{!workingDaysValues}');
+            var temShiftStaffType = JSON.parse('{!temShiftStaffType}');
+            var temShiftSpecialSkills = JSON.parse('{!temShiftSpecialSkills}');
+            var crownPicklistVal = JSON.parse('{!crownPicklistVal}');
+            var imgeSoftwarePickVal = JSON.parse('{!imgeSoftwarePickVal}');
+            var pmsSkillPickVal = JSON.parse('{!pmsSkillPickVal}');
+            var staffList = JSON.parse('{!staffList}');
+            var compSkillPickVal = JSON.parse('{!compSkillPickVal}');
+            var xrayProficiencyPickVal = JSON.parse('{!xrayProficiencyPickVal}');*/
+            //var getAllEvents = JSON.parse('{!getAllEvents}');
+
+
+        </script>
+
+    </head>
+
+    <body ng-app="cp_app">
+        <div ng-controller="cp_dashboard_ctrl" ng-init="">
+            <!--c:CP_NavigationBar/-->
+
+            <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(63,63,70,1) !important;font-size: 14px;">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#/Home">
+                        <apex:image url="{!$Resource.logo}" styleClass="logo" width="30%" height="30%" />
+                    </a>
+                    <button class="navbar-toggler float-end m-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <!-- <span class="navbar-toggler-icon"></span> -->
+                        <i class="fa fa-bars" />
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/Home" ng-class="{activeColor:activeTab==0}" style="color: white">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/Sample" ng-class="{activeColor:activeTab==6}" style="color: white">Sample</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/Products" ng-class="{activeColor:activeTab==1}" style="color: white">Products</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/Customers" ng-class="{activeColor:activeTab==2}" style="color: white">My Customers</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/Opportunity" ng-class="{activeColor:activeTab==3}" style="color: white">Opportunity</a>
+                            </li>
+                            <li class="nav-item">
+                                <!--<a class="nav-link" href="{!$Label.SymegaSiteURL}CP_CandidateTempJobCalender?id={!candidateId}&hc={!candidateHashcode}#/CP_HomePage"
+                                    ng-class="{activeColor:activeTab==2}" style="color: white">Temporary Job's</a>-->
+                                <a class="nav-link" href="#/Orders"
+                                    ng-class="{activeColor:activeTab==4}" style="color: white">Sales Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#/Cases" ng-class="{activeColor:activeTab==5}" style="color: white">Cases</a>
+                            </li>
+                          
+
+                        </ul>
+                        <div class="navbar-nav ms-auto me-5">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                    style="color: white !important;">
+                                 
+                                    <div class="profile-header-img">
+                                       
+                                        <img ng-if="!profilePic"  class=" rounded-circle mr-2 img-circle" src="https://icons-for-free.com/download-icon-business+costume+male+man+office+user+icon-1320196264882354682_512.png"
+                                            width="40" height="40" alt="profile" />
+                                        <img ng-if="profilePic" class="rounded-circle mr-2 profile-pic" src="https://symegafood--symegadev.lightning.force.com/sfc/servlet.shepherd/version/download/{!ProfilePictureId}"
+                                            width="40" height="40" alt="avatar" /><!--TODO: remove hardcoding-->
+                                        <!-- badge -->
+
+                                    </div>
+                                    <span class="rank-label-container" style="margin-left: 12px">
+                                        <span class="label label-default rank-label">{{userDetails.LastName}}</span>
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu me-5 mobile-drops" aria-labelledby="navbarDropdown" style="margin-left: -100px">
+                                    <li>
+                                        <a class="dropdown-item" href="#/EditProfile">Edit Profile</a>
+                                    </li>
+                                    <!--<li>
+                                        <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#referralModal">Referrals</a>
+                                    </li>-->
+                                    <!--<li>
+                                        <a class="dropdown-item" ng-click="">My Calender</a>
+                                    </li>-->
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" ng-click="logout()">Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="loadingSection" id="spinner" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+
+            <div style="Margin-top: 1%;">
+                <div>
+
+                    <ng-view>
+                    </ng-view>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</apex:page>

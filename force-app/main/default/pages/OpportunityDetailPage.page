@@ -1,0 +1,892 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
+    <html>
+        <head>
+            <apex:includeLightning />
+            <c:Libraries ></c:Libraries>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js">
+            </script>
+            <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet"/>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <apex:stylesheet value="{!$Resource.OperationsPortalCSS}" />
+
+
+
+            <style>
+                .loadingBackground {
+                    position: fixed;
+                    height: 100%;
+                    width: 100%;
+                    background: #F6F6F6;
+                    z-index: 11111;
+                    opacity: 0.7;
+                    top: 0px;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                }
+                    .loading {
+                    top: 50%;
+                    left: 50%;
+                    margin: -50px 0px 0px -50px;
+                    z-index: 111111;
+                    position: fixed;
+                }
+
+                .tab {
+                    overflow: hidden;
+                    border: 1px solid #ccc;
+                    background-color: mintcream;
+                    padding-left: 1%;
+                        margin-left: 1%;
+                        margin-right: 2%;
+                        border-radius: 11px;
+                    }
+
+                    /* Style the buttons inside the tab */
+                    .tab button {
+                    background-color: inherit;
+                    float: left;
+                    border: none;
+                    outline: none;
+                    cursor: pointer;
+                    padding: 14px 16px;
+                    transition: 0.3s;
+                    font-size: 17px;
+                    }
+
+                    /* Change background color of buttons on hover */
+                    .tab button:hover {
+                    background-color: #ddd;
+                    }
+
+                    /* Create an active/current tablink class */
+                    .tab button.active {
+                    background-color: #ccc;
+                    }
+
+                    /* Style the tab content */
+                    .tabcontent {
+                    display: none;
+                    padding: 6px 12px;
+                    border: 1px solid #ccc;
+                    border-top: none;
+                    }
+            </style>
+        </head>
+
+        <body ng-app="OppDet_App" ng-controller="OppDet_ctrl" style="background-color: white; !important;">
+            <div class="loadingSection" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="wrapper px-5">
+                    <div>
+                        <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                    </div>
+                    <div style="width: 50%;">
+                        <!-- <marquee>
+                            <h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+                         </marquee> -->
+                    </div>
+                    
+                        <!--div class="d-flex text-align-center">
+                            <div class="dropdown">
+                                <i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                </i>
+                                <ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{conName}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-at me-3"></i>{{email}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+                                </li>
+                                </ul>
+                              </div>
+                            </div-->
+                </div>
+            </nav>
+
+            <div class="row mx-5">
+                <div class="row box-shadow-2 mb-5">
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-8">
+                            <h3 class="pb-3 color-theme"><b>BASIC DETAILS</b></h3>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="blue-btn me-2 mb-5" ng-click="openPopUp()"  style="background:teal; float: right;" type="button">
+                                Submit for FERT Code</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">RecordType Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.RecordType.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Account Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Account.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Close Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="oppDetails.CloseDate" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Type
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Type" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Stage
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.StageName" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity Age
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Opportunity_Age__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Reason For Loss
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Reason_For_Loss_del__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Primary Contact
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Primary_Contact__r.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Probability (%)
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Probability" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Fiscal Year
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Fiscal_Year__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Instruction
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Customer_response__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Proforma Invoice No
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Performa_Invoice_No__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Lead Source
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.LeadSource" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity Reference No
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Opportunity_Reference_No__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Followup Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="oppDetails.Customer_Followup_Date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Freight Charge (Per Kg)
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Freight_charges__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Proposed Date Of Dispatch
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="oppDetails.Proposed_Date_of_Dispatch__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">End Use Category
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.End_Use_Category__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Child Opp
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Child_Opp__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">End Use Application
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.End_Use_Application__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total Quantity
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Total_Quantity__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Send Fert Notification Email
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="oppDetails.Send_Fert_Notification_Email__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total List Price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Total_List_Price__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total Unit Price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Total_Unit_Price__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Include Freight Charges
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="oppDetails.Include_Freight_Charges__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total Qty In Kg
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Total_Qty_In_Kg__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total Freight Charges
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Total_Freight_Charges__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Approver Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Approver_Name__c" ng-disabled="true"/>
+                    </div>
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>ADDITIONAL INFORMATION</b></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Next Step
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.NextStep" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Description
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Description" ng-disabled="true"/>
+                    </div>
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>OPPORTUNITY SUMMARY</b></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity Currency
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.CurrencyIsoCode" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Synced Quote
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.SyncedQuoteId" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total Quantity (In KG)
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.TotalOpportunityQuantity" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Amount
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Amount" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Markdown %
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Markdown__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Price Book
+                        </label>
+                        <input class="form-control" type="text" ng-model="oppDetails.Pricebook2.Name" ng-disabled="true"/>
+                    </div>
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>APPROVAL INFORMATION</b></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Approval Status
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oppDetails.Approval_Status__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Approved by Business Head
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="oppDetails.Approved_by_Business_Head__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3 mb-3">
+                        <label class="font-if">Approved by Manager
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="oppDetails.Approved_by_Manager__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3 mb-3">
+                        <label class="font-if">Approved by MD
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="oppDetails.Approved_by_MD__c" ng-disabled="true"/>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6 mt-3">
+                <button class="blue-btn float-end me-2 mb-5" ng-click="back()" type="button">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back</button>
+            </div>
+            
+            
+            
+            <div class="modal" id="flipFlop">
+            <div class="modal-dialog" style="min-width:1000px">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                            <h3 class="color-theme2" style="color:green;">
+                                <b>UPDATE RECORD</b>
+                            </h3>
+                         </div></h4> 
+                        <!--button type="button" class="btn-close" data-bs-dismiss="modal"></button-->
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="row" ng-show="showAccRecord">
+                            <div class="col-md-6 mt-3" ng-if="accRecord.Name == undefined">
+                                <label class="font-if">Name:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.Name"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.Customer_Type__c == undefined">
+                                <label class="font-if">Customer Type:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Customer_Type__c">
+                                    <option ng-repeat="staff in customerType">{{staff}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.BillingCity == undefined">
+                                <label class="font-if">Currency:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.CurrencyIsoCode">
+                                    <option ng-repeat="staff in currencyCode">{{staff}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.Name == undefined">
+                                <label class="font-if">City:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.BillingCity"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.BillingCountry == undefined">
+                                <label class="font-if">Country:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.BillingCountry"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.BillingStreet == undefined">
+                                <label class="font-if">Street:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.BillingStreet"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.BillingPostalCode == undefined">
+                                <label class="font-if">Pin Code:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.BillingPostalCode"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.BillingState == undefined">
+                                <label class="font-if">State:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.BillingState"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.Delivery_Plant__c == undefined">
+                                <label class="font-if">Delivery Plant:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Delivery_Plant__c">
+                                    <option ng-repeat="staff in deliveryPlant">{{staff}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.Account_Segment__c == undefined">
+                                <label class="font-if">Account Segment:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Account_Segment__c">
+                                    <option ng-repeat="staff in accountSegmant">{{staff}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.Transportation_Terms__c == undefined">
+                                <label class="font-if">Transportation Terms:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Transportation_Terms__c">
+                                    <option ng-repeat="staff in transportationTerms">{{staff}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.PAN_Number__c == undefined">
+                                <label class="font-if">PAN Number:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.PAN_Number__c"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-if="accRecord.GST_number__c == undefined">
+                                <label class="font-if">GST Number:</label>
+                                <input class="form-control" type="text" ng-model="accRecord.GST_number__c"/>
+                            </div>
+                        </div>
+                        <div ng-show="showCustomerAddress">
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Address__Street__s == undefined || showFieldStreet == false">
+                                <label class="font-if">Street:</label>
+                                <input class="form-control" type="text" ng-model="customerAddressRec.Address__Street__s"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Address__City__s == undefined || showFieldCity == false">
+                                <label class="font-if">City:</label>
+                                <input class="form-control" type="text" ng-model="customerAddressRec.Address__City__s"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Address__StateCode__s == undefined || showFieldState == false">
+                                <label class="font-if">State:</label>
+                                <input class="form-control" type="text" ng-model="customerAddressRec.Address__StateCode__s"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Address__CountryCode__s == undefined || showFieldCountry == false">
+                                <label class="font-if">Country:</label>
+                                <input class="form-control" type="text" ng-model="customerAddressRec.Address__CountryCode__s"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Address__PostalCode__s == undefined || showFieldPC == false">
+                                <label class="font-if">Pin Code:</label>
+                                <input class="form-control" type="text" ng-model="customerAddressRec.Address__PostalCode__s"/>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Type__c == undefined || showFieldType == false">
+                                <label class="font-if">Type:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="customerAddressRec.Type__c">
+                                    <option ng-repeat="type in customerAddType">{{type}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3" ng-show="customerAddressRec.Contact__c == undefined || showFieldContact == false">
+                                <label class="font-if">Contact:</label>
+                                <select class="form-select" aria-label="Default select example" ng-model="customerAddressRec.Contact__c">
+                                    <option ng-repeat="con in conList" value="{{con.Id}}">{{con.Name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7 mt-3 mb-3">
+                        <button class="blue-btn float-end me-2 mb-5" ng-click="updateDetails()" type="button">
+                            Save</button>
+                        
+                        <button class="blue-btn float-end me-2 mb-5" onclick="cancelLWC()" type="button">
+                            Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal" id="oli">
+            <div class="modal-dialog" style="min-width:1000px">
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"><div class="d-flex justify-content-center" style="background:unset;">
+                                <h3 class="color-theme2" style="color:green;">
+                                    <b>SUBMIT FOR FERT CODE</b>
+                                </h3>
+                             </div></h4> 
+                            <!--button type="button" class="btn-close" data-bs-dismiss="modal"></button-->
+                    	</div>
+                        <div class="modal-body">
+                            <div class="row" >
+                                <table class="table" ng-repeat="oliRec in OLIList">
+                                    <thead>
+                                        <th style="width:40%;">Field</th>
+                                        <th style="width:60%;">Value</th>
+                                    </thead>
+                                    <tbody>
+                                        <td>Product Name:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Product2.Name" ng-disbled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Packing Type:</td>
+                                        <td><select class="form-control" aria-label="Default select example" ng-model="oliRec.Packaging_Type__c">
+                                            <option ng-repeat="staff in packingType">{{staff}}</option>
+                                        </select></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Customer No.:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Customer_Code__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Customer No.:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Customer_Code__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Customer Name:</td>
+                                        <td><input class="form-control" type="text" ng-model="oppDetails.Account.Name" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Street:</td>
+                                        <td><input class="form-control" type="text" ng-model="oppDetails.Billing_Street__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>City:</td>
+                                        <td><input class="form-control" type="text" ng-model="oppDetails.Billing_City__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>State:</td>
+                                        <td><input class="form-control" type="text" ng-model="oppDetails.Billing_State__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Country:</td>
+                                        <td><input class="form-control" type="text" ng-model="oppDetails.Billing_Country__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Postal Code:</td>
+                                        <td><input class="form-control" type="text" ng-model="oppDetails.Billing_Postal_Code__c" ng-disabled="true"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Expected Order Quantity:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Quantity"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Fert Description:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Fert_Description__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Unit Of Measure (Sales Unit):</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Unit_Of_Measure__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Halb Code:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.ProductCode"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Base Qty:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Packaging_Quantity__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Art Work:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Art_Work__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Shelf Life Qty:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Product2.Shelf_Life__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Allergen Status Required:</td>
+                                        <td><input class="form-check-input" type="checkbox" ng-model="oliRec.Product2.Allergen_Status_Required__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Veg/ Non- Veg Logo in Label:</td>
+                                        <td><select class="form-control" aria-label="Default select example" ng-model="oliRec.Product2.Veg_Nonveg_Logo_In_Label__c">
+                                            <option ng-repeat="staff in vegNonVegLabel">{{staff}}</option>
+                                        </select></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Customer Customised label:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Customized_Label__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Ingredients List declared with customer:</td>
+                                        <td><select class="form-control" aria-label="Default select example" ng-model="oliRec.Ingredients_List_Declared_With_Customer__c">
+                                            <option ng-repeat="staff in ingredients">{{staff}}</option>
+                                        </select></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Ingredients List:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Ingredient_list__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Reveal SYMEGA Identity:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Reveal_Symega_Identity__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Cusinery Identity:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Cusinery_identity__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Label:</td>
+                                        <td><select class="form-control" aria-label="Default select example" ng-model="oliRec.Label__c">
+                                            <option ng-repeat="staff in label">{{staff}}</option>
+                                        </select></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Material Sector:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Material_Sector__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Sales Remarks:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Sales_Remarks__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Plant:</td>
+                                        <td><select class="form-select" aria-label="Default select example" ng-model="oliRec.Plant__c">
+                                            <option ng-repeat="staff in plant">{{staff}}</option>
+                                        </select></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Control Code/HSN Code:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Product2.Control_Code_HSN_Code__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Primary:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Primary__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Secondary:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Secondary__c"/></td>
+                                    </tbody>
+                                    <tbody>
+                                        <td>Teritary:</td>
+                                        <td><input class="form-control" type="text" ng-model="oliRec.Tertiary__c"/></td>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr class="border mt-3" />
+                        </div>
+                    <div class="col-md-7 mt-3 mb-3">
+                        <button class="blue-btn float-end me-2 mb-5" ng-click="updateOppProductDetails()" type="button">
+                            Update</button>
+                        <button class="blue-btn float-end me-2 mb-5" ng-click="closeOLI()" type="button">
+                            Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </body>
+
+        <script>
+            var userHashId = '{!$CurrentPage.parameters.id}';
+            var oppId = '{!$CurrentPage.parameters.oppId}';
+        	var packingType = JSON.parse('{!packingType}');
+            var vegNonVegLabel = JSON.parse('{!vegNonVegLabel}');
+            var ingredients = JSON.parse('{!ingredients}');
+        	var label = JSON.parse('{!label}');
+        	var plant = JSON.parse('{!plant}');
+       		var customerType = JSON.parse('{!customerType}');
+        	var currencyCode = JSON.parse('{!currencyCode}');
+        	var deliveryPlant = JSON.parse('{!deliveryPlant}');
+            var accountSegmant = JSON.parse('{!accountSegmant}');
+            var transportationTerms = JSON.parse('{!transportationTerms}');
+        	var customerAddType = JSON.parse('{!customerAddType}');
+            var app = angular.module('OppDet_App', []);
+        	var parentId = '0061m000001fQjuAAE';
+            app.controller('OppDet_ctrl', function ($scope){
+                debugger;
+                $scope.packingType = packingType;
+                $scope.vegNonVegLabel = vegNonVegLabel;
+                $scope.ingredients = ingredients;
+                $scope.label = label;
+                $scope.plant = plant;
+                $scope.customerType = customerType;
+                $scope.currencyCode = currencyCode;
+                $scope.deliveryPlant = deliveryPlant;
+                $scope.accountSegmant = accountSegmant;
+                $scope.transportationTerms = transportationTerms;
+                $scope.customerAddType = customerAddType;
+                $scope.showAccRecord = false;
+                $scope.showCustomerAddress = false;
+                $scope.showOLIPopUp = false;
+                $scope.showFieldCity = true;
+                $scope.showFieldStreet = true;
+                $scope.showFieldPC = true;
+                $scope.showFieldCountry = true;
+                $scope.showFieldState = true;
+                $scope.showFieldType = true;
+                $scope.showFieldContact = true;
+                
+
+                $scope.getOpportunityDetails = function(){
+                        debugger;
+                        OperationsPortalController.getOpportunityDetails(oppId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                debugger;
+                                $scope.oppDetails = result.oppList[0];
+                                $scope.OLIList = result.oppProductList;
+                                if(result.conList != undefined){
+                                    $scope.conList = result.conList;
+                                }
+                                if(result.accRecord != undefined){
+                                    $scope.accRecord = result.accRecord;
+                                    
+                                }else if(result.customerAddRec != undefined){
+                                    $scope.customerAddressRec = result.customerAddRec;
+                                    if($scope.customerAddressRec.Address__City__s == undefined){
+                                        $scope.showFieldCity = false;
+                                    }
+                                    if($scope.customerAddressRec.Address__Street__s == undefined){
+                                        $scope.showFieldStreet = false;
+                                    }
+                                    if($scope.customerAddressRec.Address__PostalCode__s == undefined){
+                                        $scope.showFieldPC = false;
+                                    }
+                                    if($scope.customerAddressRec.Address__CountryCode__s == undefined){
+                                        $scope.showFieldCountry = false;
+                                    }
+                                    if($scope.customerAddressRec.Address__StateCode__s == undefined){
+                                        $scope.showFieldState = false;
+                                    }
+                                    if($scope.customerAddressRec.Type__c == undefined){
+                                        $scope.showFieldType = false;
+                                    }
+                                    if($scope.customerAddressRec.Contact__c == undefined){
+                                        $scope.showFieldContact = false;
+                                    }
+                                    
+                                }else{
+                                    }
+                                
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    $scope.getOpportunityDetails();
+
+                    $scope.back = function(){
+                        debugger;
+                        var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleLineItemDetailPage';
+                        window.location.replace(window.location.origin + sitePrefix +'?id='+ userHashId);
+                    }
+                    
+                    $scope.openPopUp = function(){
+                        debugger;
+                        if($scope.accRecord != undefined){
+                                    if($scope.accRecord.Name == undefined || $scope.accRecord.Customer_Type__c == undefined || $scope.accRecord.CurrencyIsoCode == undefined || 
+                                      $scope.accRecord.BillingCity == undefined || $scope.accRecord.BillingCountry == undefined || $scope.accRecord.BillingStreet == undefined || 
+                                      $scope.accRecord.BillingPostalCode == undefined || $scope.accRecord.BillingState == undefined || $scope.accRecord.Delivery_Plant__c == undefined || 
+                                      $scope.accRecord.Account_Segment__c == undefined || $scope.accRecord.Transportation_Terms__c == undefined || $scope.accRecord.PAN_Number__c == undefined || 
+                                      $scope.accRecord.GST_number__c == undefined){
+                                        var myModal = new bootstrap.Modal(document.getElementById('flipFlop'));
+                                        myModal.show('slow');
+                                        myModal.innerHTML="";
+                                        $scope.showAccRecord = true;
+                                    	$scope.showCustomerAddress = false;
+                                        $scope.showOLIPopUp = false;
+                                    }else{
+                                        $('#oli').modal('toggle');
+                                    	$scope.showOLIPopUp = true;
+                                    }
+                                }else if($scope.customerAddressRec != undefined){
+                                    if($scope.customerAddressRec.Address__City__s == undefined || $scope.customerAddressRec.Address__Street__s == undefined || 
+                                      $scope.customerAddressRec.Address__PostalCode__s == undefined || $scope.customerAddressRec.Address__CountryCode__s == undefined || 
+                                      $scope.customerAddressRec.Address__StateCode__s == undefined || $scope.customerAddressRec.Contact__c == undefined || 
+                                      $scope.customerAddressRec.Type__c == undefined){
+                                        var myModal = new bootstrap.Modal(document.getElementById('flipFlop'));
+                                        myModal.show('slow');
+                                        myModal.innerHTML="";
+                                        $scope.showCustomerAddress = true;
+                                    	$scope.showAccRecord = false;
+                                        $scope.showOLIPopUp = false;
+                                    } else{
+                                        $('#oli').modal('toggle');
+                                    	$scope.showOLIPopUp = true;
+                                    }
+                                }else{
+                               		
+                                }
+                        $scope.$apply();
+                    }
+                    
+                    $scope.updateDetails = function(){
+                        debugger;
+                        if($scope.customerAddressRec == undefined){
+                            $scope.customerAddressRec = {"Name":""};
+                        }
+                        if($scope.accRecord == undefined){
+                            $scope.accRecord = {"Name":""};
+                        }
+                        OperationsPortalController.updateDetails($scope.accRecord,$scope.customerAddressRec,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                debugger;
+                                swal("success", "Record Updated successfully.","success");
+                                //$scope.showOLIPopUp = true;
+                                $scope.showAccRecord = false;
+                				$scope.showCustomerAddress = false;
+                                $('#flipFlop').modal('toggle');
+                                $('#oli').modal('toggle');
+                                $scope.$apply();
+                            }
+                            $scope.$apply();
+                        })
+                    }
+                    
+                    $scope.updateOppProductDetails = function(){
+                        debugger;
+                        for(var i=0;i<$scope.OLIList.length;i++){
+                            delete ($scope.OLIList[i]['$$hashKey']);
+                        }
+                        OperationsPortalController.updateOppProductDetails($scope.OLIList,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                swal("success", "Product details have been Updated successfully.","success");
+                                $('#oli').modal('toggle');
+                                $scope.$apply();
+                            }
+                            
+                        })
+                    }
+                    
+                    $scope.closeOLI = function(){
+                        debugger;
+                        $('#oli').modal('toggle');
+                    }
+            })
+        </script>
+        <script>
+        function cancelLWC(){
+            debugger;
+            $('#flipFlop').modal('toggle');
+            //var myModal = new bootstrap.Modal(document.getElementById('flipFlop'));
+            //myModal.hide('slow');
+        }
+        </script>
+    </html>
+</apex:page>

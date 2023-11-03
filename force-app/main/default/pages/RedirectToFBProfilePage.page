@@ -1,0 +1,26 @@
+<apex:page controller="Distributor_LoginPage_Controller" showHeader="false" sidebar="false" action="{!checkUserAuth}">
+    <script>
+    debugger;
+        let email = encodeURIComponent('{!FbId}');
+        let firstName = encodeURIComponent('{!name}');
+        let isLogin = encodeURIComponent('{!isLogin}');
+    	let isSignUp = encodeURIComponent('{!isSignUp}');
+    	let isDistributor = encodeURIComponent('{!isDistributor}');
+    	let isFBcustomerSignup = encodeURIComponent('{!isFBcustomerSignup}');  
+        let isFBcandidateSignup = encodeURIComponent('{!isFBcandidateSignup}');
+        let docUplaodCustomer = encodeURIComponent('{!docUplaodCustomer}');
+        let isCustomer = encodeURIComponent('{!isCustomer}');
+    	var hashcode = '{!hasCodeUpdate}';
+        // window.location.replace(siteURL+'RegistrationFromFacebook?gemail='+email+'&first_name='+firstName);
+        let mainURL = window.location.origin+'/apex';
+        if(isSignUp == "false" && hashcode != ""){ 
+            if(docUplaodCustomer == "true"){
+                window.location.replace('{!$Label.SymegaSiteURL}' + '/documentUpload?hc='+hashcode);
+            }else{
+                window.location.replace('{!$Label.SymegaSiteURL}' + '/DistributorDashboard?hc='+hashcode);
+            }
+        }else{
+            window.location.replace('{!$Label.SymegaSiteURL}' + '/Distributor_LoginPage?gemail='+email+'&first_name='+firstName+'&signUp=customer&register=true');       
+        }        
+    </script>
+</apex:page>

@@ -1,0 +1,22 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="mapMarkers" type="Object"/>
+    <aura:attribute name="zoomLevel" type="Integer" />
+    
+    <!-- handlers-->
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <!-- the map component -->
+    
+    <iframe
+                           width="100%"
+                           height="400"
+                           frameborder="0"
+                           style="border: 0"
+                           src="https://symegafood--uat--c.sandbox.vf.force.com/apex/FSLMapToShowBoundaries?core.apexpages.request.devconsole=1"
+                           allowfullscreen="true">
+                         </iframe>
+    
+    <!-- style=" height:10%; box-shadow: 0px 2px 5px silver; border:solid white; border-radius: 1%;" -->
+    <br/>
+</aura:component>

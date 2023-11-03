@@ -1,0 +1,132 @@
+<apex:page applyHtmlTag="false" docType="html-5.0" showHeader="false" sidebar="false" renderAs="pdf" controller="SampleInvoicePDFController" >
+    <head>
+        <style>
+            @page {
+            
+            margin-left: 0.5cm;
+            margin-right: 0.5cm;      
+            }
+            
+        </style>
+        
+    </head>
+    <body>
+        <br/>  <br/>  <br/>  <br/>
+        <div>  
+            <table style="width:100%;border:1px solid black;">
+                <tr>
+                    <td style="font-size:12px;"><p>{!sampDetails.MasterLabel}, <br/>
+                        {!sampDetails.SyntPark__c},{!sampDetails.Hno__c},{!sampDetails.Pancode__c} <br/> 
+                        {!sampDetails.Landmark__c},{!sampDetails.City__c}-{!sampDetails.Pincode__c},{!sampDetails.State__c},{!sampDetails.Country__c} <br/>   
+                        CIN- {!sampDetails.CIN__c} <br/> 
+                        T. {!sampDetails.mobile1__c}, T.  {!sampDetails.mobile2__c}  </p> </td>
+                    <td>  <span style="padding-right:15px;float:right"><apex:image url="{!$Resource.logo}" width="220px" height="50px"/></span> <br/> <br/> <br/>
+                        <span  style="padding-right:45px;float:right"> www.symega.com</span> <span style="padding-right:3px;float:right;color:blue;">W</span><br/>
+                        <span  style="padding-right:45px;float:right"> info@symega.com</span> <span style="padding-right:3px;float:right;color:blue;">E</span><br/>
+                        <span style="font-size:20px;padding-right:325px;float:right"><b>Sample Invoice</b></span>
+                    </td>
+                </tr>   
+            </table>
+        </div>
+        <div style="width:100% ; border:1px solid black; height:178px;"> 
+            <br/>
+            <div style="border: 1px solid black; width:47%; float:left; margin-left:10px;">
+                <p style="padding-left:5px; font-size:12px;">
+                    Consignee <br/>
+                    {!projRec.Opportunity__r.Account.ShippingCity} <br/>
+                    {!projRec.Opportunity__r.Account.ShippingStreet} <br/>
+                    {!projRec.Opportunity__r.Account.ShippingState},<br/>
+                    POSTAL CODE -  {!projRec.Opportunity__r.Account.ShippingPostalCode} {!projRec.Opportunity__r.Account.ShippingCountry} <br/>
+                    Contact No. {!projRec.Customers_Contact__r.Name}{!projRec.Customers_Contact__r.Phone}{!projRec.Customers_Contact__r.Email}  <br/>  <!-- Mr. Nofian(+62213863974)nofian.junaedi@indesso.com -->
+                    <br/>
+                    <br/>
+                </p>
+            </div>
+            
+            <div style="border: 1px solid black; width:48%; float:right; margin-right:10px;">
+                <p style="padding-left:5px; font-size:12px;">
+                    Customer Number &nbsp;&nbsp;&nbsp; {!projRec.Opportunity__r.Account.Customer_Number__c}  <br/>
+                    Invoice Number | Date2023781381 |{!projRec.Invoice_No__c}   <br/>
+                    Currency  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;   {!projRec.Opportunity__r.CurrencyIsoCode}   <br/>
+                    Net Wt.   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  {!convertGmToKG}KG
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                </p>
+            </div>  
+            <div style="font-size:12px;height:10px; margin-top:142px; margin-left:10px; "> Delivery at : {!projRec.City__c} {!projRec.State__c} {!projRec.Postal_Code__c} </div>  
+        </div>
+        
+        <div style="width:100%;">            
+            <table style="width:100%;border:1px solid black;border-collapse:collapse;">
+                <tr >
+                    <th  style="border:1px solid black;background-color: #dddddd;text-align:center;">Item Nr.</th>
+                    <th  style="border:1px solid black;background-color: #dddddd;font-size:12px;text-align:center;">Item Description</th>
+                    <th  style="border:1px solid black;background-color: #dddddd;font-size:12px;text-align:center;">HSN </th>
+                    <th  style="border:1px solid black;background-color: #dddddd;font-size:12px;text-align:center;">Quantity</th>
+                    <th  style="border:1px solid black;background-color: #dddddd;font-size:12px;text-align:center;">Packing</th>
+                    <th  style="border:1px solid black;background-color: #dddddd;font-size:12px;text-align:center;">Unit</th>
+                    <th  style="border:1px solid black;background-color: #dddddd;font-size:12px;text-align:center;">Net Value</th>  
+                </tr>
+                
+                <apex:repeat value="{!sampLineItemList}" var="sliList"> 
+                    <tr>
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;" >{!sliList.Product_Code__c}</td>   <!-- R10007508 -->
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;" >{!sliList.Product_Name__c}</td>
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;">{!sliList.Product__r.HSN_Code__c}</td>
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;" >{!sliList.Quantity__c}</td>
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;" >{!sliList.Packaging_Unit__c}</td>
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;" >{!sliList.Quantity_Unit__c}</td>
+                        <td  style="border:1px solid black;font-size:12px;text-align:center;">0.90</td> 
+                    </tr>
+                </apex:repeat>
+                
+                <tr>
+                    <!--  <td  style="border:1px solid black;font-size:12px;text-align:center;"></td> -->
+                    <td style="border:1px solid black; font-size:12px; padding-left:120px; " colspan="2"  > Total </td>
+                    <td  style="border:1px solid black;font-size:12px; text-align:center;"></td>
+                    <td style="border:1px solid black; font-size:12px; text-align:center;" > {!convertGmToKG}KG </td>
+                    <!--  <td  style="border:1px solid black;font-size:12px;text-align:center;"></td>  -->
+                    <td style="border:1px solid black; font-size:12px;text-align:right; " colspan="2"> </td>
+                    <td style="border:1px solid black; font-size:12px;text-align:right; " > 100 </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+        <div style="border: 1px solid black;">
+            
+            <apex:repeat value="{!projRec}" var="projRec">  </apex:repeat>
+            <!--  No_Of_Cartoons__c,Mode_Of_Courier__c -->
+            <p style="font-size:12px;padding-left:5px;">
+                Mode Of Courier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;&nbsp; {!projRec.Mode_Of_Courier__c}  <br/> <br/>
+                Value for Custom Purpose   &nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp; {!projRec.Opportunity__r.CurrencyIsoCode}  <br/>
+                (In Words) <br/> <br/>
+                Number Of Cartoons &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;  {!projRec.No_Of_Cartoons__c}
+                
+            </p>
+            
+            <br/> <br/>
+            <br/> <br/>
+            <hr/>
+            
+            <p style="padding-left:5px;">
+                we here by declare that the above mentioned Products are sent for trails and evaluation <br/>
+                Hence no commercial value applied or non currency transactions involved <br/>
+                The declare value is only for Customs Evaluation Purpose </p><br/>
+            
+            <hr/>
+            <p style="padding-left:5px;">
+                For Symega Ingredients Ltd <br/> 
+            </p> 
+            <br/> <br/>
+            <p style="padding-left:5px;">
+                Authorized Signatory <br/> 
+            </p>  
+            <br/> <br/>
+        </div>        
+        
+    </body>
+</apex:page>

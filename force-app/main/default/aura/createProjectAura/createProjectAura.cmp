@@ -1,0 +1,119 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader"
+                access="global" controller="ProjectHanlder">
+    
+    <aura:attribute name="oppList" type="Opportunity[]"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    
+    <aura:iteration items="{!v.oppList}" var="oppRec">
+        <lightning:card>
+            <div class="modal-header slds-modal__header slds-size_1-of-1">
+                <h4 class="title slds-text-heading--medium">Create Project</h4>
+            </div><br/>
+            <lightning:recordEditForm aura:id="recordEditForm" 
+                                      objectApiName="Project__c"
+                                      onerror="{!c.handleError}"
+                                      onsuccess="{!c.handleSuccess}" >
+                
+                <lightning:messages />
+                <lightning:inputField fieldName="Project_Name__c" value="{!oppRec.Account.Name + ' - Project'}"/>
+                <lightning:inputField fieldName="Opportunity__c" value="{!oppRec.Id}"/>
+                <lightning:inputField fieldName="RecordTypeId" aura:id="recType" disabled="true"/>
+                <lightning:inputField fieldName="Parent_Project__c" />
+                <lightning:inputField fieldName="Approval_Status__c" />
+                <lightning:inputField fieldName="Way_Bill_No__c" />
+                <lightning:inputField fieldName="Courier__c" />
+                <lightning:inputField fieldName="Sample_Delivery_Date__c"/>
+                <lightning:inputField fieldName="Dosage_Guidelines__c"/>
+                <lightning:inputField fieldName="Product_Approval_Format_Customer__c" />                
+                <lightning:inputField fieldName="R_D_Approval_Status__c" />
+                <lightning:inputField fieldName="GMO_Status__c" />
+                <lightning:inputField fieldName="Halal_Certification__c"/>
+                <lightning:inputField fieldName="Allergin_Free_Decleration__c" />                
+                <lightning:inputField fieldName="Kosher_Certification__c" /> 
+                <lightning:inputField fieldName="Organic_Certification__c" />
+                <lightning:inputField fieldName="CurrencyIsoCode"/>
+                <lightning:inputField fieldName="Status__c" />
+                
+                <!-- Address Information  -->
+                <lightning:inputField fieldName="City__c" value="{!oppRec.Shipping_City__c}"/>
+                <lightning:inputField fieldName="State__c" value="{!oppRec.Shipping_State__c}"/>
+                <lightning:inputField fieldName="Street__c" value="{!oppRec.Shipping_Street__c}"/>
+                <lightning:inputField fieldName="Country__c" value="{!oppRec.Shipping_Country__c}"/>
+                <lightning:inputField fieldName="Postal_Code__c" value="{!oppRec.Shipping_Postal_Code__c}"/>
+                
+                <lightning:inputField fieldName="Billing_City__c" value="{!oppRec.Billing_City__c}"/>
+                <lightning:inputField fieldName="Billing_State__c" value="{!oppRec.Billing_State__c}"/>
+                <lightning:inputField fieldName="Billing_Street__c" value="{!oppRec.Billing_Street__c}"/>
+                <lightning:inputField fieldName="Billing_Country__c" value="{!oppRec.Billing_Country__c}"/>
+                <lightning:inputField fieldName="Billing_Postal_Code__c" value="{!oppRec.Billing_Postal_Code__c}"/>
+                
+                <!-- Project Brief  -->
+                <lightning:inputField fieldName="Expected_Annual_Value__c" /> 
+                <lightning:inputField fieldName="Expected_Volume_Unit__c" />
+                <lightning:inputField fieldName="Target_Price__c" />
+                <lightning:inputField fieldName="Application_method__c"/>
+                <lightning:inputField fieldName="Other_Application_Methods__c" />
+                <lightning:inputField fieldName="Expected_Shelf_Life__c" /> 
+                <lightning:inputField fieldName="Current_Shelf_life__c" /> 
+                <lightning:inputField fieldName="Solubility_Preference__c" />
+                <lightning:inputField fieldName="Priority__c" />
+                <lightning:inputField fieldName="Other_Project_Composition__c"/>
+                <lightning:inputField fieldName="Customer_Launch_Date__c" />
+                <lightning:inputField fieldName="Required_End_Date__c" />
+                <lightning:inputField fieldName="Minimum_order_quantity__c" /> 
+                <lightning:inputField fieldName="Minimum_order_quantity_unit__c" />
+                <lightning:inputField fieldName="Type_of_PR__c" />
+                <lightning:inputField fieldName="Country_Regulation__c"/>
+                <lightning:inputField fieldName="Wet_Dry__c" />
+                <lightning:inputField fieldName="Ingredient_Specific_If_Any__c" /> 
+                <lightning:inputField fieldName="Sampling_Quantity_details__c" />
+                <lightning:inputField fieldName="Sampling_Quantity_Unit__c" />
+                
+                <!-- Sample Dispatch Request  -->
+                <lightning:inputField fieldName="Proposed_date_of_dispatch__c" /> 
+                <lightning:inputField fieldName="Actual_Date_of_Dispatch__c" />
+                <lightning:inputField fieldName="Project_Completion_Date__c" />
+                <lightning:inputField fieldName="Start_Date__c"/>
+                <lightning:inputField fieldName="Quantity__c" /> 
+                <lightning:inputField fieldName="Quantity_Unit__c" />
+                <lightning:inputField fieldName="Packaging_Unit__c" />                
+                
+                <!-- Approver Suggestion -->
+                <lightning:inputField fieldName="Sales_head_review__c" />  
+                
+                <!-- Additional Information  -->
+                <lightning:inputField fieldName="S_O_Date__c" /> 
+                <lightning:inputField fieldName="Reason_for_rejection__c" />
+                <lightning:inputField fieldName="Dispatch_Details__c" />
+                <lightning:inputField fieldName="Scaled_up_date__c"/>
+                <lightning:inputField fieldName="Moved_Production_date__c" />
+                
+                <!-- Customer Feedback -->
+                <lightning:inputField fieldName="Customer_Feedback__c" /> 
+                <lightning:inputField fieldName="Customer_Comments__c" />
+                <lightning:inputField fieldName="Additional_Comments__c" />
+                <lightning:inputField fieldName="Regulatory_Requirements__c"/>
+                <lightning:inputField fieldName="Prototype_Feedback__c" />
+                <lightning:inputField fieldName="Customers_Contact__c" value="{!oppRec.Account.Customer_Contact__c}"/>
+                
+                <!-- Packing Details -->
+                <lightning:inputField fieldName="If_Private_Label__c" />
+                
+                <!-- Proposed Commercial Details -->
+                <lightning:inputField fieldName="Cost_in_use__c" />
+                
+                <div class="modal-footer slds-modal__footer slds-size_1-of-1 slds-p-around_large slds-align_absolute-center">
+                    <div role="contentinfo">
+                        <lightning:button label="Cancel" onclick="{!c.handleCancel}" class="marginTop" />
+                        <lightning:button label="Save" onclick="{!c.handleSubmit}" class="marginTop" />
+                    </div>
+                </div>
+                
+            </lightning:recordEditForm>
+        </lightning:card>
+    </aura:iteration>    
+    
+    
+    <!-- onsuccess="{!c.handleSuccess}" -->
+</aura:component>

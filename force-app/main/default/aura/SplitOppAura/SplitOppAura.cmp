@@ -1,0 +1,6 @@
+<aura:component implements="lightning:actionOverride,lightning:hasPageReference,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction"
+                access="global">
+        <aura:attribute name="recordId" type="Id" />
+    <c:oppSplitParent recordId="{!v.recordId}" oncancel="{!c.handleEvent}"/>
+    <!-- <aura:dependency resource="c:oppSplitParent" recordId="{!v.recordId}"/> -->
+</aura:component>

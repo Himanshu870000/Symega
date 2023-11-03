@@ -1,0 +1,124 @@
+@media (min-width:820px) and (max-width:1680px){
+    .THIS .NameBar{
+        background: linear-gradient(90.51deg, #6DA2EA 0%, #DDB5FF 100%);
+        border-radius: 10px;
+        padding:11px;
+        margin-left: -1%;
+            max-width: 78vw;
+    }
+    .THIS .top-button {
+        background-color: #fff;
+        color: #007bff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .THIS .h2Details{
+        display: inline; 
+        font-size:180%;
+        width:100%;
+        color:white;
+    }
+    .THIS .createDate{
+        display: inline; 
+        font-size:120%; 
+        color:white;
+    }
+    .THIS .Approved{
+        display: inline; 
+        font-size:120%; 
+        color:white;
+    } 
+    .THIS .Status{
+        background-color:#00C6B7; 
+        color:white; 
+        height: 48%; 
+        padding: 3%; 
+        border-radius: 16px;
+        text-align: center;
+    } 
+    
+}
+@media (min-width:1680px){
+    .THIS .NameBar{
+        background: linear-gradient(90.51deg, #6DA2EA 0%, #DDB5FF 100%);
+        border-radius: 10px;
+        padding:11px;
+        margin-left: -1%;
+    }
+    .THIS .top-button {
+        background-color: #fff;
+        color: #007bff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .THIS .h2Details{
+        display: inline; 
+        font-size:180%;
+        width:100%;
+        color:white;
+    }
+    .THIS .createDate{
+        display: inline; 
+        font-size:120%; 
+        color:white;
+    }
+    .THIS .Approved{
+        display: inline; 
+        font-size:120%; 
+        color:white;
+    } 
+    .THIS .Status{
+        background-color:#00C6B7; 
+        color:white; 
+        height: 48%; 
+        padding: 3%; 
+        border-radius: 16px;
+        text-align: center;
+    } 
+}
+@media (max-width:820px){
+    .THIS .NameBar{
+        background: linear-gradient(90.51deg, #6DA2EA 0%, #DDB5FF 100%);
+        border-radius: 10px;
+        padding:11px;
+        margin-left: -13%;
+        min-width: 130%;    
+    } 
+    .THIS .h2Details{
+        display: inline; 
+        font-size:110%;
+        width:100%;
+        color:white;
+    }
+    .THIS .createDate{
+        display: inline; 
+        font-size:100%; 
+        color:white;
+    }
+    .THIS .Approved{
+        display: inline; 
+        font-size:100%; 
+        color:white;
+        margin-left: -2%;
+    } 
+    .THIS .MonBeatPlanDetail{
+        margin-left: -6%;
+    } 
+    .THIS .statusFont{
+        font-size: 78%;
+    } 
+    .THIS .Status{
+        background-color:#00C6B7; 
+        color:white; 
+        padding-left: 12%; 
+        padding-top: 3%; 
+        border-radius: 16px;
+        text-align: center;
+        min-width: 65px;
+        margin-left: -15px;
+    } 
+}

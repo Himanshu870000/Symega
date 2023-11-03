@@ -1,0 +1,462 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
+    <html>
+        <head>
+            <c:Libraries ></c:Libraries>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js">
+            </script>
+            <link href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" rel="stylesheet"/>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous"/>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <apex:stylesheet value="{!$Resource.OperationsPortalCSS}" />
+
+
+
+            <style>
+                .loadingBackground {
+                    position: fixed;
+                    height: 100%;
+                    width: 100%;
+                    background: #F6F6F6;
+                    z-index: 11111;
+                    opacity: 0.7;
+                    top: 0px;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                }
+                    .loading {
+                    top: 50%;
+                    left: 50%;
+                    margin: -50px 0px 0px -50px;
+                    z-index: 111111;
+                    position: fixed;
+                }
+
+                .tab {
+                    overflow: hidden;
+                    border: 1px solid #ccc;
+                    background-color: mintcream;
+                    padding-left: 1%;
+                        margin-left: 1%;
+                        margin-right: 2%;
+                        border-radius: 11px;
+                    }
+
+                    /* Style the buttons inside the tab */
+                    .tab button {
+                    background-color: inherit;
+                    float: left;
+                    border: none;
+                    outline: none;
+                    cursor: pointer;
+                    padding: 14px 16px;
+                    transition: 0.3s;
+                    font-size: 17px;
+                    }
+
+                    /* Change background color of buttons on hover */
+                    .tab button:hover {
+                    background-color: #ddd;
+                    }
+
+                    /* Create an active/current tablink class */
+                    .tab button.active {
+                    background-color: #ccc;
+                    }
+
+                    /* Style the tab content */
+                    .tabcontent {
+                    display: none;
+                    padding: 6px 12px;
+                    border: 1px solid #ccc;
+                    border-top: none;
+                    }
+            </style>
+        </head>
+
+        <body ng-app="oliDet_App" ng-controller="oliDet_ctrl" style="background-color: white; !important;">
+            <div class="loadingSection" ng-if="showSpinner">
+                <div class="loadingBackground"></div>
+                <div>
+                    <apex:image url="{!$Resource.Loading}" styleClass="loading" />
+                </div>
+            </div>
+
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="wrapper px-5">
+                    <div>
+                        <apex:image url="{!$Resource.logo}" alt="SYMEGA" styleClass="brand-logo"/>
+                    </div>
+                    <div style="width: 50%;">
+                        <!-- <marquee>
+                            <h2 class="nav-link" style="color:white;"><b>Hello We partner with our customers across a project’s lifespan – from inception, through product commercialisation, sharing our experience and expertise. With our informed, committed, and passionate team of professionals, we strive to provide you with solutions that bring your culinary ideas to life, faster and better.</b></h2>
+                         </marquee> -->
+                    </div>
+                    
+                        <!--div class="d-flex text-align-center">
+                            <div class="dropdown">
+                                <i class="far fa-user fa-2x" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" style="color:white;">
+                                </i>
+                                <ul class="dropdown-menu" style="width: 300px" aria-labelledby="dropdownMenuButton1">                                                            
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-user me-3"></i>{{conName}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                  <li><a class="dropdown-item pe-5"><i class="fa-solid fa-at me-3"></i>{{email}}</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li><a class="dropdown-item pe-5" ng-click="showProfileDiv()"><i class="fa-solid fa-edit me-3"></i>Edit Profile</a></li>
+                                  <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item pe-5" ng-click="LogoutApplicant()"><i class="fa-solid fa-right-from-bracket me-3"></i>Logout</a>
+                                </li>
+                                </ul>
+                              </div>
+                            </div-->
+                </div>
+            </nav>
+
+            <div class="row mx-5">
+                <div class="row box-shadow-2 mb-5">
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>BASIC DETAILS</b></h3>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity Product Name
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Code (HALB)
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.ProductCode" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Opportunity
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Opportunity.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="oliDetails.ServiceDate" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Product2.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Packaging Type
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Packaging_Type__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Quantity
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Quantity" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Packaging Quantity
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Packaging_Quantity__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">FERT Code
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.FERT_Code__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Packaging Unit
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Packaging_Unit__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sales Order
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Sales_Order__r.Name" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Primary
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Primary__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Pvt Label Selling Price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Pvt_Label_Selling_Price__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Secondary
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Secondary__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customized Label
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Customized_Label__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Tertiary
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Tertiary__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Quantity Unit
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Quantity_Unit__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Material Sector
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Material_Sector__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Plant
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Plant__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">If Organised, set Micro as Long Term
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.If_Organised_set_Micro_as_Long_Term__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Product Family
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Product_Family__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Discount Description
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Discount_Description__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Code
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Customer_Code__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">UnitPriceXQty
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.UnitPriceXQty__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">ListPriceXQty
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.ListPriceXQty__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Is PIR Created?
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="Checkbox" ng-model="oliDetails.Is_PIR_Created__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Service Rendering Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="oliDetails.Service_Rendering_Date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Planned Delivery Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="date" ng-model="oliDetails.Planned_Delivery_Date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Service Rendering Date Reason
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Service_Rendering_Date_Reason__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Type
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Customer_Type__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer SF Id
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Customer_SF_Id__c" ng-disabled="true"/>
+                    </div>
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>PRICING</b></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">List Price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.ListPrice" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Sales Price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.UnitPrice" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Customer Discount Applied
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="checkbox" ng-model="oliDetails.Customer_Discount_Applied__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Total Price
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.TotalPrice" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Volume Based Amount
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Volume_Based_Amount__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Applied Volume Based Markup
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Applied_Volume_Based_Markup__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Price In KG
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Price_In_KG__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Volume Based Unit
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Volume_Based_Unit__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Quantity In KG
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Quantity_In_KG__c" ng-disabled="true"/>
+                    </div>
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>MARKUP DETAILS</b></h3>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Markdown Amount
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.MarkDown_Amount__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Markup Amount
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Markup_Amount__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Approval Markdown %
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Approval_Markdown__c" ng-disabled="true"/>
+                    </div>
+
+                    <div class="row mt-5 mx-1">
+                        <div class="col-md-12">
+                            <h3 class="pb-3 color-theme"><b>DESCRIPTION INFORMATION</b></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Line Description
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Description" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label class="font-if">Change in Dispatch Date
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Change_in_Dispatch_Date__c" ng-disabled="true"/>
+                    </div>
+                    <div class="col-md-6 mt-3 mb-3">
+                        <label class="font-if">Repeat Order Details
+                        </label>
+                        <span class="required-asterisk" style="color:red;">*</span>
+                        <input class="form-control" type="text" ng-model="oliDetails.Repeat_Order_Details__c" ng-disabled="true"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-3">
+                <button class="blue-btn float-end me-2 mb-5" ng-click="back()" type="button">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Back</button>
+            </div>
+        </body>
+
+        <script>
+            var userHashId = '{!$CurrentPage.parameters.id}';
+            var oliId = '{!$CurrentPage.parameters.oliId}';
+            var app = angular.module('oliDet_App', []);
+            app.controller('oliDet_ctrl', function ($scope){
+                debugger;
+
+                $scope.getOppProductDetails = function(){
+                        debugger;
+                        OperationsPortalController.getOppProductDetails(oliId,function(result,event){
+                            debugger;
+                            if(event.status && result){
+                                debugger;
+                                $scope.oliDetails = result;
+                                $scope.$apply();
+                            }
+                        })
+                    }
+                    $scope.getOppProductDetails();
+
+                    $scope.back = function(){
+                        debugger;
+                        var sitePrefix = window.location.href.includes('/apex') ? '/apex' : '/operations/SampleLineItemDetailPage';
+                        window.location.replace(window.location.origin + sitePrefix +'?id='+ userHashId);
+                    }
+            })
+        </script>
+    </html>
+</apex:page>

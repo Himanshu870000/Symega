@@ -1,0 +1,37 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" 
+                Controller="SearchProductSOSL" access="global" >
+    
+    <aura:attribute name="selectedProduct" type="string" />
+    <aura:attribute name="selectedProductdesciption" type="string" />
+    <aura:attribute name="selectedProductName" type="string" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <lightning:card class="slds-list_horizontal"   variant="Narrow">
+        
+        <h1 style="text-align:center; font-size:18px;">
+            <b>Update Product Detail</b>
+        </h1><br/>
+        
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <c:CustomLookup 
+                                objectName="Product2" 
+                                Label="Product Code"
+                                fieldName ="ProductCode"
+                                selectRecordId="{!v.selectedProduct}"
+                                selectRecordName="{!v.selectedProductName}"
+                                required="true"/> 
+                
+            </div>            
+            <div class="slds-col">
+                <lightning:input value="{!v.selectedProductdesciption}" type="String"  label="Product Instruction" />
+            </div>
+            
+            <div class="slds-col" style="padding-top: 20px;">
+                <span>
+                    <lightning:button class="slds-button slds-button_brand" variant="brand" label="Update" onclick="{!c.handleUpdate}"  />
+                </span>
+            </div>
+        </div>        
+    </lightning:card>
+</aura:component>

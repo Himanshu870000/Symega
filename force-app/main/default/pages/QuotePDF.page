@@ -1,0 +1,137 @@
+<apex:page readOnly="true" applyHtmlTag="false" sidebar="false" showHeader="false" cache="true" docType="html-5.0" renderAs="pdf" controller="QuotePDFController">
+    <html>
+        <head>
+            <style type="text/css">
+                #theImage{
+                margin-left:82%;  
+                text-align:right;
+                }
+                @page {
+                padding-left: 5px;    
+                padding-right: 5px;      
+                }
+                
+                th {  
+                font-weight: bold;
+                text-align: center;
+                color: black;
+                padding: 8px;
+                }
+                
+                td {    
+                font-size: 15px;
+                text-align: left;
+                padding: 8px;
+                }
+                
+                table{
+                border-collapse: collapse;
+                }
+                
+                table, th, td {
+                border: 1px solid black;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="theImage">
+                <apex:image url="{!$Resource.SymegaLogo}" width="120" height="50"/>
+            </div>
+            <div style="color:red;">
+                www.symega.in
+            </div>
+            <div>
+                Symega Savoury Technology Ltd
+            </div>
+            <div style="font-size:13px">
+                Synthite Taste Park, No. XI 312 G, Pancode   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;   <span style="color:red;"> T </span> &nbsp; +91 97464 74100
+                &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;  <span style="color:red;"> F </span> &nbsp; +91 48427 31470
+            </div>
+            <div style="font-size:13px">
+                Near Kolenchery, Ernakulam, Kerala, India - 682310     &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;   <span style="color:red;"> T </span> &nbsp; +91 48427 34636  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <span style="color:red;"> E </span> &nbsp; symega@symega.in
+            </div><br/><br/><br/>
+            <div>
+                <b>{!quoteDetails.QuoteNumber}</b><BR/>
+                {!day} {!quoteDetails.Month__c} {!year}
+            </div><br/><br/>
+            <div>
+                <b>
+                    {!quoteDetails.Account.Name} <br/>
+                    {!quoteDetails.Account.BillingStreet}, {!quoteDetails.Account.BillingCity}  <br/>
+                    {!quoteDetails.Account.BillingState}, {!quoteDetails.Account.BillingPostalCode} <br/>
+                    {!quoteDetails.Account.BillingCountry}
+                </b>
+            </div><BR/><BR/>
+            
+            <div>
+                <!-- Response waiting  <b>Attn: Ms. Reshma Mirchandani</b>   -->
+            </div>
+            <div style="font-size:16px">
+                We thank you for your enquiry and are delighted to present you our commercial offer as below:
+            </div><BR/><BR/>
+            <table style="width:100%; table-layout: fixed;">
+                <tr>
+                    <td style="width:10%;font-size: 12px; text-align:center"><b>S.No.</b></td>
+                    <td style="width:15%; font-size: 12px; text-align:center"><b>Ref. Code</b></td>
+                    <td style="width:30%; font-size: 12px; text-align:center"><b>Product</b></td>
+                    <td style="width:25%; font-size: 12px; text-align:center"><b>**Price Per kg</b></td>
+                    <td style="width:20%; font-size: 12px; text-align:center"><b>*Quantity</b></td>
+                </tr>
+                
+                <apex:variable var="cnt" value="{!0}" />
+                <apex:repeat value="{!quoteDetails.QuoteLineItems}" var="quote">
+                    <apex:variable var="cnt" value="{!cnt+1}"/>
+                    <tr style="font-family: dialog; font-size: 14pt;">
+                        <td style="font-size: 12px;  text-align:center"><apex:OutputText value="{!cnt}"/></td>
+                        <td style="font-size: 12px;  text-align:center">{!quote.FERT_Code__c} <apex:outputpanel rendered="{!quote.FERT_Code__c == null}" > {!quote.Product2.ProductCode} </apex:outputpanel> </td>
+                        <td style="font-size: 12px;  text-align:center">{!quote.Product2.Name}</td>
+                        <td style="font-size: 12px; text-align:center">{!quote.UnitPrice}</td>
+                        <td style="font-size: 12px; text-align:center">{!quote.Quantity}</td>
+                    </tr>
+                </apex:repeat>    
+            </table>
+            <table style="width:100%; table-layout: fixed;">
+                <tr style="font-family: Dialog;">
+                    <td style="width:55%; font-size: 12px;"><b>  Grand Total <apex:outputpanel rendered="{!quoteDetails.Include_Freight_Charges__c}" > including Freight Charges </apex:outputpanel> </b> </td>
+                    <td style="width:25%; font-size: 10px; text-align:center">  {!sumOfTotalCharges}  </td>
+                    <td style="width:20%; font-size: 10px; text-align:center"> </td>
+                </tr>
+            </table><br/>
+            <div>
+                <b>Terms &amp; Conditions</b>
+            </div>
+            <ul>
+                <li>Min Qty. to be ordered   &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;: {!quoteDetails.Total_Quantity_In_Kg__c}</li> 
+                <li>Packing   &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;: <apex:outputpanel rendered="{!sumOfPackQuantity != 0}" > {!sumOfPackQuantity} </apex:outputpanel> </li>
+                <li>Payment  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;: {!quoteDetails.Account.Payment_terms__c}</li>
+                <li>Shipment   &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {!quoteDetails.Account.ShippingStreet}, {!quoteDetails.Account.ShippingCity},
+                    {!quoteDetails.Account.ShippingState}, {!quoteDetails.Account.ShippingPostalCode}
+                    {!quoteDetails.Account.ShippingCountry}
+                </li>
+                <li>Validity  &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; : {!quoteExpDay}-{!quoteExpMonth}-{!quoteExpYear}</li>
+                
+                <li> <apex:outputpanel rendered="{!quoteDetails.Include_Freight_Charges__c}" > 
+                    Freight Charge / Kg &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; :  {!quoteDetails.Freight_charges__c}
+                    </apex:outputpanel>    
+                </li>  
+                <li>
+                    Total Freight Charge &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; :  {!quoteDetails.Total_Freight_Charges__c}
+                </li>
+                
+                <li>**    &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;:
+                    <apex:outputpanel rendered="{!quoteDetails.Account.RecordType.Name == 'Direct Customer'}" > Ex-Works Price </apex:outputpanel>
+                    <apex:outputpanel rendered="{!quoteDetails.Account.RecordType.Name == 'Channel and Food Service'}" > PLP Price <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Trade Discount of {!quoteDetails.Account.Customer_Discount__c} % Applied </apex:outputpanel>
+                </li>
+            </ul><br/>
+            <div>
+                We thank you for your interest in our product and hope the offer above is to your expectation. We look forward to your valuable order
+            </div><br/><br/>
+            <div>
+                Thank You<br/>
+                Kind Regards
+            </div>
+            
+            
+        </body>
+    </html>
+</apex:page>

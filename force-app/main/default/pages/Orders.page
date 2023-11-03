@@ -1,0 +1,512 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" >
+    <style>
+        
+        .table>thead{
+        background-color: rgb(203 213 225);
+        }
+        .dataTables_wrapper.no-footer{
+        background:#fff;
+        padding:10px;
+        }
+        
+        .dataTables_paginate.paging_simple_numbers>*{
+        margin:10px;
+        text-decoration:none;
+        cursor:pointer;
+        color:black;
+        }
+        .dataTables_paginate.paging_simple_numbers>span>*{
+        margin: 0px 10px;
+        text-decoration: none;
+        color:black;
+        padding: 5px 10px;
+        border-radius: 50%;
+        }
+        .paginate_button.current{
+        background:rgb(203 213 225);
+        }
+    </style>
+    <div ng-controller="order_ctrl">
+        <div class="container mt-3 mb-2" ng-init="getOrders();">
+            <div class="row" style="background:#fff;width:100%;">
+                <h3 ng-show="!orderDetails && !showSalesOrderForm" style="text-align:center;margin-top:1%">Orders</h3>
+                <h3 ng-show="orderDetails && !showSalesOrderForm && !orderDetails.invoiceSelected" style="text-align:center;margin-top:1%">Orders Details</h3>
+
+                <div ng-show="!showSalesOrderForm && !orderDetails" class="d-flex justify-content-lg-end">
+                    <div class="d-flex justify-content-md-around" style="background:#fff;width:100%;">
+                        <div class="col-sm-6 p-2">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Customer</label>
+                                <select class="form-control" ng-change="customerChangeHandler(e.target.value)" ng-model="customerSelected">
+                                    <option selected="" value="All">--All--</option>
+                                    <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3 col-sm-6 d-flex justify-content-end ">
+                            <!-- <button class="btn btn-primary" ng-click="visibleSalesOrderForm();">Create Sales Order</button> -->
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="viewOption==='Table' && !orderDetails && !showSalesOrderForm" class="row col-sm-12 table-responsive">
+                    
+                    <table id="orderTable" class="table table-striped" style="width:100%;background:#fff;">
+                        <thead>
+                            <tr>
+                                <th>Sales Order Name</th>
+                                <th>Opportunity Name </th>
+                                <th>Customer Name</th>
+                                <th>Order Quantity</th>
+                                <th>Customer</th>
+                                <th>Way bill No</th>
+                                <th>Submitted Date</th>
+                                <th>Submission Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="order in Orders track by $index">
+                                <td>{{order.Name}}</td>
+                                <td>{{order.Opportunity__r.Name || 'N/A'}}</td>
+                                <td>{{order.Distributer_Customer__r.Name || 'N/A'}}</td>
+                                <td>{{order.Order_quantity__c || 'N/A'}}</td>
+                                <td>{{order.Distributer_Customer__r.Name}}</td>
+                                <td>{{order.Way_Bill_No__c || 'N/A'}}</td>
+                                <td>{{order.Submitted_Date__c | date:'dd/MM/yyyy'}}</td>
+                                <td>{{order.Submission_Date__c | date:'dd/MM/yyyy'}}</td>
+                                <td>
+                                    <div class="row">
+                                        <a class="col-sm btn btn-primary m-1" title="View" ng-click="details($index);">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a class="col-sm btn btn-primary m-1" title="Edit" ng-click="editSalesOrder($index)">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- <div class="col-sm-12 scollable-controlls" ng-show="viewOption==='Cards' && !orderDetails && !showSalesOrderForm" >
+                    <div ng-repeat="order in Orders track by $index">
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between">
+                                <p class="card-title" style="margin-top:0.5rem;">
+                                    <b class="ondontefontColor">Sales Order Name  : </b>
+                                    <span style="color:black;">{{order.Name}}</span>
+                                </p>
+                                <a class="btn btn-primary smallEye" ng-click="details($index)" style="width:10%;">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between d-block-mobile">
+                                    <div style="width: 50%;">
+                                        <b class="ondontefontColor">Opportunity Name : &nbsp;</b>
+                                        <span style="color:black;">{{order.Opportunity__r.Name || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div style="width: 50%;">
+                                        <b class="ondontefontColor">Account Name :&nbsp;</b>
+                                        <span style="color:black;">{{order.Opportunity__r.Account.Name || 'N/A'}}</span>
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div class="d-flex justify-content-between d-block-mobile">
+                                    <div style="width: 50%;">
+                                        <b class="ondontefontColor">Order Quantity  : &nbsp;</b>
+                                        <span style="color:black;">{{order.Order_quantity__c || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div style="width: 50%;">
+                                        <b class="ondontefontColor">Submitted Date :&nbsp;</b>
+                                        <span style="color:black;">{{order.Submitted_Date__c | date:'dd/MM/yyyy'}}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between d-block-mobile">
+                                    <div style="width: 50%;">
+                                        <b class="ondontefontColor">Way bill No  : &nbsp;</b>
+                                        <span style="color:black;">{{order.Way_Bill_No__c || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div style="width: 50%;">
+                                        <b class="ondontefontColor">Submission Date :&nbsp;</b>
+                                        <span style="color:black;">{{order.Submission_Date__c | date:'dd/MM/yyyy'}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div> -->
+
+
+                
+                <div class="col-sm-12 scollable-controlls" ng-show="orderDetails!==undefined && !showSalesOrderForm && !orderDetails.invoiceSelected">
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between">
+                                <p class="card-title" style="margin-top:0.5rem;">
+                                    <b class="ondontefontColor">Sales Order Name  : </b>
+                                    <span style="color:black;">{{orderDetails.Name}}</span>
+                                </p>
+                                <a class="btn btn-danger smallEye" ng-click="details('close')" style="width:10%;">
+                                    <i class="fa fa-close"></i>
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                    <div  class="col-sm-6">
+                                        <b class="ondontefontColor">Opportunity Name : &nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Opportunity__r.Name || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Account Name :&nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Opportunity__r.Account.Name || 'N/A'}}</span>
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Order Quantity  : &nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Order_quantity__c || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Submitted Date :&nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Submitted_Date__c | date:'dd/MM/yyyy'}}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Way bill No  : &nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Way_Bill_No__c || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Submission Date :&nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Submission_Date__c | date:'dd/MM/yyyy'}}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Service Rendering Date  : &nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Service_Rendering_date__c || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Courier :&nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Courier__c || 'N/A' }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between d-block-mobile mb-2 mt-2">
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Item category  : &nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Item_category__c || 'N/A'}}</span>
+                                    </div>
+                                    
+                                    <div class="col-sm-6">
+                                        <b class="ondontefontColor">Plant :&nbsp;</b>
+                                        <span style="color:black;">{{orderDetails.Plant__c || 'N/A'}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- child Opps Sales order Invoices List-->
+                        <div class="mt-2">
+                            <div ng-show="orderDetails.Invoice__r && orderDetails.Invoice__r.length===0">
+                                <div class="d-flex justify-content-between">
+                                    <p class="card-subtitle mb-2  col-sm-12 text-muted">
+                                        <b class="ondontefontColor">No Invoice Found </b>
+                                    </p>
+                                </div>
+                            </div>
+                        
+                            <div ng-show="orderDetails.Invoice__r.length>0" class="table-responsive">
+                                <div class="d-flex justify-content-between" style="margin-top:2%">
+                                    <p class="card-subtitle   justify-content-center d-flex col-sm-12 text-muted">
+                                        <b class="ondontefontColor justify-content-center">Invoices </b>
+                                    </p>
+                                </div>
+                        
+                                <table id="example" class="table table-striped" style="width:100%;background:#fff;">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice Name :</th>
+                                            <th>Invoice Number :</th>
+                                            <th>Due Date :</th>
+                                            <th>Number of Packs :</th>
+                                            <th>Total Amount :</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="invoice in orderDetails.Invoice__r">
+                                            <td>{{invoice.Name}}</td>
+                                            <td>{{invoice.Invoice_Number__c}}</td>
+                                            <td>{{invoice.Due_Date__c | date:'dd-MM-yyyy'}}</td>
+                                            <td>{{invoice.Number_of_Packs__c}}</td>
+                                            <td>{{invoice.Total_Amount__c}}</td>
+                                            <td>
+                                                <i class="fa fa-eye" style="color:blue; cursor: pointer;" ng-click="invoiceSelected(invoice);" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- end child Opps Sales Invoices List List -->
+                     
+                    
+                </div>
+
+                <div class="col-sm-12 scollable-controlls" ng-show="orderDetails!==undefined && !showSalesOrderForm && orderDetails.invoiceSelected">
+                
+                    <h3 style="text-align:center;margin-top:1%">Invoice Details</h3>
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary " ng-click="closeInvoice();">
+                            <i class="fa fa-arrow-left" />
+                        </button>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header" style="justify-content: space-between;">
+                            <p class="card-title" style="margin-top:0.5rem;">
+                                <b class="ondontefontColor">Invoice Name : </b>
+                                <span style="color:black;">{{orderDetails.invoiceSelected.Name}}</span>
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex; justify-content:space-between;">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Invoice Number : </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Invoice_Number__c}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Due Date : </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Due_Date__c | date:'dd-MM-yyyy'}}</span>
+                                </p>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;" class="mb-2 mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Number of Packs : </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Number_of_Packs__c}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Total Bill :</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Total_Amount__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Billed Quantity : </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Billed_Quantity__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Amount:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Amount__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">CGST: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.CGST__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">GST:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.GST__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Customer Payment Date: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Customer_Payment_Update__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Dispatch Date:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Dispatch_Date__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Due Date: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Due_Date__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Freight Charges:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Freight_Charges__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">IGST: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.IGST__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Insurance:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Insurance__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Invoice Date: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Invoice_Date__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Net Value:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Net_Value__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">SGST: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.SGST__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Taxable value:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Taxable_value__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                            <div style="display:flex; justify-content:space-between;" class="mt-2">
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">TCS Value: </b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.TCS_Value__c|| 'N/A'}}</span>
+                                </p>
+                                <p class="card-subtitle text-muted">
+                                    <b class="ondontefontColor">Way Bill No:</b>
+                                    <span style="color:black;">{{orderDetails.invoiceSelected.Way_Bill_No__c|| 'N/A'}}</span>
+                                </p>
+                            </div>
+                
+                        </div>
+                    </div>
+                </div>
+                <!-- end child opps sales details invoice selected -->
+
+                <div class="col-sm-12 scollable-controlls" ng-show="showSalesOrderForm">
+                
+                    <h3 style="text-align:center;margin-top:1%">Update Sales Order</h3>
+                    <!-- <div class="col-sm-12">
+                        <button class="btn btn-primary" ng-click="backArrowHandler('hideSalesOrderCreation');">
+                            <i class="fa fa-arrow-left" />
+                        </button>
+                
+                    </div> -->
+                    <div class="card mb-3 mt-2">
+                        <form>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Sales Order Name</label>
+                                        <span class="required-asterisk" style="color:red;">*</span>
+                
+                                        <input type="text" class="form-control" ng-model="orderToUpdate.Name" required="true" ng-required="orderToUpdate.Name" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer</label>
+                                        <select class="form-control" ng-model="orderToUpdate.Distributer_Customer__c">
+                                            <option selected="true">--select--</option>
+                                            <option ng-repeat="customer in customers" value="{{customer.Id}}">{{ customer.Name }} </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Account</label>
+                                        <input type="text" class="form-control" ng-disabled="true" ng-model="orderToUpdate.Account__r.Name" />
+                                    </div>
+                                </div>
+                
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Opportunity</label>
+                                        <input type="text" class="form-control" ng-disabled="true" ng-model="orderToUpdate.Opportunity__r.Name" />
+                                    </div>
+                                </div>
+                
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Order Quantity</label>
+                                        <input type="number" class="form-control" ng-model="orderToUpdate.Order_quantity__c" ng-disabled="orderToUpdate.Id"/>
+                                    </div>
+                                </div>
+                
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Amount</label>
+                                        <input type="number" class="form-control" ng-model="orderToUpdate.Amount__c" ng-disabled="orderToUpdate.Id"/>
+                                    </div>
+                                </div>
+                
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Plant</label>
+                                        <select class="form-control" ng-model="orderToUpdate.Plant__c">
+                                            <option selected="true" value="select">--select--</option>
+                                            <option value="SC">SC</option>
+                                            <option value="QC">QC</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="expected">Expected Delivery Date :</label>
+                                        <input type="date" class="form-control" ng-model="orderToUpdate.Expected_Delivery_Date__c" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Customer PO Number</label>
+                                        <input type="text" class="form-control" ng-model="orderToUpdate.Customer_PO_Ref_no__c" />
+                                    </div>
+                                </div>
+                
+                                <div class="col-sm-6 p-2">
+                                    <div class="form-group">
+                                        <label for="exampleInputEmail1">Remarks</label>
+                                        <input type="text" class="form-control" ng-model="orderToUpdate.Remarks__c" />
+                                    </div>
+                                </div>
+                
+                            </div>
+                
+                            <div class="d-flex p-3">
+                                <button type="submit" class=" btn-primary btn  p-2 col-sm-6" ng-click="updateSalesOrder();">Update Sales Order</button>
+                                <button class="btn btn-danger p-2 m-xl-2 col-sm-6" ng-click="visibleSalesOrderForm();">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

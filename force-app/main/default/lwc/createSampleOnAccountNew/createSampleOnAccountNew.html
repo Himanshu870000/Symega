@@ -1,0 +1,19 @@
+<template>
+    <lightning-quick-action-panel header="Choose RecordType">
+        <template if:true={showModal}>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_1-of-3" style="display:flex; justify-content:end">
+                    <label>Select a record type</label>
+                </div>
+                <div class="slds-col slds-size_2-of-3">
+                    <lightning-radio-group name="radioGroup" options={options} value={recordTypeSelected} type="radio" style="padding:10px;" onchange={handleChange}>
+                    </lightning-radio-group>
+                </div>
+            </div>
+            <div slot="footer">
+                <lightning-button variant="neutral" label="Cancel" onclick={closeAction}></lightning-button>
+                <lightning-button variant="brand" label="Next" class="slds-m-left_x-small" onclick={handleSuccess}></lightning-button>
+            </div>
+        </template>
+    </lightning-quick-action-panel>
+</template>

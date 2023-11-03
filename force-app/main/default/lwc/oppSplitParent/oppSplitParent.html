@@ -1,0 +1,121 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <template if:true={isLoaded}>
+        <lightning-quick-action-panel header="Split Opportunity">
+            <!-- <div style="color: rgb(233, 0, 0);text-align: center;font-size: 18px;">{errorMsg}</div> -->
+        
+            <template if:true={hasLoaded}>
+                <div>Amount : <lightning-badge label={oppRecord.Amount} icon-position="end" style="margin-right:10px">
+                    </lightning-badge>
+                    Quantity : <lightning-badge label={oppRecord.TotalOpportunityQuantity} icon-position="end">
+                    </lightning-badge>
+                </div>
+                <br />
+                <template if:false={showDetails}>
+                    <lightning-datatable key-field="id" data={oppRecord.OpportunityLineItems} columns={tableColums}
+                        hide-checkbox-column="true" show-row-number-column="true">
+                    </lightning-datatable>
+                </template>
+                <template if:true={hasChildSplits}>
+        
+        
+                    <div class="slds-scrollable_x slds-m-top_large" style="display:flex">
+                        <template for:each={childSplits} for:item="record">
+                            <div key={record.oppName} data-id={record.oppName} class="slds-box cardhover"
+                                style="margin:1%; width:20%;" onclick={shiftSelectedHandlder}>
+                                <div class="slds-card__header slds-grid slds-p-around_none"
+                                    style="flex-wrap: wrap; flex-direction: column;">
+                                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                                        <div style="flex-wrap: wrap;flex-direction: column;">
+                                            <h2 class="slds-card__header-title">
+                                                <span>{record.oppName}</span>
+                                            </h2>
+                                            <div style="display:flex">
+                                                Quantity:- <span class="slds-card__header-title">{record.totalQuantity}</span>
+                                            </div>
+                                            <div style="display:flex">
+                                                Total Amount:- <span class="slds-card__header-title">{record.totalAmount}</span>
+                                            </div>
+                                        </div>
+                                    </header>
+                                </div>
+                                <footer class="slds-card__footer">
+                                </footer>
+                            </div>
+                        </template>
+                    </div>
+                    <hr />
+                </template>
+        
+        
+                <template if:true={showDetails}>
+                    <c-opp-split-details product-list={prodList} opp-name={currentOppName}></c-opp-split-details>
+                </template>
+                <template if:true={hasChildSplits}>
+                    <div style="display: flex; justify-content: space-between;"
+                        class="slds-m-top_large slds-text-heading_small">
+                        <div>
+                            Child Opportunity Count: <lightning-badge label={childSplits.length} icon-position="end">
+                            </lightning-badge>
+                        </div>
+                        <template if:true={isSplitLeft}>
+                            <template if:true={showDetails}>
+                                <lightning-button variant="brand" label="Create Child Opportunity" title="Add Split"
+                                    onclick={addNewSplit} class="slds-m-left_x-small">
+                                </lightning-button>
+                            </template>
+                            <template if:false={showDetails}>
+                                <lightning-button variant="brand" label="Add New Split" title="Add Split" onclick={addNewSplit}
+                                    class="slds-m-left_x-small"></lightning-button>
+                            </template>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={hasChildSplits}>
+                    <div style="display: flex; justify-content: space-between;"
+                        class="slds-m-top_large slds-text-heading_small">
+                        Split Not Added:-
+                        <template if:true={showDetails}>
+                            <lightning-button variant="brand" label="Create Child Opportunity" title="Add Split"
+                                onclick={addNewSplit} class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                        <template if:false={showDetails}>
+                            <lightning-button variant="brand" label="Add New Split" title="Add Split" onclick={addNewSplit}
+                                class="slds-m-left_x-small"></lightning-button>
+                        </template>
+                    </div>
+                </template>
+            </template>
+            <div slot="footer">
+                <lightning-button variant="neutral" label="Cancel" onclick={closePopup}></lightning-button>
+                <lightning-button variant="brand" label="Save" class="slds-m-left_x-small" onclick={createOpp}
+                    disabled={isSplitLeft}>
+                </lightning-button>
+            </div>
+            <template if:true={showAlert}>
+                <div role="dialog" class="slds-modal slds-fade-in-open slds-modal_small card" aria-labelledby="modal-heading-01"
+                    aria-modal="true">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__header">
+                            <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Alert</h1>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p style="text-align:center;">You have unsaved changes, </p>
+                            <p style="text-align:center;">Are you sure, You want to close?</p>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                                onclick={closeAlert}>Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick={closePopup}>Okay</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="slds-backdrop slds-backdrop_open" role="presentation"></div> -->
+            </template>
+        </lightning-quick-action-panel>
+    </template>
+        
+    <template if:false={isLoaded}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+</template>
