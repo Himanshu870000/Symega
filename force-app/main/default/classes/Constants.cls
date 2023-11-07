@@ -82,12 +82,14 @@ public class Constants {
     public static final String SAP_CREATE_CUSTOMER_ENDPOINT = System.label.SAP_CREATE_CUSTOMER_ENDPOINT;
 
     public static final String SAP_UPDATE_CUSTOMER_REQ_TOKEN = System.label.SAP_UPDATE_CUSTOMER_REQ_TOKEN;
-    public static final String SAP_UPDATE_CUSTOMER_ENDPOINT = System.label.SAP_UPDATE_CUSTOMER_ENDPOINT;
-
-    
+    public static final String SAP_UPDATE_CUSTOMER_ENDPOINT = System.label.SAP_UPDATE_CUSTOMER_ENDPOINT;    
 
     public static final String SAP_CREATE_PROJECT_REQ_TOKEN = System.label.SAP_CREATE_PROJECT_REQ_TOKEN;
     public static final String SAP_CREATE_PROJECT_ENDPOINT = System.label.SAP_CREATE_PROJECT_ENDPOINT;
+    
+    public static final String SAP_ADDRESS_ENDPOINT = System.Label.SAP_ADDRESS_ENDPOINT;
+    public static final string SAP_ADDRESS_REQ_TOKEN = System.Label.SAP_ADDRESS_REQ_TOKEN;
+    public static final String SAP_Address_AUTH = System.label.SAP_Address_AUTH;
 
     public static final String SAP_CREATE_PIR_REQ_ENDPOINT = System.label.SAP_CREATE_PIR_REQ_ENDPOINT;
     public static final String SAP_CREATE_PIR_ENDPOINT = System.label.SAP_CREATE_PIR_ENDPOINT;

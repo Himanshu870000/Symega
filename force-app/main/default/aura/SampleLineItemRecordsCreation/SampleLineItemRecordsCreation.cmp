@@ -72,8 +72,12 @@
                         <th scope="col">
                             <div class="slds-truncate" >Packaging Quantity</div>
                         </th>
+                        
                         <th scope="col">
                             <div class="slds-truncate" >Packaging Unit</div>
+                        </th>    
+                         <th scope="col">
+                            <div class="slds-truncate" >Customer Preferred Name</div>
                         </th>
                         <th scope="col">
                             <div class="slds-truncate" >Regulatory Requirements</div>
@@ -132,6 +136,10 @@
                             
                             <td style="width:10%; text-align:center;">
                                 <lightning:formattedNumber name="Packaging Quantity Unit" label="Packaging Quantity Unit:" maximumFractionDigits="2" value="{!SLI.Quantity__c / SLI.Packaging_Quantity__c}" />&nbsp;{!SLI.Quantity_Unit__c}                                
+                            </td>
+                            
+                             <td style="width:10%;">
+                                <lightning:input name="{!index}" type="text" label="CustomerPrefferedName"  onchange="{!c.update}"  value="{!SLI.Customer_Preferred_Name__c}"/>                              
                             </td>
                             
                             <td style="width:10%; text-align:center">

@@ -10,8 +10,18 @@ export default class SubmitForFertCode extends LightningElement {
 
  @api recordId;
  @track oppProdList = [];
+ @track accordionList =[];
 
  @track prod2List = [];
+
+     custName ;
+     custNo;
+     custAddress;
+     billStreet ;
+     billCity   ;
+     billCountry  ;
+     billState  ;
+     billPostCode ;
 
  @track options =[];
  @track options1 =[];
@@ -21,6 +31,10 @@ export default class SubmitForFertCode extends LightningElement {
  @track dlvryPlantList = [];
  @track custTypeList = [];
  @track accSegList = [];
+
+ @track primList = [];
+ @track secondList = [];
+ @track tertList = [];
 
 
   idValueMap = new Map();
@@ -64,6 +78,22 @@ export default class SubmitForFertCode extends LightningElement {
           }, 300);
      }
 
+      activeSectionMessage = '';
+  @track  activeSection = 'B';
+
+    handleToggleSection(event) {
+         debugger;
+        this.activeSectionMessage =
+            'Open section name:  ' + event.detail.openSections;
+    }
+
+//     handleSetActiveSectionC() {
+//          debugger;
+//         const accordion = this.template.querySelector('.example-accordion');
+
+//         accordion.activeSectionName = 'A';
+//     }
+
      handleChange(event){
           debugger;
           let name = event.target.name;
@@ -90,6 +120,23 @@ export default class SubmitForFertCode extends LightningElement {
                if(data){
                     console.log('Data',data);
                     this.oppProdList = data.oliList;
+                    this.accordionList = data.oliList[0];
+
+                    if( data.oliList[0].Opportunity.Account_Billing_Address__c){
+                      this.custNo =     data.oliList[0].Opportunity.Account.Customer_Code_SAP__c ;
+                    }
+                     
+                         this.billStreet =         data.oliList[0].Opportunity.Billing_Street__c;
+                         this.billCity   =    data.oliList[0].Opportunity.Billing_City__c;
+                         this.billCountry  =     data.oliList[0].Opportunity.Billing_Country__c;
+                         this.billState  =     data.oliList[0].Opportunity.Billing_State__c;
+                         this.billPostCode  =     data.oliList[0].Opportunity.Billing_Postal_Code__c;
+
+                         this.custName = data.oliList[0].Opportunity.Account.Name ;
+                         console.log('  this.custName ---->',  this.custName );
+
+                    //      custNo;
+                    //    custAddress;
                     debugger;
                     console.log('recordId ===> '+this.recordId);
                     if(this.oppProdList.length!=0){
@@ -181,6 +228,10 @@ export default class SubmitForFertCode extends LightningElement {
                let Arr6 = data.Customer_Type__c.Customer_Type__c;
                let Arr7 = data.Account_Segment__c.Account_Segment__c;
 
+               let Arr8 = data.Primary__c.Primary__c;
+               let Arr9 = data.Secondary__c.Secondary__c;
+               let Arr10 = data.Tertiary__c.Tertiary__c;
+
                 let option=[]
                 for(var i=0; i < Arr.length; i++){
                   option.push({label:Arr[i],value:Arr[i]});
@@ -228,6 +279,28 @@ export default class SubmitForFertCode extends LightningElement {
                     option7.push({label:Arr7[i],value:Arr7[i]});
                }
                this.accSegList=option7;
+
+               let option8=[]
+               for(var i=0; i < Arr8.length; i++){
+                    option8.push({label:Arr8[i],value:Arr8[i]});
+               }
+               this.primList =  option8;
+                
+                let option9=[]
+               for(var i=0; i < Arr9.length; i++){
+                    option9.push({label:Arr9[i],value:Arr9[i]});
+               }
+               this.secondList =  option9;
+                
+                let option10=[]
+               for(var i=0; i < Arr10.length; i++){
+                    option10.push({label:Arr10[i],value:Arr10[i]});
+               }
+               this.tertList =  option8;
+
+
+               
+
 
                 console.log('  this.options---->',JSON.stringify(this.options));
                 console.log('  this.options1---->',JSON.stringify(this.options1));
@@ -315,14 +388,18 @@ export default class SubmitForFertCode extends LightningElement {
     updateOppProdList(){
           debugger;
           updateOppProdList({oppLineList:this.oppProdList,prod2List:this.prod2List}).then(data=>{
-               if(data == 'SUCCESS'){
+               if(data == 'Success'){
                     console.log('Data',data);
                     this.showToast('Success', 'Notification to Sales Ops sent successfully!', 'success');
                     this.closeModal();
                }
                else if(data == 'create'){
                     console.log('Data',data);
-                    this.showToast('Success', 'Customer Creation in Progress!', 'success');
+                    this.showToast('Success', 'Customer Creation Initiated!', 'success');
+                    this.closeModal();
+               }
+               else if(data == 'progress'){
+                    this.showToast('Success', 'Customer Creation already in Progress!', 'success');
                     this.closeModal();
                }
                else{

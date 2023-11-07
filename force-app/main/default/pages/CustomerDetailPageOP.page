@@ -1,3 +1,10 @@
+<!--
+  @description       : 
+  @author            : Dhanush Babu
+  @group             : 
+  @last modified on  : 10-31-2023
+  @last modified by  : Dhanush Babu
+-->
 <apex:page sidebar="false" showHeader="false" standardStylesheets="false" controller="OperationsPortalController">
     <html>
         <head>
@@ -735,7 +742,8 @@
                                 <tbody>
                                     <tr ng-repeat="sample in samples">
                                         <td>{{$index+1}}</td>
-                                        <td>{{sample.Sample_Name__c}}</td>
+                                        <td ng-if="sample.Record_Type_Name__c == 'Sample'">{{sample.Sample_Name__c}}</td>
+                                        <td ng-if="sample.Record_Type_Name__c == 'Project'">{{sample.Project_Name__c}}</td>
                                         <td>{{sample.Status__c}}</td>
                                         <td>{{sample.Shipping_Type__c}}</td>
                                         <!--td>{{sample.Product_Family__c}}</td-->
@@ -768,7 +776,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="com in listOfComments">
-                                <td>{{$index+1}}</td>
+                                <td>{{$index+1}}</td> 
                                 <td>{{com.Name}}</td>
                                 <td>{{com.Comment__c}}</td>
                                 <td>{{com.Comment_By__r.Name}}</td>

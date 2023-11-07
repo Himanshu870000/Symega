@@ -39,7 +39,7 @@ public class RepeatOrderProcessorQueueable implements Queueable {
             Opportunity matchingOpportunity;
             Map<Id, Map<String, OpportunityLineItem>> matchingoppLineMap = new Map<Id, Map<String, OpportunityLineItem>>();
             Map<String,Account> customerMap = soCreationHandler.getCustomerMap(new Set<String> {currentOrder.CUSTOMER_CODE});
-            Map<String, OpportunityLineItem> fertProductMap = soCreationHandler.getRequestedProducts(fertSet, currentOrder.CUSTOMER_CODE);
+            Map<String, OpportunityLineItem> fertProductMap = soCreationHandler.getRequestedProductsByCustCode(fertSet, currentOrder.CUSTOMER_CODE);
 
             for(Opportunity opp : oppMap.values()) {
                 //line items map
@@ -77,11 +77,11 @@ public class RepeatOrderProcessorQueueable implements Queueable {
             if(matchingOpportunity == null) {
                 matchingOpportunity = soCreationHandler.createOpp(customerMap.get(currentOrder.CUSTOMER_CODE), 'Closed Won');
                 matchingOpportunity.Repeat_Order_Created__c = true;
-                matchingOpportunity.Annual_Volume_Full__c = 1;
-                matchingOpportunity.Annual_Volume_in_units__c = 'Kg';
-                matchingOpportunity.Target_Price_Kg__c = 1;
-                matchingOpportunity.End_Use_Category__c = 'Baked Goods';
-                matchingOpportunity.End_Use_Application__c = 'Crackers';
+                // matchingOpportunity.Annual_Volume_Full__c = 1;
+                // matchingOpportunity.Annual_Volume_in_units__c = 'Kg';
+                // matchingOpportunity.Target_Price_Kg__c = 1;
+                // matchingOpportunity.End_Use_Category__c = 'Baked Goods';
+                // matchingOpportunity.End_Use_Application__c = 'Crackers';
                 insert matchingOpportunity;
             }else {
                 matchingOpportunity.StageName = 'Closed Won';
@@ -189,9 +189,11 @@ public class RepeatOrderProcessorQueueable implements Queueable {
             
             //clone to new opp:
             System.debug('matching opp line count ---'+ (matchingoppLineMap.containsKey(matchingOpportunity.Id) ? String.valueOf(matchingoppLineMap.get(matchingOpportunity.Id).size()) : ''));
+            Opportunity clonedOpp;
             if(matchingoppLineMap.containsKey(matchingOpportunity.Id) && matchingoppLineMap.get(matchingOpportunity.Id).size() > 0) {
                 //TODO: create and clone these products into new opp and delete from here.
-                Opportunity clonedOpp = soCreationHandler.createOpp(customerMap.get(currentOrder.CUSTOMER_CODE), 'New');
+                clonedOpp = soCreationHandler.createOpp(customerMap.get(currentOrder.CUSTOMER_CODE), 'New');
+                clonedOpp.Account_Billing_Address__c = true;
                 insert clonedOpp;
                 System.debug('--- created opp clone, now tag products'+clonedOpp);
                 for(OpportunityLineItem oli: matchingoppLineMap.get(matchingOpportunity.Id).values()) {
@@ -208,7 +210,25 @@ public class RepeatOrderProcessorQueueable implements Queueable {
             }
             //address processing
             if(currentOrder.SHIPPING_ADDRESS != null && /* !currentOrder.SHIPPING_ADDRESS.size() > 0 && */ customerMap.containsKey(currentOrder.CUSTOMER_CODE)) {
-                soCreationHandler.updateCustomerAddress(currentOrder.SHIPPING_ADDRESS, customerMap.get(currentOrder.CUSTOMER_CODE).Id);
+                String shippingAddrResponse = soCreationHandler.updateCustomerAddress(currentOrder.SHIPPING_ADDRESS, customerMap.get(currentOrder.CUSTOMER_CODE).Id);
+
+                if(shippingAddrResponse == 'success'){
+                    matchingOpportunity.Account_Shipping_Address__c = true;
+                    if(clonedOpp != null)
+                        clonedOpp.Account_Shipping_Address__c = true;
+                }
+                else if(shippingAddrResponse.startsWith('a0G')){
+                    matchingOpportunity.Customer_Shipping_Address__c = shippingAddrResponse;
+                    if(clonedOpp != null)
+                        clonedOpp.Customer_Shipping_Address__c = shippingAddrResponse;
+                }
+                
+                matchingOpportunity.Account_Billing_Address__c = true;
+
+                update matchingOpportunity;
+                if(clonedOpp != null)
+                    update clonedOpp;
+
             }
             System.debug('--- matching opp: '+matchingOpportunity);
             // DML's
@@ -268,7 +288,8 @@ public class RepeatOrderProcessorQueueable implements Queueable {
 
     private static Date parseDate(String d){
         String[] dSplit = d.split('-');
-        String cDate = dSplit[1]+'/'+dSplit[2]+'/'+dSplit[0];
+        //String cDate = dSplit[1]+'/'+dSplit[2]+'/'+dSplit[0];
+        String cDate = dSplit[2]+'/'+dSplit[1]+'/'+dSplit[0];
         return Date.parse(cDate);
     }
 

@@ -40,7 +40,7 @@
                 <lightning:inputField fieldName="Sampling_Quantity_details__c" />
                 <lightning:inputField fieldName="Sampling_Quantity_Unit__c"/>
                 <lightning:inputField fieldName="Regulatory_Requirements__c" />                
-                <lightning:inputField fieldName="Customer_Feedback__c" /> 
+                <lightning:inputField fieldName="Specific_inputs_by_customer__c" /> 
                                 
                 <!-- Address Information  -->
                 <lightning:inputField fieldName="City__c" value="{!oppRec.Shipping_City__c}"/>

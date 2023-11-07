@@ -12,16 +12,16 @@ public without sharing class AddressTriggerHandler {
         List<Id> addressIds = new List<Id>();
         Set<Id> setOfAddressToUpdate = new Set<Id>();
         Set<Id> registeredAddressIds = new Set<Id>();
-        for(Dispatch_Address__c acc : newMap.values()){
-            if(oldMap.get(acc.Id).SAP_Customer_Code__c==null && acc.SAP_Customer_Code__c!=null){
-                addressIds.add(acc.Id);
+        for(Dispatch_Address__c addr : newMap.values()){
+            if(oldMap.get(addr.Id).Customer_Code_SAP__c==null && addr.Customer_Code_SAP__c!=null){
+                addressIds.add(addr.Id);
             }
             
-            if((oldMap.get(acc.Id).SAP_Customer_Code__c==null && acc.SAP_Customer_Code__c!=null) || (oldMap.get(acc.Id).OPTIVA_Customer_Code__c==null && acc.OPTIVA_Customer_Code__c!=null)) {
-                registeredAddressIds.add(acc.Id);
+            if((oldMap.get(addr.Id).Customer_Code_SAP__c==null && addr.Customer_Code_SAP__c!=null) || (oldMap.get(addr.Id).OPTIVA_Customer_Code__c==null && addr.OPTIVA_Customer_Code__c!=null)) {
+                registeredAddressIds.add(addr.Id);
             }
-            if(isAccChange(oldMap,acc) && acc.SAP_Update_Customer__c){
-                setOfAddressToUpdate.add(acc.Id);
+            if(isAddressChange(oldMap,addr) && addr.SAP_Update_Customer__c){
+                setOfAddressToUpdate.add(addr.Id);
             }
         }
         
@@ -29,9 +29,9 @@ public without sharing class AddressTriggerHandler {
         
         if(!addressIds.isEmpty()){
             System.debug('hiii');
-            //GetFERTCodeController.sendFertCodeEmailBulk(accIds); 
-            //OpportunityCreateSaleOrderController.updateOppInBulk(accIds);  
-            //SAP_UpdatePIRCallout.updateOnPIR(accIds);
+            GetFERTCodeController.sendFertCodeEmailBulkAddress(addressIds); 
+            OpportunityCreateSaleOrderController.updateOppInBulkAddress(addressIds);  
+            //SAP_UpdatePIRCallout.updateOnPIR(addressIds);
         }
         
         if(!registeredAddressIds.isEmpty()) {
@@ -43,13 +43,13 @@ public without sharing class AddressTriggerHandler {
         }
         
         if(!setOfAddressToUpdate.isEmpty()){
-            //Database.executeBatch(new SAP_Update_CustomerAddressBatch(setOfAddressToUpdate));
+            Database.executeBatch(new SAP_Update_CustomerAddressBatch(setOfAddressToUpdate));
         }
     }
     
     
-    private static boolean isAccChange(Map<Id,Dispatch_Address__c> oldMap, Dispatch_Address__c acc){
-        if(oldMap.get(acc.Id).Name != null && acc.Name!=null && oldMap.get(acc.Id).Name!=acc.Name && acc.SAP_Customer_Code__c == null
+    private static boolean isAddressChange(Map<Id,Dispatch_Address__c> oldMap, Dispatch_Address__c acc){
+        if(oldMap.get(acc.Id).Name != null && acc.Name!=null && oldMap.get(acc.Id).Name!=acc.Name && acc.Customer_Code_SAP__c == null
            || oldMap.get(acc.Id).Address__Street__s != null && acc.Address__Street__s!=null && oldMap.get(acc.Id).Address__Street__s!=acc.Address__Street__s 
            || oldMap.get(acc.Id).Address__PostalCode__s != null && acc.Address__PostalCode__s !=null && oldMap.get(acc.Id).Address__PostalCode__s!=acc.Address__PostalCode__s
            || oldMap.get(acc.Id).Address__City__s != null && acc.Address__City__s !=null && oldMap.get(acc.Id).Address__City__s!=acc.Address__City__s

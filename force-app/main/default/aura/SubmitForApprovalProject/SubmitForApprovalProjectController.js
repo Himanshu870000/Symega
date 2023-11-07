@@ -107,13 +107,21 @@
                     var data = response.getReturnValue();
                     component.set("v.ShowSpinner",false);
                     if(data != null && data != undefined){
+                        component.set("v.missingCode", data.missingCode);
                         if(data.missingFields == true){
                             component.set("v.Show1stPage",true);
-                            component.set("v.ShowUpdateAccountPage",true);
                             component.set("v.MissingFieldList",data.missingFieldsList);   
                             component.set("v.accountId",data.projectRec.Opportunity__r.AccountId);
                             component.set("v.userId", data.userId);
                             component.set("v.bhId", data.bhId);
+                            
+                            if(data.isAccount == true){
+                                component.set("v.ShowUpdateAccountPage",true);
+                            }
+                            else{
+                                component.set("v.ShowUpdateAccountPage",false);
+                                component.set("v.customerId",data.projectRec.Opportunity__r.Customer_Billing_Address__c);
+                            }
                             
                             if(data.missingFieldsList.length > 0){
                                 if(data.isAccount == true){
@@ -123,7 +131,7 @@
                                     component.set("v.custFieldsMissing",true);
                                 }
                             }
-                                                        
+                            
                             if(data.onlyAccMissingFieldList.length>0){
                                 
                                 var picklistResult = data.picklistValues;
@@ -277,10 +285,18 @@
             var serverResponse = response.getReturnValue();
             var dismissActionPanel = $A.get("e.force:closeQuickAction");    
             if (response.getState() === "SUCCESS" && serverResponse === "SUCCESS") {
+                var missingCode = component.get("v.missingCode");
+                var message = '';
+                if(missingCode == true){
+                    message = 'Record Updated Successfully and submitted for BH Approval and Customer Creation will be In-Progress after approving.';
+                }
+                else{
+                    message = 'Record Updated Successfully and submitted for BH Approval...';
+                }
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title : 'Success',
-                    message: 'Record Updated Successfully and submitted for BH Approval...',
+                    message: message,
                     duration:' 5000',
                     key: 'info_alt',
                     type: 'success',

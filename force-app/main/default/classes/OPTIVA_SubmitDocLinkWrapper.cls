@@ -1,4 +1,7 @@
 public without sharing class OPTIVA_SubmitDocLinkWrapper {
+	//new
+	public String product_code;
+
 	public cls_document_link[] document_linksync;
 	public class cls_document_link {
 		public String document_name;	

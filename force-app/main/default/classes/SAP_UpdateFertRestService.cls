@@ -81,8 +81,8 @@ global without sharing class SAP_UpdateFertRestService {
             System.debug('sapOppProdByCstmCodeMap '+ sapOppProdByCstmCodeMap);
             
             if(!sapOppProdMap.isEmpty() && !sapOppProdByCstmCodeMap.isEmpty()) {
-                List<OpportunityLineItem> existingProductList = [SELECT Id, Name, FERT_Code__c, ProductCode, Opportunity.Account.Customer_Code_SAP__c, Opportunity.Account_Billing_Address__c, Opportunity.Customer_Billing_Address__c, Opportunity.Customer_Billing_Address__r.SAP_Customer_Code__c
-                                                                 FROM OpportunityLineItem WHERE FERT_Code__c = null AND ProductCode IN: sapOppProdMap.keySet() AND (Opportunity.Account.Customer_Code_SAP__c IN: sapOppProdByCstmCodeMap.keySet() OR Opportunity.Customer_Billing_Address__r.SAP_Customer_Code__c IN: sapOppProdByCstmCodeMap.keySet() ) AND Quantity_Unit__c != null AND Packaging_Type__c != null /* AND Opportunity.RecordType.Name = 'Parent' */ ];
+                List<OpportunityLineItem> existingProductList = [SELECT Id, Name, FERT_Code__c, ProductCode, Opportunity.Account.Customer_Code_SAP__c, Opportunity.Account_Billing_Address__c, Opportunity.Customer_Billing_Address__c, Opportunity.Customer_Billing_Address__r.Customer_Code_SAP__c
+                                                                 FROM OpportunityLineItem WHERE FERT_Code__c = null AND ProductCode IN: sapOppProdMap.keySet() AND (Opportunity.Account.Customer_Code_SAP__c IN: sapOppProdByCstmCodeMap.keySet() OR Opportunity.Customer_Billing_Address__r.Customer_Code_SAP__c IN: sapOppProdByCstmCodeMap.keySet() ) AND Quantity_Unit__c != null AND Packaging_Type__c != null /* AND Opportunity.RecordType.Name = 'Parent' */ ];
                 if(!existingProductList.isEmpty()){
                     for(OpportunityLineItem lineItem : existingProductList) {
 
@@ -92,7 +92,7 @@ global without sharing class SAP_UpdateFertRestService {
                             customerCodeSAP = lineItem.Opportunity.Account.Customer_Code_SAP__c;
                         }
                         else if(lineItem.Opportunity.Customer_Billing_Address__c != null){
-                            customerCodeSAP = lineItem.Opportunity.Customer_Billing_Address__r.SAP_Customer_Code__c;
+                            customerCodeSAP = lineItem.Opportunity.Customer_Billing_Address__r.Customer_Code_SAP__c;
                         }
 
                         if(sapOppProdMap.containsKey(lineItem.ProductCode) && sapOppProdByCstmCodeMap.containsKey(customerCodeSAP)) {

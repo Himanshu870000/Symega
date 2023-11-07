@@ -153,49 +153,77 @@ else*/
             
             System.debug('GETMDTBYMAP------'+getMDTByMap.keySet());
             System.debug('prodFamilyByOppProdsMap------'+prodFamilyByOppProdsMap.keySet());
+
+            if(prodFamilyByOppProdsMap.size()>0){
+                List<ContentDocumentLink> docLinks  = [SELECT Id, ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId =: salesOrderId ]; 
+                system.debug('docLinks -- ' + docLinks);
+                system.debug('docLinks.size() -- ' + docLinks.size());
+                
+                set<id> cdIdSet = new set<id>();
+                for(ContentDocumentLink cdl : docLinks){
+                    cdIdSet.add(cdl.ContentDocumentId);
+                }
+                system.debug('cdIdSet -- ' + cdIdSet);
+                List<ContentVersion> cVerList = [SELECT ContentDocumentId, VersionData, FileExtension, FileType, Id, Title FROM ContentVersion WHERE ContentDocumentId IN: cdIdSet AND Title LIKE '%Purchase Order%'];
+                system.debug('cVerList -- ' + cVerList);
+                system.debug('cVerList.size() -- ' + cVerList.size());
+                
+                
+                List<Messaging.EmailFileAttachment> attachments = new List<Messaging.EmailFileAttachment>();
+                for (ContentVersion cVer: cVerList) {
+                    Messaging.EmailFileAttachment efa = new Messaging.EmailFileAttachment();
+                    efa.setFileName(cVer.Title + '.' + cVer.FileExtension);
+                    efa.setBody(cVer.VersionData);
+                    //efa.setContentType(cVer.ContentType);
+                    attachments.add(efa);
+                }
             
-            for(String prodFamily : prodFamilyByOppProdsMap.keyset()){
-                Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
-                message.setTargetObjectId(saleUserId);
-                message.setSenderDisplayName('Symega Foods');
-                message.setReplyTo(replyToEmail);
-                message.setUseSignature(false);
-                message.setBccSender(false);
-                message.setSaveAsActivity(false);
-                EmailTemplate sOrderTemplate = [Select Id,Subject,Description,
-                                                HtmlValue,DeveloperName,Body
-                                                from EmailTemplate where name = 'Sales Order Email'];
-                
-                system.debug('sOrderTemplate :: ' + sOrderTemplate);
-                system.debug('prodFamily :: ' + prodFamily);
-                message.setTemplateID(sOrderTemplate.Id);
-                message.setWhatId(salesOrderId);
-                
-                
-                String emails = getMDTByMap.get(formatCustomMetadat(prodFamily)).User_Emails__c;
-                List <String> emailRecipients = emails.split(',');
-                
-                String cC_Emails = getMDTByMap.get(formatCustomMetadat(prodFamily)).cC_Email_Ids__c;
-                
-                List <String> cC_EmailRecipients = new List<String>();
-                if(cC_Emails != null)
-                    cC_EmailRecipients = cC_Emails.split(',');
-                
-                message.setToAddresses(emailRecipients);
-                if(!cC_EmailRecipients.isEmpty()){
-                    message.setCcAddresses(cC_EmailRecipients);
-                }
-                
-                Messaging.SingleEmailMessage[] messages = new List<Messaging.SingleEmailMessage> {message};
-                    Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
-                
-                if (results[0].success)
-                {
-                    System.debug('The email was sent successfully.');
-                }
-                else
-                {
-                    System.debug('The email failed to send: ' + results[0].errors[0].message);
+                for(String prodFamily : prodFamilyByOppProdsMap.keyset()){
+                    Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
+                    message.setTargetObjectId(saleUserId);
+                    message.setSenderDisplayName('Symega Foods');
+                    message.setReplyTo(replyToEmail);
+                    message.setUseSignature(false);
+                    message.setBccSender(false);
+                    message.setSaveAsActivity(false);
+                    EmailTemplate sOrderTemplate = [Select Id,Subject,Description,
+                                                    HtmlValue,DeveloperName,Body
+                                                    from EmailTemplate where name = 'Sales Order Email'];
+                    
+                    system.debug('sOrderTemplate :: ' + sOrderTemplate);
+                    system.debug('prodFamily :: ' + prodFamily);
+                    message.setTemplateID(sOrderTemplate.Id);
+                    message.setWhatId(salesOrderId);
+                    
+                    
+                    String emails = getMDTByMap.get(formatCustomMetadat(prodFamily)).User_Emails__c;
+                    List <String> emailRecipients = emails.split(',');
+                    
+                    String cC_Emails = getMDTByMap.get(formatCustomMetadat(prodFamily)).cC_Email_Ids__c;
+                    
+                    List <String> cC_EmailRecipients = new List<String>();
+                    if(cC_Emails != null)
+                        cC_EmailRecipients = cC_Emails.split(',');
+                    
+                    message.setToAddresses(emailRecipients);
+                    if(!cC_EmailRecipients.isEmpty()){
+                        message.setCcAddresses(cC_EmailRecipients);
+                    }
+
+                    if(attachments.size()>0)
+                        message.setFileAttachments(attachments);
+                    
+                    Messaging.SingleEmailMessage[] messages = new List<Messaging.SingleEmailMessage> {message};
+                        Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
+                    
+                    if (results[0].success)
+                    {
+                        System.debug('The email was sent successfully.');
+                    }
+                    else
+                    {
+                        System.debug('The email failed to send: ' + results[0].errors[0].message);
+                    }
                 }
             }
         }
@@ -543,7 +571,7 @@ sendTempReqEmail(tempReqList[0].Id,tempReqList[0].Client__r, emailTemplateList[0
         for (Schema.PicklistEntry a : pick_list_values) {
             respMap.put(a.getLabel(),a.getValue());
         }
-        
+        system.debug('respMap -- ' + respMap);
         return respMap;
     }
     

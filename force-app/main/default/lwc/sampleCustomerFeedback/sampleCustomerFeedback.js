@@ -35,9 +35,9 @@ export default class SampleCustomerFeedback extends NavigationMixin(LightningEle
         if(this.feedback!=null && this.dateChoosed!=null){
             debugger;
             let obj = {};
-            obj.Customer_Feedback__c = this.feedback;
+            obj.Specific_inputs_by_customer__c = this.feedback;
             obj.Actual_Date_of_Dispatch__c	 = new Date(this.dateChoosed).toISOString();
-            createFeedback({id:this.recordId,feedback:obj.Customer_Feedback__c,cDate:obj.Actual_Date_of_Dispatch__c}).then(result=>{
+            createFeedback({id:this.recordId,feedback:obj.Specific_inputs_by_customer__c,cDate:obj.Actual_Date_of_Dispatch__c}).then(result=>{
                 console.log("Result",result);
                 if(result && result.status) {
                     this.showNotification('Success','Feedback Submitted','success');

@@ -90,7 +90,7 @@
                 <lightning:inputField fieldName="Moved_Production_date__c" />
                 
                 <!-- Customer Feedback -->
-                <lightning:inputField fieldName="Customer_Feedback__c" /> 
+                <lightning:inputField fieldName="Specific_inputs_by_customer__c" /> 
                 <lightning:inputField fieldName="Customer_Comments__c" />
                 <lightning:inputField fieldName="Additional_Comments__c" />
                 <lightning:inputField fieldName="Regulatory_Requirements__c"/>

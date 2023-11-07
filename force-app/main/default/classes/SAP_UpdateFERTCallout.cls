@@ -4,7 +4,7 @@ public class SAP_UpdateFERTCallout {
         
         String endpoint = 'callout:SAP'+System.Label.SAP_PR_TOKEN;
         
-        Map<String,String> tokenMap = SAPRequestTokenHeader.getInstance().requestToken(System.Label.SAP_TOKEN);//'VwjYxecZl9_yUv2pLtoLHA==';
+        Map<String,String> tokenMap = SAPRequestTokenHeader.getInstance().getCSRFToken(System.Label.SAP_TOKEN, Constants.SAP_FERT_AUTH_HEADER);//'VwjYxecZl9_yUv2pLtoLHA==';
         String cookies = tokenMap.get('cookies');//'SAP_SESSIONID_SMD_200=21m-9n9qrNMY4XJn-zCnZIt2ArVljhHtrSkADTo-F08%3d; sap-usercontext=sap-client=200';
         String token = tokenMap.get('token');
 
@@ -22,7 +22,7 @@ public class SAP_UpdateFERTCallout {
         Map<String,String> headerMap = new Map<String,String>();
         headerMap.put('Content-Type','application/json');
         headerMap.put('X-CSRF-Token',token);
-        headerMap.put('Authorization',HTTPUtility.getAuthHeader());
+        headerMap.put('Authorization',HTTPUtility.getSAPCalloutHeader(Constants.SAP_FERT_AUTH_HEADER));
 
         Map<String,String> respMap = HTTPUtility.getInstance().httpReqHelper(headerMap, 'POST', body, endPoint);
 

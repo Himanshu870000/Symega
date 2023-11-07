@@ -41,7 +41,7 @@ public class SampleLineItemCreation_UI {
     @AuraEnabled
     public static List<Sample_Line_Item__c> getSLIList(string sampleId){
         system.debug('sampleId ====>' + sampleId);
-        List<Sample_Line_Item__c> lineItemList = [SELECT Id, Name, Product__c, Quantity__c, Quantity_Unit__c, Packaging_Quantity__c, Packaging_Unit__c, Product_Max_Qty__c, Formula_Packaging_Qty__c, Product__r.Regulatory__c, OPTIVA_Recipe__r.Regulatory__c, OPTIVA_Recipe__r.Shelf_Life__c,
+        List<Sample_Line_Item__c> lineItemList = [SELECT Id, Name, Product__c, Quantity__c, Quantity_Unit__c, Packaging_Quantity__c, Packaging_Unit__c, Product_Max_Qty__c, Formula_Packaging_Qty__c, Product__r.Regulatory__c, OPTIVA_Recipe__r.Regulatory__c, OPTIVA_Recipe__r.Shelf_Life__c,Customer_Preferred_Name__c,
                                                   Expected_Shelf_Life__c, Additional_Comments__c, Customer_Instructions__c, Sample__c, Project_Quotient__r.SSC_Code__c, Product__r.Sampling_Qty_UNIT__c, Product__r.Name, Product__r.Max_sampling_Qty__c, Product__r.ProductCode, Product__r.Current_Shelf_Life__c, OPTIVA_Recipe__r.SSC_Code__c
                                                   FROM Sample_Line_Item__c WHERE Sample__c =: sampleId];
         return lineItemList;

@@ -29,6 +29,9 @@ public with sharing class SAP_SaleOrderUpdateWrapper {
         public String COUNTRY;
         public String POSTAL_CODE;
         public String STREET;
+
+        //NEW
+        public String CUST_CODE;
     }
     public static SAP_SaleOrderUpdateWrapper parse(String json){
         return (SAP_SaleOrderUpdateWrapper) System.JSON.deserialize(json, SAP_SaleOrderUpdateWrapper.class);

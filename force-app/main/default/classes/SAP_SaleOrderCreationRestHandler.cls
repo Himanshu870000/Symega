@@ -8,13 +8,13 @@ public without sharing class SAP_SaleOrderCreationRestHandler {
     }
 
     public Map<Id, Opportunity> getOpenOpportunityByCustomer(String customerNumber/* , Set<String> fertCodeSet */) {
-        return new Map<Id, Opportunity> ([SELECT Id,(Select Id, Quantity, Quantity_In_KG__c, Quantity_Unit__c, FERT_Code__c, UnitPrice, PricebookEntryId, OpportunityId, Product2Id, Opportunity.Account_Billing_Address__c, Opportunity.Customer_Billing_Address__c, Opportunity.Customer_Billing_Address__r.SAP_Customer_Code__c, Opportunity.Account.Customer_Code_SAP__c, ProductCode FROM OpportunityLineItems /* WHERE  FERT_Code__c IN : fertCodeSet AND FERT_Code__c != null*/) FROM Opportunity WHERE (Account.Customer_Code_SAP__c = : customerNumber OR Customer_Billing_Address__r.SAP_Customer_Code__c =: customerNumber) AND RecordType.Name='One Time' AND StageName != 'Closed Won' AND StageName != 'Closed Lost']);
+        return new Map<Id, Opportunity> ([SELECT Id,(Select Id, Quantity, Quantity_In_KG__c, Quantity_Unit__c, FERT_Code__c, UnitPrice, PricebookEntryId, OpportunityId, Product2Id, Opportunity.Account_Billing_Address__c, Opportunity.Customer_Billing_Address__c, Opportunity.Customer_Billing_Address__r.Customer_Code_SAP__c, Opportunity.Account.Customer_Code_SAP__c, ProductCode FROM OpportunityLineItems /* WHERE  FERT_Code__c IN : fertCodeSet AND FERT_Code__c != null*/) FROM Opportunity WHERE (Account.Customer_Code_SAP__c = : customerNumber OR Customer_Billing_Address__r.Customer_Code_SAP__c =: customerNumber) AND RecordType.Name='One Time' AND StageName != 'Closed Won' AND StageName != 'Closed Lost']);
     }
 
-    public Map<String,OpportunityLineItem> getRequestedProducts(Set<String> fertCodeSet,String customerSAPCode){
+    public Map<String,OpportunityLineItem> getRequestedProductsByCustCode(Set<String> fertCodeSet,String customerSAPCode){
         Map<String,OpportunityLineItem> prodCodeSet = new Map<String,OpportunityLineItem>();
 
-        List<OpportunityLineItem> olis =  [Select Id, Quantity, Quantity_In_KG__c, Quantity_Unit__c, FERT_Code__c,UnitPrice,PricebookEntryId,Product2Id,Opportunity.Account_Billing_Address__c,Opportunity.Account.Customer_Code_SAP__c,Opportunity.Customer_Billing_Address__r.SAP_Customer_Code__c,Opportunity.Customer_Billing_Address__c,ProductCode From OpportunityLineItem Where FERT_Code__c IN : fertCodeSet AND (Opportunity.Account.Customer_Code_SAP__c = :customerSAPCode OR Opportunity.Customer_Billing_Address__r.SAP_Customer_Code__c =: customerSAPCode) AND FERT_Code__c!=null AND Opportunity.RecordType.Name='One Time' AND Opportunity.StageName = 'Closed Won' ORDER BY CreatedDate DESC];
+        List<OpportunityLineItem> olis =  [Select Id, Quantity, Quantity_In_KG__c, Quantity_Unit__c, FERT_Code__c,UnitPrice,PricebookEntryId,Product2Id,Opportunity.Account_Billing_Address__c,Opportunity.Account.Customer_Code_SAP__c,Opportunity.Customer_Billing_Address__r.Customer_Code_SAP__c,Opportunity.Customer_Billing_Address__c,ProductCode From OpportunityLineItem Where FERT_Code__c IN : fertCodeSet AND (Opportunity.Account.Customer_Code_SAP__c = :customerSAPCode OR Opportunity.Customer_Billing_Address__r.Customer_Code_SAP__c =: customerSAPCode) AND FERT_Code__c!=null AND Opportunity.RecordType.Name='One Time' AND Opportunity.StageName = 'Closed Won' ORDER BY CreatedDate DESC];
 
         for(OpportunityLineItem opli : olis){
             if(!prodCodeSet.containsKey(opli.FERT_Code__c)) //pick latest fert for pricing
@@ -108,16 +108,36 @@ public without sharing class SAP_SaleOrderCreationRestHandler {
     } */
 
 
-    public void updateCustomerAddress(SAP_SO_Creation_Wrapper.cls_shipping_address shippingAddress, Id accountId){
+    public String updateCustomerAddress(SAP_SO_Creation_Wrapper.cls_shipping_address shippingAddress, Id accountId){
         
-        List<Dispatch_Address__c> dAdress = [Select Id, Address__Street__s, Address__City__s, Address__PostalCode__s, toLabel(Address__StateCode__s), toLabel(Address__CountryCode__s), Account__c From Dispatch_Address__c Where Account__c = :accountId];
+        /*List<Dispatch_Address__c> dAdress = [Select Id, Address__Street__s, Address__City__s, Address__PostalCode__s, toLabel(Address__StateCode__s), toLabel(Address__CountryCode__s), Account__c 
+                                             From Dispatch_Address__c Where Account__c = :accountId];
         
         if(!isDuplicateAddress(dAdress, shippingAddress.CITY, shippingAddress.STATE, shippingAddress.POSTAL_CODE)){
             Dispatch_Address__c address = new Dispatch_Address__c(Address__City__s = shippingAddress.city, Address__CountryCode__s = shippingAddress.country, Address__PostalCode__s = shippingAddress.POSTAL_CODE, 
-                                                                  Address__StateCode__s = shippingAddress.STATE, Address__Street__s = shippingAddress.STREET, Account__c = accountId, SAP_Customer_Code__c = shippingAddress.CUST_CODE);
+                                                                  Address__StateCode__s = shippingAddress.STATE, Address__Street__s = shippingAddress.STREET, Account__c = accountId, Customer_Code_SAP__c = shippingAddress.CUST_CODE);
             
             System.debug('--- address not found, inserting new address:'+ address);
             insert address;
+        }*/
+
+        Account accRec = [SELECT Id, Shipping_Customer_Code_SAP__c FROM Account WHERE Id =: accountId];
+        if(accRec.Shipping_Customer_Code_SAP__c == shippingAddress.CUST_CODE){
+            return 'success';
+        }
+        else{
+            List<Dispatch_Address__c> dAdress = [Select Id, Address__Street__s, Address__City__s, Address__PostalCode__s, toLabel(Address__StateCode__s), toLabel(Address__CountryCode__s), Account__c 
+                                                 From Dispatch_Address__c Where Account__c =: accountId AND Customer_Code_SAP__c =: shippingAddress.CUST_CODE];
+            
+            if(dAdress.size() == 0){
+                Dispatch_Address__c address = new Dispatch_Address__c(Type__c = 'Shipping', Address__City__s = shippingAddress.city, Address__CountryCode__s = shippingAddress.country, Address__PostalCode__s = shippingAddress.POSTAL_CODE, 
+                                                                      Address__StateCode__s = Utility.getPickVal('Dispatch_Address__c','Address__StateCode__s').get(shippingAddress.STATE), Address__Street__s = shippingAddress.STREET, Account__c = accountId, Customer_Code_SAP__c = shippingAddress.CUST_CODE);
+                
+                System.debug('--- address not found, inserting new address:'+ address);
+                insert address;
+                return address.Id;
+            }
+            return dAdress[0].Id;
         }
     }
 
@@ -152,7 +172,9 @@ public without sharing class SAP_SaleOrderCreationRestHandler {
         //add close date = today+30;
         //recordType oneTime
         String oneTimeRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('One Time').getRecordTypeId();
-        Opportunity opp = new Opportunity(Name=acc.Name+'-opp_repeat_order',AccountId=acc.Id,StageName=StageName,CloseDate=System.today(),RecordTypeId=oneTimeRecordTypeId);
+        Opportunity opp = new Opportunity(Name=acc.Name+'-opp_repeat_order', AccountId=acc.Id, StageName=StageName, CloseDate=System.today(), RecordTypeId=oneTimeRecordTypeId, 
+                          Annual_Volume_Full__c = 1, Annual_Volume_in_units__c = 'Kg', Target_Price_Kg__c = 1, End_Use_Category__c = 'Baked Goods',
+                          End_Use_Application__c = 'Crackers');
         return opp;
     }
 

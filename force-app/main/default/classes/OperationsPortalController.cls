@@ -132,7 +132,7 @@ public without sharing class OperationsPortalController {
             Center_filling_Cream__c,City__c,Company_Name__c,Confectionary_Type__c,Contact_Number__c,Cost_in_Use_target__c,Cost_in_use__c,
             Country_of_Compliance__c,Country_Regulation__c,Country__c,Courier__c,CreatedById,CreatedDate,Critical__c,CurrencyIsoCode,Currency_Type__c,
             Current_Cost__c,Current_Packaging__c,Current_RM_FG_Code__c,Current_Shelf_life__c,Current_Supplier_Name__c,Customers_Contact__c,
-            Customer_Base_Details__c,Customer_Brand_details__c,Customer_Comments__c,Customer_Cost_in_USE_CIU__c,Customer_Feedback__c,Customer_Launch_Date__c,
+            Customer_Base_Details__c,Customer_Brand_details__c,Customer_Comments__c,Customer_Cost_in_USE_CIU__c,Customer_Launch_Date__c,
             Customer_Name__c,Customer_Target_price__c,Dispatch_Details__c,Distributer_Customer__c,Documentation_Support__c,Dosage_guidelines_by_customer__c,
             Dosage_Guidelines__c,End_Application_Category__c,End_Use_Applications__c,End_use_application_other__c,End_Use_category__c,Error_Message_On_Submitting_To_Optiva__c,
             Error_Occured_On_Submitting_To_Optiva__c,Expected_Annual_Value__c,Expected_Shelf_Life__c,Expected_Volume_Unit__c,Export__c,External_Id__c,Fat__c,
@@ -193,7 +193,7 @@ public without sharing class OperationsPortalController {
             Distributer_Customer__c,Exclusive_customer_product_code__c,Expected_Shelf_Life__c,First_Sample_Due_Date__c,Formula_Packaging_Qty__c,Id,
             IsDeleted,LastActivityDate,LastModifiedById,LastModifiedDate,LastReferencedDate,LastViewedDate,Line_Item_Name__c,Name,OPTIVA_Recipe__c,
             OwnerEmail__c,OwnerId,Packaging_Quantity__c,Packaging_Unit__c,Product_Code__c,Product_Family__c,Product_Max_Qty__c,Product_Name__c,Product__c,
-            Project_Quotient__c,Qty_in_KGs__c,Quantity_Unit__c,Quantity__c,Reason_For_Rejection__c,Regulatory_Requirements__c,Sample_delivery_date__c,
+            Project_Quotient__c,Qty_in_KGs__c,Quantity_Unit__c,Quantity__c,Reason_For_Rejection__c,Regulatory_Requirements__c,Sample_Delivery_Date__c,
             Sample_Invoice_Date__c,Sample_Request_Status__c,Sample_Submitted_Date__c,Sample_Type__c,Sample__c,SLI_Dispatched__c,Start_Date__c,Submitted__c,
             SystemModstamp,Way_Bill_No__c,Sample__r.Name,Project_Quotient__r.Name,(SELECT Id,Name,Comment__c,Comment_By__r.Name FROM Comments__r) FROM Sample_Line_Item__c WHERE Id =: sliId];
             return SLIRec[0];
@@ -270,7 +270,7 @@ public without sharing class OperationsPortalController {
             }
             system.debug('setOfOppIds =====> '+setOfOppIds);
             
-            List<Project__c> listOfAllSampleRecords = [SELECT Id,Name,Record_Type_Name__c,Sample_Name__c,Shipping_Type__c,Status__c,Product_Family__c,Sample_Requested_by__c,Opportunity__c From Project__c WHERE Opportunity__c IN : setOfOppIds];
+            List<Project__c> listOfAllSampleRecords = [SELECT Id,Name,Record_Type_Name__c,Sample_Name__c,Project_Name__c,Shipping_Type__c,Status__c,Product_Family__c,Sample_Requested_by__c,Opportunity__c From Project__c WHERE Opportunity__c IN : setOfOppIds];
             system.debug('listOfAllSampleRecords ====> '+listOfAllSampleRecords);
             accountDetailWrapper wrapper = new accountDetailWrapper();
             wrapper.accRecord = (accRecord.size() > 0) ? accRecord[0] : null;
@@ -599,7 +599,7 @@ public without sharing class OperationsPortalController {
                     setOfAccIds.add(acc.Id);
                 }
             }
-            List<Account> listOfAccount = [SELECT Id,Name,Email__c,Phone FROM Account WHERE Name LIKE :('%' + serachKey + '%') AND Id IN : setOfAccIds];
+            List<Account> listOfAccount = [SELECT Id,Name,Email__c,Phone,Customer_Number__c FROM Account WHERE (Name LIKE :('%' + serachKey + '%') OR Customer_Number__c LIKE :('%' + serachKey + '%'))  AND Id IN : setOfAccIds];
             return listOfAccount;
         }catch(Exception e){
             return null;

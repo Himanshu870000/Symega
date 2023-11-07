@@ -235,12 +235,12 @@
                         <span class="required-asterisk" style="color:red;">*</span>
                         <input class="form-control" type="text" ng-model="oppDetails.Freight_charges__c" ng-disabled="true"/>
                     </div>
-                    <div class="col-md-6 mt-3">
+                   <!-- <div class="col-md-6 mt-3">
                         <label class="font-if">Proposed Date Of Dispatch
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
                         <input class="form-control" type="date" ng-model="oppDetails.Proposed_Date_of_Dispatch__c" ng-disabled="true"/>
-                    </div>
+                    </div>-->
                     <div class="col-md-6 mt-3">
                         <label class="font-if">End Use Category
                         </label>
@@ -287,7 +287,7 @@
                         <label class="font-if">Include Freight Charges
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input class="form-control" type="checkbox" ng-model="oppDetails.Include_Freight_Charges__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="oppDetails.Include_Freight_Charges__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Total Qty In Kg
@@ -359,7 +359,7 @@
                         <label class="font-if">Markdown %
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input class="form-control" type="text" ng-model="oppDetails.Markdown__c" ng-disabled="true"/>
+                        <input class="form-control" type="text" ng-model="oppDetails.Markdown__c" ng-disabled="true" step="0.01"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Price Book
@@ -382,19 +382,19 @@
                         <label class="font-if">Approved by Business Head
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input class="form-control" type="checkbox" ng-model="oppDetails.Approved_by_Business_Head__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="oppDetails.Approved_by_Business_Head__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3 mb-3">
                         <label class="font-if">Approved by Manager
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input class="form-control" type="checkbox" ng-model="oppDetails.Approved_by_Manager__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="oppDetails.Approved_by_Manager__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3 mb-3">
                         <label class="font-if">Approved by MD
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input class="form-control" type="checkbox" ng-model="oppDetails.Approved_by_MD__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="oppDetails.Approved_by_MD__c" ng-disabled="true"/>
                     </div>
 
                 </div>
@@ -426,13 +426,13 @@
                             </div>
                             <div class="col-md-6 mt-3" ng-if="accRecord.Customer_Type__c == undefined">
                                 <label class="font-if">Customer Type:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Customer_Type__c">
+                                <select class="form-control" aria-label="Default select example" ng-model="accRecord.Customer_Type__c">
                                     <option ng-repeat="staff in customerType">{{staff}}</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mt-3" ng-if="accRecord.BillingCity == undefined">
                                 <label class="font-if">Currency:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.CurrencyIsoCode">
+                                <select class="form-control" aria-label="Default select example" ng-model="accRecord.CurrencyIsoCode">
                                     <option ng-repeat="staff in currencyCode">{{staff}}</option>
                                 </select>
                             </div>
@@ -458,19 +458,19 @@
                             </div>
                             <div class="col-md-6 mt-3" ng-if="accRecord.Delivery_Plant__c == undefined">
                                 <label class="font-if">Delivery Plant:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Delivery_Plant__c">
+                                <select class="form-control" aria-label="Default select example" ng-model="accRecord.Delivery_Plant__c">
                                     <option ng-repeat="staff in deliveryPlant">{{staff}}</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mt-3" ng-if="accRecord.Account_Segment__c == undefined">
                                 <label class="font-if">Account Segment:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Account_Segment__c">
+                                <select class="form-control" aria-label="Default select example" ng-model="accRecord.Account_Segment__c">
                                     <option ng-repeat="staff in accountSegmant">{{staff}}</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mt-3" ng-if="accRecord.Transportation_Terms__c == undefined">
                                 <label class="font-if">Transportation Terms:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="accRecord.Transportation_Terms__c">
+                                <select class="form-control" aria-label="Default select example" ng-model="accRecord.Transportation_Terms__c">
                                     <option ng-repeat="staff in transportationTerms">{{staff}}</option>
                                 </select>
                             </div>
@@ -506,13 +506,13 @@
                             </div>
                             <div class="col-md-6 mt-3" ng-show="customerAddressRec.Type__c == undefined || showFieldType == false">
                                 <label class="font-if">Type:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="customerAddressRec.Type__c">
+                                <select class="form-control" aria-label="Default select example" ng-model="customerAddressRec.Type__c">
                                     <option ng-repeat="type in customerAddType">{{type}}</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mt-3" ng-show="customerAddressRec.Contact__c == undefined || showFieldContact == false">
                                 <label class="font-if">Contact:</label>
-                                <select class="form-select" aria-label="Default select example" ng-model="customerAddressRec.Contact__c">
+                                <select class="form-control" aria-label="Default select example" ng-model="customerAddressRec.Contact__c">
                                     <option ng-repeat="con in conList" value="{{con.Id}}">{{con.Name}}</option>
                                 </select>
                             </div>
@@ -666,7 +666,7 @@
                                     </tbody>
                                     <tbody>
                                         <td>Plant:</td>
-                                        <td><select class="form-select" aria-label="Default select example" ng-model="oliRec.Plant__c">
+                                        <td><select class="form-control" aria-label="Default select example" ng-model="oliRec.Plant__c">
                                             <option ng-repeat="staff in plant">{{staff}}</option>
                                         </select></td>
                                     </tbody>
@@ -741,6 +741,20 @@
                 $scope.showFieldType = true;
                 $scope.showFieldContact = true;
                 
+                /* Account */
+                $scope.showAccName = true;
+                $scope.showCustType = true;
+                $scope.showCurrency = true;
+                $scope.showBillingCity = true;
+                $scope.showBillingCountry = true;
+                $scope.showBillingStreet = true;
+                $scope.showBillingPostalCode = true;
+                $scope.showBillingState = true;
+                $scope.showDeliveryPlant = true;
+                $scope.showAccountSegment = true;
+                $scope.showTransportationTerms = true;
+                $scope.showPANNumber = true;
+                $scope.showGSTNumber = true;
 
                 $scope.getOpportunityDetails = function(){
                         debugger;
@@ -749,12 +763,65 @@
                             if(event.status && result){
                                 debugger;
                                 $scope.oppDetails = result.oppList[0];
+                                if($scope.oppDetails.Markdown__c != undefined){
+                                    $scope.oppDetails.Markdown__c = $scope.oppDetails.Markdown__c.toFixed(2);
+                                }
                                 $scope.OLIList = result.oppProductList;
+                                
+                                 if(result.oppList[0].CloseDate != null){
+                                       $scope.oppDetails.CloseDate = new Date(result.oppList[0].CloseDate);
+                                 }
+                                if(result.oppList[0].Customer_Followup_Date__c != null){
+                                       $scope.oppDetails.Customer_Followup_Date__c = new Date(result.oppList[0].Customer_Followup_Date__c);
+                                 }
+                                // if(result.oppList[0].Proposed_Date_of_Dispatch__c != null){
+                                //       $scope.oppDetails.Proposed_Date_of_Dispatch__c = new Date(result.oppList[0].Proposed_Date_of_Dispatch__c);
+                                // }
+                                
                                 if(result.conList != undefined){
                                     $scope.conList = result.conList;
                                 }
                                 if(result.accRecord != undefined){
                                     $scope.accRecord = result.accRecord;
+                                    if($scope.accRecord.Name == undefined){
+                                        $scope.showAccName = false;
+                                    }
+                                    if($scope.accRecord.Customer_Type__c == undefined){
+                                        $scope.showCustType = false;
+                                    }
+                                    if($scope.accRecord.CurrencyIsoCode == undefined){
+                                        $scope.showCurrency = false;
+                                    }
+                                    if($scope.accRecord.BillingCity == undefined){
+                                        $scope.showBillingCity = false;
+                                    }
+                                    if($scope.accRecord.BillingCountry == undefined){
+                                        $scope.showBillingCountry = false;
+                                    }
+                                    if($scope.accRecord.BillingStreet == undefined){
+                                        $scope.showBillingStreet = false;
+                                    }
+                                    if($scope.accRecord.BillingPostalCode == undefined){
+                                        $scope.showBillingPostalCode = false;
+                                    }
+                                    if($scope.accRecord.BillingState == undefined){
+                                        $scope.showBillingState = false;
+                                    }
+                                    if($scope.accRecord.Delivery_Plant__c == undefined){
+                                        $scope.showDeliveryPlant = false;
+                                    }
+                                    if($scope.accRecord.Account_Segment__c == undefined){
+                                        $scope.showAccountSegment = false;
+                                    }
+                                    if($scope.accRecord.Transportation_Terms__c == undefined){
+                                        $scope.showTransportationTerms = false;
+                                    }
+                                    if($scope.accRecord.PAN_Number__c == undefined){
+                                        $scope.showPANNumber = false;
+                                    }
+                                    if($scope.accRecord.GST_number__c == undefined){
+                                        $scope.showGSTNumber = false;
+                                    }
                                     
                                 }else if(result.customerAddRec != undefined){
                                     $scope.customerAddressRec = result.customerAddRec;
@@ -779,6 +846,7 @@
                                     if($scope.customerAddressRec.Contact__c == undefined){
                                         $scope.showFieldContact = false;
                                     }
+                                    
                                     
                                 }else{
                                     }

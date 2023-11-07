@@ -20,10 +20,10 @@ public without sharing class SAP_Create_CustomerBatch Implements Database.Batcha
         }
         if(successfulAccIdSet.size()>0){
             List<Account> accRecListToUpdate = new List<Account>();
-            List<Account> accRecList = [SELECT Id, SAP_Update_Customer__c FROM Account WHERE Id IN: successfulAccIdSet];
+            List<Account> accRecList = [SELECT Id, Submitted_to_SAP__c FROM Account WHERE Id IN: successfulAccIdSet];
             for(Account accRec : accRecList){
-                if(accRec.SAP_Update_Customer__c != true){
-                    accRec.SAP_Update_Customer__c = true;
+                if(accRec.Submitted_to_SAP__c != true){
+                    accRec.Submitted_to_SAP__c = true;
                     accRecListToUpdate.add(accRec);
                 }
             }

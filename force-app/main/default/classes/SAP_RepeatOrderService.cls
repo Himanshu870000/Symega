@@ -46,6 +46,9 @@ global without sharing class SAP_RepeatOrderService {
                 if(String.isBlank(so.CUSTOMER_CODE)) return Constants.CUSTOMER_CODE_EMPTY_ERROR;
                 
                 if(String.isBlank(so.REF_CODE)) return 'ERROR: REF_CODE Number cannot be blank';
+
+                if(String.isBlank(so.SHIPPING_ADDRESS.CUST_CODE)) return 'ERROR: ADDRESS CUSTOMER CODE cannot be blank';
+
                 if(sapSaleOrderMap.containsKey(so.REF_CODE))
                     return 'ERROR: Duplicate order found. REF_CODE should be unique:'+so.REF_CODE;
                 

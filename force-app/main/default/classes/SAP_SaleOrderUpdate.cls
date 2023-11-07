@@ -58,9 +58,9 @@ global without sharing class SAP_SaleOrderUpdate {
                 
                 /*******************    SALE ORDER START   ************************/
                 
-                List<Sales_Order__c> existingSaleOrderList = [SELECT Id, Name, Opportunity__r.Account_Billing_Address__c, Opportunity__r.Account.Customer_Code_SAP__c, Opportunity__r.Customer_Billing_Address__c, Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c,
+                List<Sales_Order__c> existingSaleOrderList = [SELECT Id, Name, Opportunity__r.Account_Billing_Address__c, Opportunity__r.Account.Customer_Code_SAP__c, Opportunity__r.Customer_Billing_Address__c, Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c,
                                                               SAP_Reference_Code__c, Remarks__c, Account__c, Service_Rendering_date__c, Submitted_Date__c, Payment_Received__c, Change_in_Dispatch_Date_Reason__c  
-                                                              FROM Sales_Order__c WHERE (Id IN: soByRefCodeMap.keySet() OR SAP_Reference_Code__c IN: soByRefCodeMap.keySet()) AND ( Opportunity__r.Account.Customer_Code_SAP__c IN: soByCstmrCodeMap.keySet() OR Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c IN: soByCstmrCodeMap.keySet()) ];
+                                                              FROM Sales_Order__c WHERE (Id IN: soByRefCodeMap.keySet() OR SAP_Reference_Code__c IN: soByRefCodeMap.keySet()) AND ( Opportunity__r.Account.Customer_Code_SAP__c IN: soByCstmrCodeMap.keySet() OR Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c IN: soByCstmrCodeMap.keySet()) ];
                 system.debug('existingSaleOrderList -- ' + existingSaleOrderList);
                 
                 Map<String, String> accountIdByRefId = new Map<String, String>();
@@ -75,7 +75,7 @@ global without sharing class SAP_SaleOrderUpdate {
                             customerCodeSAP = soRec.Opportunity__r.Account.Customer_Code_SAP__c;
                         }
                         else if(soRec.Opportunity__r.Customer_Billing_Address__c != null){
-                            customerCodeSAP = soRec.Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c;
+                            customerCodeSAP = soRec.Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c;
                         }
 
                         if( (soByRefCodeMap.containsKey(soRec.Id) || soByRefCodeMap.containsKey(soRec.SAP_Reference_Code__c)) && soByCstmrCodeMap.containsKey(customerCodeSAP) ) {
@@ -186,6 +186,7 @@ global without sharing class SAP_SaleOrderUpdate {
                             newAdrs.Address__CountryCode__s = !String.isBlank(soData.SHIPPING_ADDRESS.COUNTRY) ? soData.SHIPPING_ADDRESS.COUNTRY : '';
                             newAdrs.Address__PostalCode__s = !String.isBlank(soData.SHIPPING_ADDRESS.POSTAL_CODE) ? soData.SHIPPING_ADDRESS.POSTAL_CODE : '';
                             newAdrs.Address__Street__s = !String.isBlank(soData.SHIPPING_ADDRESS.STREET) ? soData.SHIPPING_ADDRESS.STREET : '';
+                            newAdrs.Customer_Code_SAP__c = soData.SHIPPING_ADDRESS.CUST_CODE;
                             newAdrs.Account__c = accountIdByRefId.get(soData.REF_CODE);
                             addressList.add(newAdrs);
                         }

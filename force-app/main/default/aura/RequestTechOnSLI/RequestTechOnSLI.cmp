@@ -1,0 +1,3 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<c:requestTecDocOnSLI recordId="{!v.recordId}" onclose="{!c.closeQA}" ></c:requestTecDocOnSLI>
+</aura:component>

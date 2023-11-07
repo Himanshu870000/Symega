@@ -1,6 +1,12 @@
 public class SAP_CUSTOMER_UPDATE_WRAPPER {
 
+    public String SF_ID;	//0019D00000Lixm4QAB
+    public String CUSTOMER_NAME_2;
+	public String STATE;	//TN
+	public String TAX_TYPE;	//TN
     public String CUSTOMER_SAP_CODE;
+    
+    //public String CUSTOMER_SAP_CODE;
     public String TRANSPORTATION_TERMS;
     public String STREET;
     public String STREET_2;

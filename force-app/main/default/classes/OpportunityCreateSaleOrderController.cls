@@ -389,9 +389,9 @@ public without sharing class OpportunityCreateSaleOrderController {
     @AuraEnabled
     public static string sendSONotification(String id){
         try {
-            Sales_Order__c so = [Select Id,Account__c,Account__r.Customer_Code_SAP__c,
+            Sales_Order__c so = [Select Id,Account__c,Opportunity__r.Account.Customer_Code_SAP__c,
                                  Opportunity__r.Account_Billing_Address__c,Opportunity__r.Customer_Billing_Address__c,
-                                 Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c
+                                 Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c
                                  From Sales_Order__c Where Id=:id];
             
             String customerCode = '';
@@ -399,15 +399,16 @@ public without sharing class OpportunityCreateSaleOrderController {
                 customerCode = so.Opportunity__r.Account.Customer_Code_SAP__c;
             }
             else if(so.Opportunity__r.Customer_Billing_Address__c != null){
-                customerCode = so.Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c;
+                customerCode = so.Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c;
             }
             
             if(String.isEmpty(customerCode)){
                 return 'Customer Creation Initiated';    
             }
-            Utility.sendSONotification(id);
+            //Utility.sendSONotification(id);
             return 'Success';
         } catch (Exception e) {
+            system.debug('line no ' + e.getLineNumber());
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -426,41 +427,109 @@ public without sharing class OpportunityCreateSaleOrderController {
     @AuraEnabled
     public static string updateOpp(String soId){
         try {
-            Sales_Order__c so = [Select Id,Account__c,Account__r.Customer_Code_SAP__c,Opportunity__r.AccountId,
+            Sales_Order__c so = [Select Id,Account__c,Opportunity__r.Account.Customer_Code_SAP__c,Opportunity__r.AccountId, Opportunity__r.Customer_Billing_Address__r.SAP_Update_Customer__c,
                                  Opportunity__r.Account_Billing_Address__c,Opportunity__r.Customer_Billing_Address__c,
-                                 Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c
+                                 Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c, Opportunity__r.Account.SAP_Update_Customer__c, Opportunity__r.Account.Submitted_to_SAP__c,
+                                 Opportunity__r.Customer_Billing_Address__r.Submitted_to_SAP__c
                                  From Sales_Order__c Where Id=:soId];
             
             String customerCode = '';
             Boolean isAccount = false;
             Id custId;
+            Boolean sapUpdateAcc = false;
+            Boolean sapUpdateAddress = false;
+
             if(so.Opportunity__r.Account_Billing_Address__c){
                 customerCode = so.Opportunity__r.Account.Customer_Code_SAP__c;
                 isAccount = true;
                 custId = so.Opportunity__r.AccountId;
+                sapUpdateAcc = so.Opportunity__r.Account.SAP_Update_Customer__c;
             }
             else if(so.Opportunity__r.Customer_Billing_Address__c != null){
-                customerCode = so.Opportunity__r.Customer_Billing_Address__r.SAP_Customer_Code__c;
+                customerCode = so.Opportunity__r.Customer_Billing_Address__r.Customer_Code_SAP__c;
                 isAccount = false;
                 custId = so.Opportunity__r.Customer_Billing_Address__c;
+                sapUpdateAddress = so.Opportunity__r.Customer_Billing_Address__r.SAP_Update_Customer__c;
             }
             
             if(String.isEmpty(customerCode)){
-                String response  = SAP_CreateCustomerCallout.createCustomer(custId, isAccount);
-                System.debug('ResponseXXX----'+response);
-                if(response!='Success'){
-                    return response;
+                System.debug('1st Cust Code NULL----');
+
+                if(so.Opportunity__r.Account_Billing_Address__c && !so.Opportunity__r.Account.Submitted_to_SAP__c){
+                    String response  = SAP_CreateCustomerCallout.createCustomer(so.Opportunity__r.AccountId, false);
+                    System.debug('ResponseXXX----'+response);
+                    if(response=='Success'){
+                        Account acc = [SELECT Id, SAP_Update_Customer__c, Submitted_to_SAP__c FROM Account WHERE Id =: so.Opportunity__r.AccountId];
+                        if(acc.SAP_Update_Customer__c != true){
+                            acc.SAP_Update_Customer__c = true;
+                        }
+                        if(acc.Submitted_to_SAP__c != true){
+                            acc.Submitted_to_SAP__c = true;
+                        }
+                        update acc;
+                        Utility.sendSONotification(soId);
+                        //return 'Success';
+                    }
+                    else{
+                        return response;
+                    }
+                    return updateSO(so);
                 }
-                else{
-                    if(isAccount){
-                        Account acc = [SELECT Id, SAP_Update_Customer__c FROM Account WHERE Id =: custId];
+                else if(so.Opportunity__r.Customer_Billing_Address__c != null && !so.Opportunity__r.Customer_Billing_Address__r.Submitted_to_SAP__c){
+                    String response  = SAP_CreateAddressCustomerCallout.createCustomer(so.Opportunity__r.Customer_Billing_Address__c, false);
+                    System.debug('ResponseXXX----'+response);
+                    if(response=='Success'){
+                        Dispatch_Address__c addr = [SELECT Id, SAP_Update_Customer__c, Submitted_to_SAP__c FROM Dispatch_Address__c WHERE Id =: so.Opportunity__r.Customer_Billing_Address__c];
+                        if(addr.SAP_Update_Customer__c != true){
+                            addr.SAP_Update_Customer__c = true;
+                        }
+                        if(addr.Submitted_to_SAP__c != true){
+                            addr.Submitted_to_SAP__c = true;
+                        }
+                        update addr;
+                        Utility.sendSONotification(soId);
+                        //return 'Success';
+                    }
+                    else{
+                        return response;
+                    }
+                    return updateSO(so);                    
+                }
+            }
+            else if( (so.Opportunity__r.Account_Billing_Address__c && sapUpdateAcc) || (!so.Opportunity__r.Account_Billing_Address__c && so.Opportunity__r.Customer_Billing_Address__c != null && sapUpdateAddress) ){
+                System.debug('2nd Only Notification----');
+                Utility.sendSONotification(soId);
+            }
+            else if((so.Opportunity__r.Account_Billing_Address__c && !sapUpdateAcc) || (!so.Opportunity__r.Account_Billing_Address__c && so.Opportunity__r.Customer_Billing_Address__c != null && !sapUpdateAddress) ){
+                System.debug('3rd Notification and Customer Update Callout----');
+                if(so.Opportunity__r.Account_Billing_Address__c){
+                    String response = SAP_CUSTOMER_UPDATE_CALLOUT.syncCustomersWithSAP(so.Opportunity__r.AccountId);
+                    if(response == 'Success'){
+                        Account acc = [SELECT Id, SAP_Update_Customer__c FROM Account WHERE Id =: so.Opportunity__r.AccountId];
                         if(acc.SAP_Update_Customer__c != true){
                             acc.SAP_Update_Customer__c = true;
                             update acc;
                         }
+                        return 'Success';
+                    }
+                    else{
+                        return response;
                     }
                 }
-                return updateSO(so);
+                else if(so.Opportunity__r.Customer_Billing_Address__c != null){
+                    String response = SAP_ADDRESS_UPDATE_CALLOUT.syncAddressCustomersWithSAP(so.Opportunity__r.Customer_Billing_Address__c);
+                    if(response=='Success'){
+                        Dispatch_Address__c addr = [SELECT Id, SAP_Update_Customer__c FROM Dispatch_Address__c WHERE Id =: so.Opportunity__r.Customer_Billing_Address__c];
+                        if(addr.SAP_Update_Customer__c != true){
+                            addr.SAP_Update_Customer__c = true;
+                            update addr;
+                        }
+                        return 'Success';
+                    }
+                    else{
+                        return response;
+                    }                    
+                }
             }
             
             // if(String.isEmpty(so.Account__r.Customer_Code_SAP__c)){
@@ -488,6 +557,52 @@ public without sharing class OpportunityCreateSaleOrderController {
             return 'Success';
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    public static void updateOppInBulkAddress(List<Id> addrIds){
+        try {
+            List<Utility.SOWRAPPER> SOWRAPPERS = new List<Utility.SOWRAPPER>();
+            Map<Id,Sales_Order__c> soMap = new Map<Id,Sales_Order__c>([Select Id, Name, Opportunity__c, OwnerId, Owner.Email, Submission_Date__c, Opportunity__r.Customer_Billing_Address__c FROM Sales_Order__c WHERE Opportunity__r.Customer_Billing_Address__c IN : addrIds AND Send_Sales_Ops_Email__c = true]);
+            
+            if(!soMap.isEmpty()){
+                Map<Id,Opportunity> oppToUpdate = new Map<Id,Opportunity>();
+                
+                Map<Id,OpportunityLineItem> oppLineItems = new Map<Id,OpportunityLineItem>([SELECT Id, Product2.Family,Sales_Order__c FROM OpportunityLineItem WHERE Sales_Order__c IN : soMap.keySet()]);
+                
+                Map<Id,List<OpportunityLineItem>> saleOrderLineItemsMap = new Map<Id,List<OpportunityLineItem>>();
+                
+                for(OpportunityLineItem oppItem : oppLineItems.values()){
+                    if(saleOrderLineItemsMap.containsKey(oppItem.Sales_Order__c)){
+                        saleOrderLineItemsMap.get(oppItem.Sales_Order__c).add(oppItem);
+                    }else{
+                        saleOrderLineItemsMap.put(oppItem.Sales_Order__c,new List<OpportunityLineItem>{oppItem});
+                    }
+                }
+                
+                for(Id key : saleOrderLineItemsMap.keySet()){
+                    Utility.SOWRAPPER sWrapper = new Utility.SOWRAPPER();
+                    sWrapper.soId = key;
+                    sWrapper.oppProdsList = saleOrderLineItemsMap.get(key);
+                    sWrapper.replyToEmail = soMap.containsKey(key) ? soMap.get(key).Owner.Email : UserInfo.getUserEmail();
+                    sWrapper.senderID = soMap.containsKey(key) ? soMap.get(key).OwnerId : UserInfo.getUserId();
+                    SOWRAPPERS.add(sWrapper);                
+                }
+                
+                System.debug('calling utility');
+                Utility.sendBulkSONotification(SOWRAPPERS);
+                
+                for(Sales_Order__c so : soMap.values()){
+                    so.Send_Sales_Ops_Email__c = false;
+                    so.Submission_Date__c = Date.Today();
+                    oppToUpdate.put(so.Opportunity__c,new Opportunity(Id=so.Opportunity__c,StageName='Closed Won'));
+                }
+                
+                update soMap.values();
+                update oppToUpdate.values();
+            }
+        } catch (Exception e) {
+            
         }
     }
     

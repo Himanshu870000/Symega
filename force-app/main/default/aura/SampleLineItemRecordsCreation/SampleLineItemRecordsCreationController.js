@@ -44,6 +44,7 @@
                             'Quantity__c': '',
                             'Quantity_Unit__c': '',
                             'Packaging_Quantity__c': '',
+                            'Customer_Preferred_Name__c':'',
                             'Product_Max_Qty__c' : '',
                             'Current_Shelf_Life__c': '',
                             'Expected_Shelf_Life__c': '',
@@ -90,6 +91,7 @@
                 'Quantity__c': '',
                 'Quantity_Unit__c': '',
                 'Packaging_Quantity__c': '',
+                'Customer_Preferred_Name__c':'',
                 'Product_Max_Qty__c' : '',
                 'Current_Shelf_Life__c': '',
                 'Expected_Shelf_Life__c': '',
@@ -142,6 +144,8 @@
                 }
             }
             
+          
+            
             if(obj.lookupObj && obj.lookupObj.id){
                 if(obj.lookupObj.type === 'recepie'){
                     obj.OPTIVA_Recipe__c = obj.lookupObj.id;   
@@ -154,14 +158,20 @@
                 }
             }
             
+            
             if((obj.Quantity__c <= 0) || (obj.Packaging_Quantity__c <= 0)){
                 qtyNeg = true;
             }
             
-            if( (obj.Product__c !== '' || obj.OPTIVA_Recipe__c !== '' || obj.Project_Quotient__c !== '') && obj.Quantity__c !== '' && obj.Quantity_Unit__c !== '' && obj.Packaging_Quantity__c !== ''){
+            if( (obj.Product__c !== '' || obj.OPTIVA_Recipe__c !== '' || obj.Project_Quotient__c !== '') && obj.Quantity__c !== '' && obj.Quantity_Unit__c !== '' && obj.Packaging_Quantity__c !== '' && obj.Customer_Preferred_Name__c !== ''){
                 var tempVal = obj;
                 
                 tempVal.Sample__c = CurrentRecId;
+                
+                if( obj.Customer_Preferred_Name__c){
+                     tempVal.Customer_Preferred_Name__c =  obj.Customer_Preferred_Name__c;
+                }
+                
                 if(obj.Product__r && obj.Product__r.Id){
                     tempVal.Product__c = obj.Product__r.Id; 
                 }

@@ -3,7 +3,7 @@ public without sharing class Optiva_NPDCreationWrapper {
 	public String project_title='';	//ABC XYZ
 	public String created_by='';	//Ajeet
 	public String creation_date='';	//27/03/2022
-	public String project_type='';	//External
+	public String project_type='';	//External ..
 	public String project_category='';	//Seasoning
 	public String opp_type_int='';	//Development
 	public String opp_sub_type_sales='';	//NPD
@@ -17,21 +17,21 @@ public without sharing class Optiva_NPDCreationWrapper {
 	public Double business_potent_val;	//78.9
 	public String curr_year_vol;	//890000
 	public String opp_closedate='';	//23/05/2022
-	public String sample_duedate1='';	//23/05/2022
+	public String sample_duedate1='';	//23/05/2022 ..
 	public String cust_launch_date='';	//23/05/2022
-	public String sensry_prfle_rpt='';	//Sensory Profiling Report
+	public String sensry_prfle_rpt='';	//Sensory Profiling Report ..
 	public String appl_smpl_recipe='';	//Example of recipe
 	public String physical_form='';	//Physical Form
-	public String solublity='';	//YES
-	public String shelf_life_flvr='';	//Sweet
-	public String supplier_legal_stat='';	//Certified by fssai
+	public String solublity='';	//YES ..
+	public String shelf_life_flvr='';	//Sweet ..
+	public String supplier_legal_stat='';	//Certified by fssai ..
 	public String dosage_guide_cust='';	//Dosage Guide Temp
-	public String shelf_life_appl_prod='';	//Shelf Life Application Production
+	public String shelf_life_appl_prod='';	//Shelf Life Application Production ..
 	public String appl_guide='';	//Applicance Guidelines
 	public String cust_base_details='';	//AK Group food healthify
 	public String match_target_dtls='';	//Match Taget Date
-	public String sample_size_trails='';	//Sample Size trails
-	public String sensry_target_prfl='';	//Sensory Taget Profile
+	public String sample_size_trails='';	//Sample Size trails ..
+	public String sensry_target_prfl='';	//Sensory Taget Profile ..
 	public String inputs_by_cust='';	//Amazing Taste
 	public String alrgn_free_declare='';	//YES
 	public String gmo_status='';	//YES
@@ -46,7 +46,7 @@ public without sharing class Optiva_NPDCreationWrapper {
     
     
     //NEW ADDITIONS 
-    public String expec_shelf_life = '0';
+    public String expected_shelf_life = '0';
     public String legal_status = 'NA';
 	
 }

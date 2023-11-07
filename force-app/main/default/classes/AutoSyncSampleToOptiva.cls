@@ -7,7 +7,7 @@ public without sharing class AutoSyncSampleToOptiva {
             List<Project__c> projects = [Select Id,Submitted_To_SAP_Optiva__c,Account__c,Opportunity__r.Account_Billing_Address__c,Opportunity__r.Customer_Billing_Address__c, Opportunity__r.Customer_Billing_Address__r.OPTIVA_Customer_Code__c,Opportunity__r.Account.Customer_Code_OPTIVA__c,Lead__c,Lead__r.FirstName,Lead__r.LastName,Lead__r.Country,Lead__r.State,Lead__r.City,Lead__r.Street,Product_Family__c,Sample_Name__c,Project_Type__c,Project_Category__c,Project_Reference__c,CreatedBy.Name,
             CreatedDate,Opportunity_Type__c,Opportunity_Sub_Type__c,End_Use_category__c,
             End_Use_Applications__c,Currency_Type__c,(Select Id,Quantity_Unit__c,Quantity__c,Packaging_Unit__c,
-            Packaging_Quantity__c,Additional_Comments__c,Product__r.ProductCode, OPTIVA_Recipe__c, OPTIVA_Recipe__r.SSC_Code__c,First_Sample_due_date__c,Customer_Target_Price__c From Sample_Line_Items__r) From Project__c Where Submit_Sample_To_Optiva__c = true AND Account__c!=null AND ( Opportunity__r.Account.Customer_Code_OPTIVA__c!=null OR Opportunity__r.Customer_Billing_Address__r.OPTIVA_Customer_Code__c != null)];
+            Packaging_Quantity__c,Additional_Comments__c,Product__r.ProductCode, OPTIVA_Recipe__c, OPTIVA_Recipe__r.SSC_Code__c,First_Sample_due_date__c,Customer_Target_Price__c, Customer_Preferred_Name__c From Sample_Line_Items__r) From Project__c Where Submit_Sample_To_Optiva__c = true AND Account__c!=null AND ( Opportunity__r.Account.Customer_Code_OPTIVA__c!=null OR Opportunity__r.Customer_Billing_Address__r.OPTIVA_Customer_Code__c != null)];
 
             
             if(!projects.isEmpty()){
@@ -64,7 +64,7 @@ public without sharing class AutoSyncSampleToOptiva {
                                 OpWrapper.tot_qty1 = String.valueOf(sli.Quantity__c);
                                 OpWrapper.no_units1 = checkIfBlank(sli.Packaging_Unit__c);
                                 OpWrapper.pack_size1 = sli.Packaging_Quantity__c!=null?String.valueOf(sli.Packaging_Quantity__c):'';
-                                OpWrapper.selling_desc1 = checkIfBlank(sli.Additional_Comments__c);
+                                OpWrapper.selling_desc1 = checkIfBlank(sli.Customer_Preferred_Name__c);
                                 OpWrapper.prod_code1_dev = sli.OPTIVA_Recipe__r.SSC_Code__c;
                                 OpWrapper.sample_duedate1 = sli.First_Sample_due_date__c!=null?formatDate(sli.First_Sample_due_date__c):'';
                                 OpWrapper.cust_target_price1 = sli.Customer_Target_Price__c!=null?String.valueOf(sli.Customer_Target_Price__c):'';
@@ -73,7 +73,7 @@ public without sharing class AutoSyncSampleToOptiva {
                                 OpWrapper.tot_qty2 = String.valueOf(sli.Quantity__c);
                                 OpWrapper.no_units2 = checkIfBlank(sli.Packaging_Unit__c);
                                 OpWrapper.pack_size2 = sli.Packaging_Quantity__c!=null?String.valueOf(sli.Packaging_Quantity__c):'';
-                                OpWrapper.selling_desc2 = checkIfBlank(sli.Additional_Comments__c);
+                                OpWrapper.selling_desc2 = checkIfBlank(sli.Customer_Preferred_Name__c);
                                 OpWrapper.prod_code2_dev = sli.OPTIVA_Recipe__r.SSC_Code__c;
                                 OpWrapper.sample_duedate2 = sli.First_Sample_due_date__c!=null?formatDate(sli.First_Sample_due_date__c):'';
                                 OpWrapper.cust_target_price2 = sli.Customer_Target_Price__c!=null?String.valueOf(sli.Customer_Target_Price__c):'';
@@ -82,7 +82,7 @@ public without sharing class AutoSyncSampleToOptiva {
                                 OpWrapper.tot_qty3 = String.valueOf(sli.Quantity__c);
                                 OpWrapper.no_units3 = checkIfBlank(sli.Packaging_Unit__c);
                                 OpWrapper.pack_size3 = sli.Packaging_Quantity__c!=null?String.valueOf(sli.Packaging_Quantity__c):'';
-                                OpWrapper.selling_desc3 = checkIfBlank(sli.Additional_Comments__c);
+                                OpWrapper.selling_desc3 = checkIfBlank(sli.Customer_Preferred_Name__c);
                                 OpWrapper.prod_code3_dev = sli.OPTIVA_Recipe__r.SSC_Code__c;
                                 OpWrapper.sample_duedate3 = sli.First_Sample_due_date__c!=null?formatDate(sli.First_Sample_due_date__c):'';
                                 OpWrapper.cust_target_price3 = sli.Customer_Target_Price__c!=null?String.valueOf(sli.Customer_Target_Price__c):'';

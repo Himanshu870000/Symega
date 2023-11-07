@@ -54,7 +54,7 @@ public without sharing class OptivaCreateWrapper {
                         OpWrapper.tot_qty1 = checkIfBlank(String.valueOf(sli.Quantity__c));
                         OpWrapper.no_units1 = checkIfBlank(sli.Packaging_Unit__c);
                         OpWrapper.pack_size1 = sli.Packaging_Quantity__c!=null?String.valueOf(sli.Packaging_Quantity__c):'NA';
-                        OpWrapper.selling_desc1 = checkIfBlank(sli.Additional_Comments__c);
+                        OpWrapper.selling_desc1 = checkIfBlank(sli.Customer_Preferred_Name__c);
                         OpWrapper.sample_duedate1 = sli.First_Sample_due_date__c!=null?formatDate(sli.First_Sample_due_date__c):'NA';
                         OpWrapper.cust_target_price1 = sli.Customer_Target_Price__c!=null?String.valueOf(sli.Customer_Target_Price__c):'NA';
                         OpWrapper.prod_code1_dev = checkIfBlank(sli.OPTIVA_Recipe__r.SSC_Code__c);  
@@ -63,7 +63,7 @@ public without sharing class OptivaCreateWrapper {
                         OpWrapper.tot_qty2 = checkIfBlank(String.valueOf(sli.Quantity__c));
                         OpWrapper.no_units2 = checkIfBlank(sli.Packaging_Unit__c);
                         OpWrapper.pack_size2 = sli.Packaging_Quantity__c!=null?String.valueOf(sli.Packaging_Quantity__c):'NA';
-                        OpWrapper.selling_desc2 = checkIfBlank(sli.Additional_Comments__c);
+                        OpWrapper.selling_desc2 = checkIfBlank(sli.Customer_Preferred_Name__c);
                         OpWrapper.sample_duedate2 = sli.First_Sample_due_date__c!=null?formatDate(sli.First_Sample_due_date__c):'NA';
                         OpWrapper.cust_target_price2 = sli.Customer_Target_Price__c!=null?String.valueOf(sli.Customer_Target_Price__c):'NA';
                         OpWrapper.prod_code2_dev = checkIfBlank(sli.Project_Quotient__r.SSC_Code__c);
@@ -73,7 +73,7 @@ public without sharing class OptivaCreateWrapper {
                         OpWrapper.tot_qty3 = checkIfBlank(String.valueOf(sli.Quantity__c));
                         OpWrapper.no_units3 = checkIfBlank(sli.Packaging_Unit__c);
                         OpWrapper.pack_size3 = sli.Packaging_Quantity__c!=null?String.valueOf(sli.Packaging_Quantity__c):'NA';
-                        OpWrapper.selling_desc3 = checkIfBlank(sli.Additional_Comments__c);
+                        OpWrapper.selling_desc3 = checkIfBlank(sli.Customer_Preferred_Name__c);
                         OpWrapper.sample_duedate3 = sli.First_Sample_due_date__c!=null?formatDate(sli.First_Sample_due_date__c):'NA';
                         OpWrapper.cust_target_price3 = sli.Customer_Target_Price__c!=null?String.valueOf(sli.Customer_Target_Price__c):'NA';
                         OpWrapper.prod_code3_dev = checkIfBlank(sli.Project_Quotient__r.SSC_Code__c);
@@ -191,7 +191,7 @@ public without sharing class OptivaCreateWrapper {
 
 
             //NEW ADDITIONS
-            OpWrapper.expec_shelf_life = checkIfBlank(project.Expected_Shelf_Life__c);
+            OpWrapper.expected_shelf_life = checkIfBlank(project.Expected_Shelf_Life__c);
             OpWrapper.legal_status = checkIfBlank(project.Legal_Status__c);
 
         }

@@ -707,7 +707,8 @@ public without sharing class DistributorDashboard_Controller {
 
     @RemoteAction
     public static String noSplit(String oppId){
-        return NoSplitOpportunityHelper.createOneTimeOppRec(oppId);
+       // return NoSplitOpportunityHelper.createOneTimeOppRec(oppId);
+       return null;
     }
     
     @RemoteAction

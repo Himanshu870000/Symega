@@ -250,7 +250,7 @@
                         <label class="font-if">Customer Name
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <input class="form-control" type="text" ng-model="sampleDetails.Customer_Name__c" ng-disabled="false"/>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Customer_Name__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Opportunity Close Date
@@ -258,16 +258,16 @@
                         <span class="required-asterisk" style="color:red;">*</span>
                         <input class="form-control" type="date" ng-model="sampleDetails.Opportunity_Close_Date__c" ng-disabled="false"/>
                     </div>
-                    <div class="col-md-6 mt-3">
+                   <!-- <div class="col-md-6 mt-3">
                         <label class="font-if">Business Potential Value
                         </label>
                         <input class="form-control" type="text" ng-model="sampleDetails.Business_potential_value_INR__c" ng-disabled="true"/>
-                    </div>
-                    <div class="col-md-6 mt-3">
+                    </div> -->
+                   <!-- <div class="col-md-6 mt-3">
                         <label class="font-if">Account
                         </label>
                         <input class="form-control" type="text" ng-model="sampleDetails.Account__r.Name" ng-disabled="true"/>
-                    </div>
+                    </div> -->
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Revert Date Count
                         </label>
@@ -281,7 +281,7 @@
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Submit To Optiva
                         </label>
-                        <input class="form-control" type="checkbox" ng-model="sampleDetails.Submit_Sample_To_Optiva__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="sampleDetails.Submit_Sample_To_Optiva__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Currency
@@ -291,12 +291,12 @@
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Submitted
                         </label>
-                        <input class="form-control" type="checkbox" ng-model="sampleDetails.Submitted_To_SAP_Optiva__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="sampleDetails.Submitted_To_SAP_Optiva__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Error Occured On Submitting To Optiva
                         </label>
-                        <input class="form-control" type="checkbox" ng-model="sampleDetails.Error_Occured_On_Submitting_To_Optiva__c" ng-disabled="true"/>
+                        <input class="form-check-input" type="checkbox" ng-model="sampleDetails.Error_Occured_On_Submitting_To_Optiva__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Business potential value (INR) New
@@ -312,15 +312,16 @@
                         <label class="font-if">Annual Volume (in units)
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <select class="form-control" ng-model="sampleDetails.Annual_Volume_in_units__c">
+                       <!-- <select class="form-control" ng-model="sampleDetails.Annual_Volume_in_units__c">
                             <option ng-repeat="item in annulaVolInUnits" value="{{item}}">{{item}}</option>
-                        </select>
-                        <!--input class="form-control" type="text" ng-model="sampleDetails.Annual_Volume_in_units__c" ng-disabled="true"/-->
+                        </select> -->
+                        <input class="form-control" type="text" ng-model="sampleDetails.Annual_Volume_in_units__c" ng-disabled="true"/>
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Submitted Date
                         </label>
                         <input class="form-control" type="date" ng-model="sampleDetails.Sample_Submitted_Date__c" ng-disabled="true"/>
+                   <!-- <input class="form-control" type="date" ng-model="sampleDetails.Opportunity_Close_Date__c" ng-disabled="false"/> -->
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Record Type Name
@@ -336,6 +337,12 @@
                         <label class="font-if">Sample Delivery Date
                         </label>
                         <input class="form-control" type="date" ng-model="sampleDetails.Sample_Delivery_Date__c" ng-disabled="true"/>
+                    </div>
+                    
+                     <div class="col-md-6 mt-3">
+                        <label class="font-if">Target Price/KG
+                        </label>
+                        <input class="form-control" type="text" ng-model="sampleDetails.Target_Price__c" ng-disabled="true"/>
                     </div>
                     
                     <div class="row mt-5 mx-1">
@@ -419,10 +426,10 @@
                         <label class="font-if">Main reason for selecting product
                         </label>
                         <span class="required-asterisk" style="color:red;">*</span>
-                        <select class="form-control" ng-model="sampleDetails.Reason_for_selecting_product_C__c">
+                        <select class="form-control" ng-model="sampleDetails.Main_reason_for_selecting_product__c">
                             <option ng-repeat="item in mainReasonForSelPro" value="{{item}}">{{item}}</option>
                         </select>
-                        <!--input class="form-control" type="text" ng-model="sampleDetails.Reason_for_selecting_product_C__c" ng-disabled="false"/-->
+                        <!--input class="form-control" type="text" ng-model="sampleDetails.Main_reason_for_selecting_product__c" ng-disabled="false"/-->
                     </div>
                     <div class="col-md-6 mt-3">
                         <label class="font-if">Specify other reason
@@ -448,7 +455,7 @@
                     </div>
                     
                     <div class="col-md-6 mt-3">
-                        <label class="font-if">Compamy Name
+                        <label class="font-if">Company Name
                         </label>
                         <input class="form-control" type="text" ng-model="sampleDetails.Company_Name__c" ng-disabled="true"/>
                     </div>
@@ -564,6 +571,20 @@
                         if(result.listOfSamples[0].Opportunity_Close_Date__c != null){
                             $scope.sampleDetails.Opportunity_Close_Date__c = new Date(result.listOfSamples[0].Opportunity_Close_Date__c);
                         }
+                        if(result.listOfSamples[0].Sample_Submitted_Date__c != null){
+                            $scope.sampleDetails.Sample_Submitted_Date__c = new Date(result.listOfSamples[0].Sample_Submitted_Date__c); 
+                        }
+                        if(result.listOfSamples[0].Sample_Revert_Date__c != null){
+                            $scope.sampleDetails.Sample_Revert_Date__c = new Date(result.listOfSamples[0].Sample_Revert_Date__c); 
+                        } 
+                         if(result.listOfSamples[0].Sample_Delivery_Date__c != null){
+                            $scope.sampleDetails.Sample_Delivery_Date__c = new Date(result.listOfSamples[0].Sample_Delivery_Date__c); 
+                        } 
+                        if(result.listOfSamples[0].First_Sample_due_date__c != null){
+                            $scope.sampleDetails.First_Sample_due_date__c = new Date(result.listOfSamples[0].First_Sample_due_date__c); 
+                        }
+                        
+                        
                         
                         $scope.conRec = result.conRec;
                         if(result.listOfSamples[0].Sample_Line_Items__r != undefined){

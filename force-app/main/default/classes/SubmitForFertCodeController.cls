@@ -145,7 +145,26 @@ public without sharing class SubmitForFertCodeController {
         if(FieldApi_Name=='Account_Segment__c'){
             Map<String,List<String>> getPickListValuesIntoList= getPickListValuesIntoList(ObjectName,FieldApi_Name);   
             ObjectName_FieldApiName_PickListValue.put('Account_Segment__c',getPickListValuesIntoList);
+              ObjectName='OpportunityLineItem';FieldApi_Name='Primary__c';
         }
+
+        if(FieldApi_Name=='Primary__c'){
+            Map<String,List<String>> getPickListValuesIntoList= getPickListValuesIntoList(ObjectName,FieldApi_Name); 
+            ObjectName_FieldApiName_PickListValue.put('Primary__c',getPickListValuesIntoList);
+            ObjectName='OpportunityLineItem';FieldApi_Name='Secondary__c';
+        }
+         if(FieldApi_Name=='Secondary__c'){
+            Map<String,List<String>> getPickListValuesIntoList= getPickListValuesIntoList(ObjectName,FieldApi_Name); 
+            ObjectName_FieldApiName_PickListValue.put('Secondary__c',getPickListValuesIntoList);
+            ObjectName='OpportunityLineItem';FieldApi_Name='Tertiary__c';
+        }
+
+         if(FieldApi_Name=='Tertiary__c'){
+            Map<String,List<String>> getPickListValuesIntoList= getPickListValuesIntoList(ObjectName,FieldApi_Name); 
+            ObjectName_FieldApiName_PickListValue.put('Tertiary__c',getPickListValuesIntoList);
+            
+        }
+
         
         return ObjectName_FieldApiName_PickListValue;
     }
@@ -173,8 +192,8 @@ public without sharing class SubmitForFertCodeController {
         try{
             update oppLineList;
             update prod2List;
-            //   result = GetFERTCodeController.sendFERTCodeReqEmailNotificaiton(oppLineList[0].OpportunityId);
-            result = 'SUCCESS';
+         //   result = GetFERTCodeController.sendFERTCodeReqEmailNotificaiton(oppLineList[0].OpportunityId);
+            //result = 'SUCCESS';
         }
         catch(Exception e){
             System.debug('Exception Line Number-->'+e.getLineNumber());

@@ -10,6 +10,7 @@ public without sharing class SAP_Update_CustomerBatch Implements Database.Batcha
     }
 
     public void execute(Database.BatchableContext BC, List<sObject> scope){ 
+        system.debug('Customer Update Batch Executed -- ');
         for(String id : setOfCustomer){
             String response = SAP_CUSTOMER_UPDATE_CALLOUT.syncCustomersWithSAP(id);
         }

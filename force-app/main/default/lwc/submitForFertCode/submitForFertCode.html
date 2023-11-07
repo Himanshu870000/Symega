@@ -122,16 +122,35 @@
         </template>
 
         <template if:false={showAccountPage}>
+
             <lightning-quick-action-panel header="Submit for FERT Code">
+                     
+                       <lightning-accordion  class="example-accordion"
+                         onsectiontoggle={handleToggleSection} 
+                         active-section-name={activeSection}>
+        <lightning-accordion-section name="A" label="Customer Details">
+               <label>Customer Name</label>: {custName}<br/>
+                              <label>Customer No</label>:   {custNo}<br/>
+                                <label>Billing Street</label> : {billStreet} <br/>
+                                <label> Billing City</label> :{billCity}   <br/>
+                                <label>Billing Country</label> :{billCountry}  <br/>
+                                <label>Billing State</label> :{billState}  <br/>
+                                <label>Billing Postal Code</label> :{billPostCode}
+        </lightning-accordion-section>
+            <lightning-accordion-section name="B" label="Product Details">
 
                 <div class="slds-p-around_x-small slds-scrollable_x" >
+                      <!-- <label>Customer Name</label>: {custName}<br/>
+                        <label>Customer No</label>:{custNo}<br/> -->
+
+                  
                     <table class="slds-table slds-table_cell-buffer slds-table_bordered">
                         <thead>
 
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Product Name </th>
+                                <th class="slds-size_3-of-10 headcol"  scope="col">Product Name </th>
                                 <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  
+                                <td class="long" key={oppProd.Id}>  
                                     <!-- <lightning-input type="text" data-id={oppProd.Id}  data-name="Name"  value={oppProd.Name} onchange ={changeHandler} disabled >
                                     </lightning-input> -->
                                     {oppProd.Name}
@@ -140,44 +159,41 @@
                             </tr>
 
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Packing Type</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Packing Type</th>
                                 <template for:each={oppProdList} for:item="oppProd">
                                 <!-- <td key={oppProd.Id}>  <lightning-input type="text" data-id={oppProd.Id}  data-name="Packaging_Type__c" value={oppProd.Packaging_Type__c} onchange ={changeHandler} ></lightning-input></td> -->
-                                <td key={oppProd.Id}>   <lightning-combobox name="progress"  data-id={oppProd.Id}   data-name="Packaging_Type__c" value={oppProd.Packaging_Type__c}   options={options2} onchange={changeHandler} ></lightning-combobox></td>
+                                <td class="long" key={oppProd.Id}>   <lightning-combobox name="progress"  data-id={oppProd.Id}   data-name="Packaging_Type__c" value={oppProd.Packaging_Type__c}   options={options2} onchange={changeHandler} ></lightning-combobox></td>
                                 </template>
                             </tr>
 
-                            <tr class="">
-                                <th class="slds-size_3-of-10" scope="col"> Customer No.</th>
+                            <!-- <tr class="">
+                                <th class="slds-size_3-of-10 headcol" scope="col"> Customer No.</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                    <td key={oppProd.Id}> 
+                                    <td class="long" key={oppProd.Id}> 
                                     <template if:true={oppProd.Opportunity.Account_Billing_Address__c}>
                                         <lightning-input type="text" value={oppProd.Opportunity.Account.Customer_Code_SAP__c}  onchange ={changeHandler} data-id={oppProd.Id}  data-name="customerNo" disabled></lightning-input>
                                     </template>
                                     <template if:false={oppProd.Opportunity.Account_Billing_Address__c}>
-                                            <!-- <lightning-input type="text" value="No"  onchange ={changeHandler} data-id={oppProd.Id}  data-name="customerNo" disabled></lightning-input> -->
+                                           
                                         </template>
                                     </td>
                                     </template>
 
 
-                            </tr>
-                            <tr class="">
-                                <th class="slds-size_3-of-10" scope="col"> Customer Name.</th>
-                                <!-- --> <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}><lightning-input type="text" value={oppProd.Opportunity.Account.Name} disabled ></lightning-input></td>
+                            </tr> -->
+                            
+                            <!-- <tr class="">
+                                <th class="slds-size_3-of-10 headcol" scope="col"> Customer Name.</th>
+                               <template for:each={oppProdList} for:item="oppProd">
+                                <td class="long" key={oppProd.Id}><lightning-input type="text" value={oppProd.Opportunity.Account.Name} disabled ></lightning-input></td>
                                 </template> 
 
-                            </tr>
-                                <!-- <tr class="">
-                                <th class="slds-size_3-of-10" scope="col"> Country </th>
-
                             </tr> -->
-                            <tr class="">
+                               
+                            <!-- <tr class="">
                                 <th> Address </th>
                                     <template for:each={oppProdList} for:item="oppProd">   
-                                    <!-- <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Opportunity.Billing_Country__c} onchange ={changeHandler} ></lightning-input></td>   -->
-                                    <td key={oppProd.Id}>
+                                    <td class="long" key={oppProd.Id}>
                                     <lightning-input-address  disabled
                                             street-label="Street"
                                             city-label="City"
@@ -194,64 +210,64 @@
                                             </lightning-input-address>
                                     </td>
                                     </template>
-                            </tr>
+                            </tr> -->
 
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col"> Expected Order Quantity </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col"> Expected Order Quantity </th>
                             <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Quantity}  data-id={oppProd.Id}  data-name="Quantity" onchange ={changeHandler} ></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Quantity}  data-id={oppProd.Id}  data-name="Quantity" onchange ={changeHandler} ></lightning-input></td>
                             </template>
                             </tr>
 
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col"> Fert Description </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col"> Fert Description </th>
                                 <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Fert_Description__c} data-id={oppProd.Id}  data-name="Fert_Description__c"  onchange ={changeHandler}> </lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Fert_Description__c} data-id={oppProd.Id}  data-name="Fert_Description__c"  onchange ={changeHandler}> </lightning-input></td>
                             </template>
 
                             </tr>
 
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col"> Unit of Measure (Sales Unit)</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col"> Unit of Measure (Sales Unit)</th>
                                 <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Unit_Of_Measure__c} data-id={oppProd.Id}  data-name="Unit_Of_Measure__c"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Unit_Of_Measure__c} data-id={oppProd.Id}  data-name="Unit_Of_Measure__c"  onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">HALB Code</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">HALB Code</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.ProductCode}  data-id={oppProd.Id}  data-name="ProductCode"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.ProductCode}  data-id={oppProd.Id}  data-name="ProductCode"  onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Base Qty</th> 
+                                <th class="slds-size_3-of-10 headcol" scope="col">Base Qty</th> 
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Packaging_Quantity__c} data-id={oppProd.Id}  data-name="Packaging_Quantity__c"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Packaging_Quantity__c} data-id={oppProd.Id}  data-name="Packaging_Quantity__c"  onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Art Work</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Art Work</th>
                                 <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Art_Work__c} data-id={oppProd.Id}  data-name="Art_Work__c"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Art_Work__c} data-id={oppProd.Id}  data-name="Art_Work__c"  onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Shelf Life Qty</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Shelf Life Qty</th>
                                 
                                 <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Product2Id}>  <lightning-input type="number" value={oppProd.Product2.Shelf_Life__c} data-id={oppProd.Product2Id}  data-name="Shelf_Life__c"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Product2Id}>  <lightning-input type="number" value={oppProd.Product2.Shelf_Life__c} data-id={oppProd.Product2Id}  data-name="Shelf_Life__c"  onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
 
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Allergen Status Required</th> 
+                                <th class="slds-size_3-of-10 headcol" scope="col">Allergen Status Required</th> 
                                     <template for:each={oppProdList} for:item="oppProd">
-                                    <td key={oppProd.Product2Id}> 
+                                    <td class="long" key={oppProd.Product2Id}> 
                                         <lightning-input type="checkbox" value={oppProd.Product2.Allergen_Status_Required__c} onchange ={changeHandler} data-id={oppProd.Product2Id}  data-name="Allergen_Status_Required__c" ></lightning-input>
                                     <!--   <template if:true={oppProd.Product2.Allergen_Status_Required__c}>
                                         
@@ -264,116 +280,122 @@
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Veg/ Non- Veg Logo in Label </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Veg/ Non- Veg Logo in Label </th>
                                 <template for:each={oppProdList} for:item="oppProd">
                                 <!-- <td key={oppProd.Product2Id}>  <lightning-input type="text" value={oppProd.Product2.Veg_Nonveg_Logo_In_Label__c}  data-id={oppProd.Product2Id}  data-name="Veg_Nonveg_Logo_In_Label__c" onchange ={changeHandler}></lightning-input></td> -->
 
-                                   <td key={oppProd.Product2Id}>   <lightning-combobox name="progress"  data-id={oppProd.Product2Id}   data-name="Veg_Nonveg_Logo_In_Label__c" value={oppProd.Product2.Veg_Nonveg_Logo_In_Label__c}   options={options4} onchange={changeHandler} ></lightning-combobox></td>
+                                   <td class="long" key={oppProd.Product2Id}>   <lightning-combobox name="progress"  data-id={oppProd.Product2Id}   data-name="Veg_Nonveg_Logo_In_Label__c" value={oppProd.Product2.Veg_Nonveg_Logo_In_Label__c}   options={options4} onchange={changeHandler} ></lightning-combobox></td>
                             </template>
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Customer Customised label</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Customer Customised label</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Customized_Label__c}  data-id={oppProd.Id}  data-name="Customized_Label__c" onchange ={changeHandler}> </lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Customized_Label__c}  data-id={oppProd.Id}  data-name="Customized_Label__c" onchange ={changeHandler}> </lightning-input></td>
                             </template>
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Ingredients List declared with customer</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Ingredients List declared with customer</th>
                                     <template for:each={oppProdList} for:item="oppProd">
                                 <!-- <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Ingredients_List_Declared_With_Customer__c} disabled data-id={oppProd.Id}  data-name="IngredientsListdeclared"  onchange ={changeHandler}></lightning-input></td> -->
-                                <td key={oppProd.Id}> 
+                                <td class="long" key={oppProd.Id}> 
                                 <lightning-combobox name="progress"  data-id={oppProd.Id}  data-name="Ingredients_List_Declared_With_Customer__c" value={oppProd.Ingredients_List_Declared_With_Customer__c}   options={options1} onchange={changeHandler} ></lightning-combobox>
                                 </td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Ingredients List</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Ingredients List</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Ingredient_list__c}  data-id={oppProd.Id}  data-name="IngredientsList"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Ingredient_list__c}  data-id={oppProd.Id}  data-name="IngredientsList"  onchange ={changeHandler}></lightning-input></td>
                             </template>
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Reveal SYMEGA Identity</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Reveal SYMEGA Identity</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Reveal_Symega_Identity__c}  data-id={oppProd.Id}  data-name="RevealSymegaIdentity"  onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Reveal_Symega_Identity__c}  data-id={oppProd.Id}  data-name="RevealSymegaIdentity"  onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Cusinery identity</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Cusinery identity</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}> <lightning-input type="text" value={oppProd.Cusinery_identity__c}  data-id={oppProd.Id}  data-name="cusineryIdentity" onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}> <lightning-input type="text" value={oppProd.Cusinery_identity__c}  data-id={oppProd.Id}  data-name="cusineryIdentity" onchange ={changeHandler}></lightning-input></td>
                             </template>
                             </tr>
 
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Label</th> 
+                                <th class="slds-size_3-of-10 headcol" scope="col">Label</th> 
                                 <template for:each={oppProdList} for:item="oppProd">
                                 <!-- <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Label__c} disabled onchange ={changeHandler}></lightning-input></td> -->
-                                <td key={oppProd.Id}> <lightning-combobox name="progress"  data-id={oppProd.Id}  data-name="Label" value={oppProd.Label__c}  options={options} onchange={changeHandler} ></lightning-combobox>
+                                <td class="long" key={oppProd.Id}> <lightning-combobox name="progress"  data-id={oppProd.Id}  data-name="Label" value={oppProd.Label__c}  options={options} onchange={changeHandler} ></lightning-combobox>
                                 </td>
 
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Material Sector</th> 
+                                <th class="slds-size_3-of-10 headcol" scope="col">Material Sector</th> 
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Material_Sector__c}  data-id={oppProd.Id}  data-name="MaterialSector" onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Material_Sector__c}  data-id={oppProd.Id}  data-name="MaterialSector" onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Sales Remarks</th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Sales Remarks</th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Sales_Remarks__c}  data-id={oppProd.Id}  data-name="SalesRemarks" onchange ={changeHandler}></lightning-input></td>
+                                <td class="long" key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Sales_Remarks__c}  data-id={oppProd.Id}  data-name="SalesRemarks" onchange ={changeHandler}></lightning-input></td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Plant </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Plant </th>
                                     <template for:each={oppProdList} for:item="oppProd">
                                 <!-- <td key={oppProd.Product2Id}>  <lightning-input type="text" value={oppProd.Product2.Plant__c}  data-id={oppProd.Product2Id}  data-name="Plant__c" onchange ={changeHandler}></lightning-input></td>
                                     <td key={oppProd.Product2Id}>  <lightning-input type="checkbox" value={oppProd.Product2.Plant__c} onchange ={changeHandler} data-id={oppProd.Product2Id}  data-name="Plant__c" ></lightning-input></td> -->
-                                       <td key={oppProd.Product2Id}>   <lightning-combobox name="progress"  data-id={oppProd.Product2Id}   data-name="Plant__c" value={oppProd.Product2.Plant__c}   options={options3} onchange={changeHandler} ></lightning-combobox></td>
+                                       <td class="long" key={oppProd.Product2Id}>   <lightning-combobox name="progress"  data-id={oppProd.Product2Id}   data-name="Plant__c" value={oppProd.Product2.Plant__c}   options={options3} onchange={changeHandler} ></lightning-combobox></td>
 
                             </template>
 
                             </tr>
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Control Code/HSN Code </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Control Code/HSN Code </th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Product2Id}>  <lightning-input type="text" value={oppProd.Product2.Control_Code_HSN_Code__c} data-id={oppProd.Product2Id}  data-name="Control_Code_HSN_Code__c"  ></lightning-input></td>
+                                <td class="long" key={oppProd.Product2Id}>  <lightning-input type="text" value={oppProd.Product2.Control_Code_HSN_Code__c} data-id={oppProd.Product2Id}  data-name="Control_Code_HSN_Code__c"  ></lightning-input></td>
                             </template>  
 
                             </tr>
                                 <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Primary </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Primary </th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Primary__c}  data-id={oppProd.Id}  data-name="Primary" onchange ={changeHandler}></lightning-input></td>
+                                <!-- <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Primary__c}  data-id={oppProd.Id}  data-name="Primary" onchange ={changeHandler}></lightning-input></td> -->
+                                  <td class="long" key={oppProd.Id}>   <lightning-combobox name="Primary"  data-id={oppProd.Id}   data-name="Primary__c" value={oppProd.Primary__c}   options={primList} onchange={changeHandler} ></lightning-combobox></td>
                             </template>
 
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Secondary </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Secondary </th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Secondary__c}  data-id={oppProd.Id}  data-name="secondary" onchange ={changeHandler}></lightning-input></td>
+                                <!-- <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Secondary__c}  data-id={oppProd.Id}  data-name="secondary" onchange ={changeHandler}></lightning-input></td> -->
+                                  <td class="long" key={oppProd.Id}>   <lightning-combobox name="Secondary"  data-id={oppProd.Id}   data-name="Secondary__c" value={oppProd.Secondary__c}   options={secondList} onchange={changeHandler} ></lightning-combobox></td>
                             </template>
 
                             </tr>
                             <tr class="">
-                                <th class="slds-size_3-of-10" scope="col">Teritary </th>
+                                <th class="slds-size_3-of-10 headcol" scope="col">Teritary </th>
                                     <template for:each={oppProdList} for:item="oppProd">
-                                <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Tertiary__c}  data-id={oppProd.Id}  data-name="Teritary"  onchange ={changeHandler}></lightning-input></td>
+                                <!-- <td key={oppProd.Id}>  <lightning-input type="text" value={oppProd.Tertiary__c}  data-id={oppProd.Id}  data-name="Teritary"  onchange ={changeHandler}></lightning-input></td> -->
+                                    <td class="long" key={oppProd.Id}>   <lightning-combobox name="Tertiary"  data-id={oppProd.Id}   data-name="Tertiary__c" value={oppProd.Tertiary__c}   options={tertList} onchange={changeHandler} ></lightning-combobox></td>
                             </template>
 
                             </tr>
 
                         </thead>
                     </table>
+                    
                 </div>
+                 </lightning-accordion-section>
+                       </lightning-accordion>
             </lightning-quick-action-panel>
             <div class="slds-align_absolute-center slds-border_top">
                     <lightning-button  variant="neutral" label="Cancel" onclick={closeModal} ></lightning-button>
